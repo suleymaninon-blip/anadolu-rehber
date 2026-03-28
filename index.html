@@ -103,6 +103,27 @@
   .zlabel { font-size: 14px; color: #6B6B67; }
   .zdeger { font-size: 14px; font-weight: 500; color: #1A1A18; }
   .harita-btn-buyuk { background: #1A1A18; border-radius: 14px; padding: 16px; text-align: center; color: #fff; font-family: 'Crimson Pro', serif; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 4px; border: none; width: 100%; }
+  .yorum-form { background: #fff; border-radius: 14px; border: 0.5px solid #E8E6E0; padding: 16px; margin-bottom: 16px; }
+  .yorum-form input, .yorum-form textarea { width: 100%; border: 0.5px solid #E8E6E0; border-radius: 10px; padding: 10px 12px; font-family: 'Crimson Pro', serif; font-size: 14px; color: #1A1A18; outline: none; margin-bottom: 10px; background: #FAFAF8; }
+  .yorum-form textarea { height: 80px; resize: none; }
+  .yorum-form input:focus, .yorum-form textarea:focus { border-color: #B85C2A; }
+  .yildiz-wrap { display: flex; gap: 6px; margin-bottom: 12px; }
+  .yildiz { font-size: 28px; cursor: pointer; opacity: 0.3; transition: opacity 0.15s; }
+  .yildiz.aktif { opacity: 1; }
+  .yorum-gonder-btn { background: #B85C2A; color: #fff; border: none; border-radius: 10px; padding: 11px; font-family: 'Crimson Pro', serif; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%; }
+  .yorum-gonder-btn:disabled { opacity: 0.5; }
+  .yorum-kart { background: #fff; border-radius: 12px; border: 0.5px solid #E8E6E0; padding: 13px 14px; margin-bottom: 10px; }
+  .yorum-ust { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .yorum-isim { font-size: 13px; font-weight: 500; color: #1A1A18; }
+  .yorum-tarih { font-size: 11px; color: #9B9B97; }
+  .yorum-yildizlar { font-size: 13px; margin-bottom: 6px; }
+  .yorum-metin { font-size: 13px; color: #6B6B67; line-height: 1.6; }
+  .yorum-bos { text-align: center; padding: 20px; font-size: 13px; color: #9B9B97; font-style: italic; }
+  .puan-ozet { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 12px; border: 0.5px solid #E8E6E0; padding: 14px; margin-bottom: 14px; }
+  .puan-buyuk { font-family: 'Cinzel', serif; font-size: 36px; color: #B85C2A; }
+  .puan-detay { flex: 1; }
+  .puan-yildizlar { font-size: 18px; margin-bottom: 2px; }
+  .puan-sayi { font-size: 12px; color: #9B9B97; }
   .harita-ekran { background: #E8E4DC; }
   .harita-header { background: #FAFAF8; padding: 52px 16px 12px; border-bottom: 0.5px solid #E8E6E0; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
   .harita-geri { background: none; border: none; font-size: 22px; cursor: pointer; color: #1A1A18; }
@@ -236,6 +257,28 @@
         </div>
       </div>
       <button class="harita-btn-buyuk" id="detayHaritaBtn" onclick="haritaAc()">🗺  Haritada Göster</button>
+
+      <!-- YORUMLAR -->
+      <div class="bolum" style="margin-top:20px">
+        <div class="bolum-baslik">Yorumlar & Puanlar</div>
+        <div id="puanOzet"></div>
+        <div class="yorum-form">
+          <div style="font-size:13px;color:#6B6B67;margin-bottom:10px">Puan ver:</div>
+          <div class="yildiz-wrap" id="yildizWrap">
+            <span class="yildiz" onclick="yildizSec(1)">⭐</span>
+            <span class="yildiz" onclick="yildizSec(2)">⭐</span>
+            <span class="yildiz" onclick="yildizSec(3)">⭐</span>
+            <span class="yildiz" onclick="yildizSec(4)">⭐</span>
+            <span class="yildiz" onclick="yildizSec(5)">⭐</span>
+          </div>
+          <input type="text" id="yorumIsim" placeholder="Adınız (örn: Ahmet)" maxlength="50">
+          <input type="text" id="yorumSehir" placeholder="Şehriniz (örn: İzmir) — isteğe bağlı" maxlength="50">
+          <textarea id="yorumMetin" placeholder="Ziyaret deneyiminizi paylaşın..."></textarea>
+          <button class="yorum-gonder-btn" id="yorumGonderBtn" onclick="yorumGonder()">Yorumu Gönder</button>
+        </div>
+        <div id="yorumListesi"></div>
+      </div>
+
       <div style="height:30px"></div>
     </div>
   </div>
@@ -572,6 +615,13 @@ function detayAc(id) {
   const p=document.getElementById('dPark'); p.textContent=y.park?'Mevcut':'Yok'; p.style.color=y.park?'#2E7D52':'#B85C2A';
   document.getElementById('detayHaritaBtn').onclick = () => { haritaKapat(); haritaAc(y.id); };
   document.getElementById('detayEkrani').classList.add('acik');
+  // Yorumları yükle
+  aktifOrenYeriId = y.id;
+  seciliPuan = 0;
+  document.querySelectorAll('.yildiz').forEach(el => el.classList.remove('aktif'));
+  document.getElementById('yorumListesi').innerHTML = '<div class="yorum-bos">Yükleniyor...</div>';
+  document.getElementById('puanOzet').innerHTML = '';
+  yorumlariYukle(y.id);
 }
 function detayKapat() { document.getElementById('detayEkrani').classList.remove('acik'); }
 // Koordinatlar — her ören yeri için
@@ -687,6 +737,82 @@ function haritaKapat() {
   document.getElementById('haritaEkrani').classList.remove('acik');
   document.getElementById('pinListesi').classList.remove('acik');
 }
+
+// ── SUPABASE YORUM SİSTEMİ ───────────────────────────────────────────────────
+const SUPABASE_URL = 'https://vdtfjxyktzbuyyvwbufl.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_i-I5FvMSIONTUDuiROoCqA_ilt-aBpG';
+const SAPI = `${SUPABASE_URL}/rest/v1`;
+
+let seciliPuan = 0;
+let aktifOrenYeriId = null;
+
+function yildizSec(puan) {
+  seciliPuan = puan;
+  document.querySelectorAll('.yildiz').forEach((el, i) => {
+    el.classList.toggle('aktif', i < puan);
+  });
+}
+
+async function yorumlariYukle(orenYeriId) {
+  try {
+    const res = await fetch(`${SAPI}/yorumlar?oren_yeri_id=eq.${orenYeriId}&order=olusturma_tarihi.desc`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    const yorumlar = await res.json();
+    const ozet = document.getElementById('puanOzet');
+    if (yorumlar.length > 0) {
+      const ort = (yorumlar.reduce((t, y) => t + y.puan, 0) / yorumlar.length).toFixed(1);
+      ozet.innerHTML = `<div class="puan-ozet">
+        <div class="puan-buyuk">${ort}</div>
+        <div class="puan-detay">
+          <div class="puan-yildizlar">${'⭐'.repeat(Math.round(ort))}${'☆'.repeat(5-Math.round(ort))}</div>
+          <div class="puan-sayi">${yorumlar.length} değerlendirme</div>
+        </div>
+      </div>`;
+    } else { ozet.innerHTML = ''; }
+    const liste = document.getElementById('yorumListesi');
+    if (!yorumlar.length) { liste.innerHTML = '<div class="yorum-bos">Henüz yorum yok. İlk yorumu sen yap!</div>'; return; }
+    liste.innerHTML = yorumlar.map(y => {
+      const tarih = new Date(y.olusturma_tarihi).toLocaleDateString('tr-TR');
+      const isimGoster = y.sehir ? `${y.kullanici_adi}, ${y.sehir}` : y.kullanici_adi;
+      return `<div class="yorum-kart">
+        <div class="yorum-ust"><span class="yorum-isim">${isimGoster}</span><span class="yorum-tarih">${tarih}</span></div>
+        <div class="yorum-yildizlar">${'⭐'.repeat(y.puan)}${'☆'.repeat(5-y.puan)}</div>
+        <div class="yorum-metin">${y.yorum}</div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    document.getElementById('yorumListesi').innerHTML = '<div class="yorum-bos">Yorumlar yüklenemedi.</div>';
+  }
+}
+
+async function yorumGonder() {
+  const isim = document.getElementById('yorumIsim').value.trim();
+  const sehir = document.getElementById('yorumSehir').value.trim();
+  const metin = document.getElementById('yorumMetin').value.trim();
+  const btn = document.getElementById('yorumGonderBtn');
+  if (!isim) { alert('Lütfen adınızı girin.'); return; }
+  if (!metin) { alert('Lütfen yorum yazın.'); return; }
+  if (!seciliPuan) { alert('Lütfen puan verin.'); return; }
+  btn.disabled = true; btn.textContent = 'Gönderiliyor...';
+  try {
+    const res = await fetch(`${SAPI}/yorumlar`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ oren_yeri_id: aktifOrenYeriId, kullanici_adi: isim, sehir: sehir||null, yorum: metin, puan: seciliPuan })
+    });
+    if (res.ok) {
+      document.getElementById('yorumIsim').value='';
+      document.getElementById('yorumSehir').value='';
+      document.getElementById('yorumMetin').value='';
+      yildizSec(0); seciliPuan=0;
+      btn.textContent='✓ Gönderildi!';
+      setTimeout(()=>{ btn.textContent='Yorumu Gönder'; btn.disabled=false; }, 2000);
+      yorumlariYukle(aktifOrenYeriId);
+    } else { throw new Error(); }
+  } catch(e) { alert('Gönderilemedi, tekrar deneyin.'); btn.disabled=false; btn.textContent='Yorumu Gönder'; }
+}
+// ────────────────────────────────────────────────────────────────────────────
 
 kartlarGoster();
 </script>
