@@ -469,7 +469,8 @@ const YERLER = [
 let aktifDonem=null, aktifBolge=null, aktifMod='donem', zamanYili=-200, aramaSorgusu='';
 let favoriler = new Set();
 let aktifSekme = 'kesif';
-let aktifDil = navigator.language?.startsWith('tr') ? 'tr' : 'en';
+const _lang = navigator.language?.toLowerCase() || 'tr';
+let aktifDil = _lang.startsWith('tr') ? 'tr' : _lang.startsWith('de') ? 'de' : _lang.startsWith('ru') ? 'ru' : 'en';
 
 // ── DİL SİSTEMİ ──────────────────────────────────────────────────────────────
 const TERCUMELER = {
@@ -540,7 +541,75 @@ const TERCUMELER = {
     rehberAlt: 'Coming soon! Join certified local guides for an unforgettable journey through history.',
     bildir: '🔔  Notify Me', bildirildi: '✓ We\'ll notify you!', kapat: 'Close',
     yil: 'years',
-  }
+  },
+  de: {
+    baslik: 'ANADOLU', baslikAlt: 'Geschichtsführer',
+    harita: '🗺 Karte', ara: 'Stätten, Städte oder Zivilisationen suchen...',
+    iptal: 'Abbrechen', donem: 'Epoche', zamanCubugu: 'Zeitstrahl',
+    tumDon: 'Alle', tumBol: 'Alle',
+    tasDev: 'Steinzeit', tuncCag: 'Bronzezeit', demirCag: 'Eisenzeit',
+    antik: 'Klassik', bizans: 'Byzantinisch', selcuklu: 'Seldschukisch', osmanli: 'Osmanisch',
+    ege: 'Ägäis', marmara: 'Marmara', akdeniz: 'Mittelmeer', ic: 'Zentralanatolien',
+    karadeniz: 'Schwarzes Meer', dogu: 'Ostanatolien', guneydogu: 'Südosten',
+    orenYeri: 'Stätten', kesif: 'Entdecken', favoriler: 'Favoriten',
+    kuruluş: 'Gegründet', sonAktif: 'Zuletzt aktiv', sure: 'Dauer',
+    medeniyetler: 'Zivilisationen', hakkinda: 'Über', ziyaret: 'Besuchsinfo',
+    giris: 'Eintritt', saatler: 'Öffnungszeiten', park: 'Parkplatz',
+    mevcut: 'Vorhanden', yok: 'Nicht vorhanden', haritaGoster: '🗺  Auf Karte zeigen',
+    rehberBtn: '🧭  Mit Profi-Guide entdecken', yakin: 'Demnächst',
+    yorumlar: 'Bewertungen', puanVer: 'Bewerten:',
+    adiniz: 'Ihr Name (z.B. Hans)', sehriniz: 'Ihre Stadt (optional)',
+    yorumYaz: 'Teilen Sie Ihre Erfahrung...', gonder: 'Bewertung senden',
+    gonderiliyor: 'Wird gesendet...', gonderildi: '✓ Gesendet!',
+    henuzYorum: 'Noch keine Bewertungen. Seien Sie der Erste!',
+    degerlendirme: 'Bewertungen', yuklenemedi: 'Bewertungen konnten nicht geladen werden.',
+    gonderilemedi: 'Konnte nicht gesendet werden, bitte erneut versuchen.',
+    lutfenAd: 'Bitte geben Sie Ihren Namen ein.', lutfenYorum: 'Bitte schreiben Sie eine Bewertung.',
+    lutfenPuan: 'Bitte geben Sie eine Bewertung ab.',
+    favBos: 'Noch keine Favoriten.<br>Tippen Sie auf das Herz-Symbol!',
+    favKaydedildi: 'Stätten gespeichert',
+    cubukAciklama: 'Zum Reisen durch die Zeit ziehen',
+    geri: '← Zurück', unesco: 'UNESCO Welterbe',
+    haritaBaslik: 'Stätten', noktaIsaretlendi: 'Stätten markiert',
+    rehberBaslik: '🧭 Mit professionellem Guide erkunden',
+    rehberAlt: 'Demnächst verfügbar! Erleben Sie unvergessliche Geschichtsreisen mit zertifizierten Guides.',
+    bildir: '🔔  Benachrichtigen', bildirildi: '✓ Wir benachrichtigen Sie!', kapat: 'Schließen',
+    yil: 'Jahre',
+  },
+  ru: {
+    baslik: 'ANADOLU', baslikAlt: 'Путеводитель по истории',
+    harita: '🗺 Карта', ara: 'Поиск мест, городов или цивилизаций...',
+    iptal: 'Отмена', donem: 'Эпоха', zamanCubugu: 'Лента времени',
+    tumDon: 'Все', tumBol: 'Все',
+    tasDev: 'Каменный век', tuncCag: 'Бронзовый век', demirCag: 'Железный век',
+    antik: 'Античность', bizans: 'Византийский', selcuklu: 'Сельджукский', osmanli: 'Османский',
+    ege: 'Эгейский', marmara: 'Мраморное море', akdeniz: 'Средиземноморье', ic: 'Центральная Анатолия',
+    karadeniz: 'Чёрное море', dogu: 'Восточная Анатолия', guneydogu: 'Юго-Восток',
+    orenYeri: 'объектов', kesif: 'Исследовать', favoriler: 'Избранное',
+    kuruluş: 'Основан', sonAktif: 'Последняя активность', sure: 'Продолжительность',
+    medeniyetler: 'Цивилизации', hakkinda: 'О месте', ziyaret: 'Информация для посетителей',
+    giris: 'Входной билет', saatler: 'Часы работы', park: 'Парковка',
+    mevcut: 'Есть', yok: 'Нет', haritaGoster: '🗺  Показать на карте',
+    rehberBtn: '🧭  Тур с профессиональным гидом', yakin: 'Скоро',
+    yorumlar: 'Отзывы и оценки', puanVer: 'Оценить:',
+    adiniz: 'Ваше имя (напр. Иван)', sehriniz: 'Ваш город (необязательно)',
+    yorumYaz: 'Поделитесь впечатлениями...', gonder: 'Отправить отзыв',
+    gonderiliyor: 'Отправляется...', gonderildi: '✓ Отправлено!',
+    henuzYorum: 'Отзывов пока нет. Будьте первым!',
+    degerlendirme: 'отзывов', yuklenemedi: 'Не удалось загрузить отзывы.',
+    gonderilemedi: 'Не удалось отправить, попробуйте ещё раз.',
+    lutfenAd: 'Пожалуйста, введите ваше имя.', lutfenYorum: 'Пожалуйста, напишите отзыв.',
+    lutfenPuan: 'Пожалуйста, поставьте оценку.',
+    favBos: 'Избранного пока нет.<br>Нажмите на иконку сердца, чтобы сохранить!',
+    favKaydedildi: 'объектов сохранено',
+    cubukAciklama: 'Перетащите для путешествия во времени',
+    geri: '← Назад', unesco: 'Объект всемирного наследия ЮНЕСКО',
+    haritaBaslik: 'Объектов', noktaIsaretlendi: 'объектов отмечено',
+    rehberBaslik: '🧭 Тур с профессиональным гидом',
+    rehberAlt: 'Скоро! Незабываемые путешествия по истории с сертифицированными гидами.',
+    bildir: '🔔  Уведомить меня', bildirildi: '✓ Мы уведомим вас!', kapat: 'Закрыть',
+    yil: 'лет',
+  },
 };
 
 // İngilizce ören yeri açıklamaları
@@ -652,16 +721,241 @@ const BOLGELER_EN = {
   'ic':'Central Anatolia','karadeniz':'Black Sea','dogu':'East Anatolia','guneydogu':'Southeast'
 };
 
+// ── ALMANCA ──────────────────────────────────────────────────────────────────
+const ACIKLAMALAR_DE = {
+  '1': 'Eine der größten Städte der Antike. Die Celsus-Bibliothek und das riesige Theater repräsentieren den Höhepunkt der römischen Architektur.',
+  '2': 'Diese der Aphrodite geweihte antike Stadt war eines der wichtigsten Zentren der römischen Bildhauerkunst. Das Tetrapylon-Tor steht noch in seinem Glanz.',
+  '3': 'Die hellenistische Hauptstadt, die eine der größten Bibliotheken der Antike beherbergte. Berühmt für den Zeus-Altar und das Asklepion.',
+  '4': 'Ein einzigartiges Natur-Geschichts-Areal mit weißen Travertinen und einer antiken Stadt. Ein wichtiges Thermalbad- und Wallfahrtszentrum der Römerzeit.',
+  '5': 'Die ionische Stadt, in der erste Philosophen wie Thales und Anaximandros geboren wurden. Sein Theater mit 15.000 Plätzen steht noch heute.',
+  '6': 'Ein berühmtes Orakelzentrum mit einem riesigen Apollo-Tempel. Das wichtigste Orakelzentrum der Antike nach Delphi.',
+  '7': 'Hauptstadt des Lydischen Königreichs, der ersten Zivilisation, die Münzen prägte. Die legendären Schätze von König Krösus sollen hier vergraben sein.',
+  '8': 'Bekannt als das "Pompeji Anatoliens". Sein Rasterstraßenplan war die Inspiration für moderne Stadtplanung.',
+  '9': 'Die antike Hafenstadt, in der Aristoteles seine Philosophieschule gründete. Die Ruinen des Athena-Tempels mit Blick auf das Meer bieten atemberaubende Ausblicke.',
+  '10': 'Der am besten erhaltene Zeus-Tempel Anatoliens. Die Säulen aus dem 2. Jahrhundert stehen noch an ihrem Platz, mit Stadion- und Theaterruinen.',
+  '11': 'Eine der sieben Gemeinden, die im Neuen Testament erwähnt werden. Das Große Theater und die byzantinischen Kirchen hinterlassen Besucher ehrfürchtig.',
+  '12': 'Eine der seltenen antiken Städte mit einem darüber gebauten Dorf. Die Dorfbewohner nutzten das antike Theater als Scheune und den Tempelhof als Markt.',
+  '13': 'Antike Stadt, die die berühmte Aphrodite-Statue von Praxiteles beherbergte. Eine wichtige Handelsstadt, die mit ihren zwei Häfen Ägäis und Mittelmeer verband.',
+  '14': 'Berühmte ionische Stadt mit einem Dionysos-Tempel, dem Gott des Weins. Bekannt als Geburtsort des Dichters Anakreon.',
+  '15': 'Eine der 12 ionischen Städte. Soll die ersten Kavallerie der Welt ausgebildet haben. Heute sind die meisten Ruinen zwischen Olivenhainen verborgen.',
+  '16': 'Die legendäre Stadt, die in Homers Ilias verewigt wurde. Neun Siedlungsschichten enthalten tausende Jahre Geschichte.',
+  '17': 'Geschichtete Geschichte vom byzantinischen Konstantinopel zum osmanischen Istanbul. Hagia Sophia, Topkapi-Palast und der Große Basar befinden sich hier.',
+  '18': 'Die erste große Moschee der osmanischen Architektur. Ihr Inneres mit 20 Kuppeln und 192 Kalligraphie-Werken ist ein Meisterwerk.',
+  '19': 'Die stärkste antike Hafenstadt der Marmararegion. Ihr Zeus geweihter Tempel galt als eines der Sieben Weltwunder der Antike.',
+  '20': 'Das wichtigste Verwaltungszentrum der Perser in Anatolien nach den Phrygern. Hinterließ als Hauptstadt der persischen Satrapie ein reiches kulturelles Erbe.',
+  '21': 'Das am besten erhaltene antike römische Theater der Welt. Das Theater mit 15.000 Plätzen wird heute noch für Oper und Ballett genutzt.',
+  '22': 'Hauptstadt der Lykischen Liga und Geburtsort des Weihnachtsmanns. In einzigartiger Umgebung mit langen Stränden und Sanddünen.',
+  '23': 'Hauptstadt der lykischen Zivilisation. Zweimal von den Persern niedergebrannt und zerstört; berühmt für das legendäre Harpyen-Monument.',
+  '24': 'Die romantischste antike Stadt am Meer mit den Tempeln von Apollo und Athena. Die Tempelsilhouette bei Sonnenuntergang ist unvergleichlich.',
+  '25': 'Eine Bergstadt, die selbst Alexander der Große nicht erobern konnte. Eine der geheimnisvollsten antiken Städte mit waldbedeckten Ruinen auf 1665 Metern.',
+  '26': 'Die Stadt, durch die Alexander auf seinem anatolischen Feldzug zog. Eine beeindruckende römische Stadt mit Stadion und Säulenstraße.',
+  '27': 'Heimatstadt des Heiligen Nikolaus, bekannt als Weihnachtsmann. Ein wichtiges Wallfahrtszentrum mit lykischen Felsgräbern und der Kirche des Heiligen.',
+  '28': 'Der Antoninus-Brunnen fließt noch! Eine der am besten erhaltenen antiken Städte der Türkei. Die Perle Pisidiens aus der Römerzeit.',
+  '29': 'Eine lykische Stadt auf 1500 Metern an den Hängen des Taurusgebirges. Eine der am wenigsten erkundeten antiken Städte mit unberührter Natur.',
+  '30': 'Eine pisidische Stadt auf dem Köprülü-Canyon. Eine der wichtigsten Städte Pisidiens mit Theater für 10.000 und Zeus-Tempel.',
+  '31': 'Eine antike Stadt mit drei Häfen als Handelszentrum. Wo Alexander überwinterte; eine der schönsten antiken Städte der Türkei zwischen Kiefernwäldern.',
+  '32': 'Eine antike Stadt, die am Kap Anamur mit dem Meer verwoben ist. Faszinierend in seinem ungestörten Zustand nach dem Persischen Angriff 260 n. Chr.',
+  '33': 'Hauptstadt Kilikiens. Eine der größten antiken Städte der Welt mit 1500 Meter langen Mauern, Stadion und Amphitheater.',
+  '34': 'Eine der ältesten bekannten städtischen Siedlungen der Welt. Diese neolithische Stadt aus 7500 v. Chr. ist ein Meilenstein der Menschheitsgeschichte.',
+  '35': 'Hauptstadt des Hethitischen Reiches. Eine der beeindruckendsten Stadtstrukturen der Bronzezeit mit dem Löwentor und Sphinxtor.',
+  '36': 'Die einzigartigste Natur-Geschichts-Region der Welt mit Feenkaminen und unterirdischen Städten. Heiliges Land, wo frühe Christen Felsenkirchen gruben.',
+  '37': 'Die tiefste unterirdische Stadt der Welt mit 18 Stockwerken und Kapazität für 20.000 Menschen. Wo frühe Christen vor römischer Verfolgung Zuflucht suchten.',
+  '38': 'Hauptstadt des phrygischen Königreichs, besucht von Alexander, der den legendären gordischen Knoten durchhieb. Das Land von König Midas.',
+  '39': 'Enthält die frühesten Spuren der anatolischen Zivilisation mit seinem Sphinxtor und hethitischen Reliefs aus der Bronzezeit.',
+  '40': 'Meisterwerk seldschukischer Steinmetzkunst. Die Türverzierungen und Schnitzereien am Mihrab gelten als einzigartig in der Weltarchitekturgeschichte.',
+  '41': 'Das Grab und die Loge von Mevlana Celaleddin Rumi. Seine grüne Kuppel und der Semahane-Saal verzaubern Besucher; Menschen pilgern aus aller Welt hierher.',
+  '42': 'Eine neue Entdeckung, die älter als Göbekli Tepe sein soll. Birgt die Geheimnisse der Jungsteinzeit mit menschengesichtigen Statuen und T-förmigen Pfeilern.',
+  '43': 'Das älteste bekannte Handelszentrum Anatoliens. Eine einzigartige Archivstadt, die dank assyrischer Kaufmanns-Tontafeln Licht auf die anatolische Geschichte wirft.',
+  '44': 'Die historische Burg im Herzen Ankaras. Trägt das Gedächtnis der Stadt mit ihren byzantinischen Mauern und osmanischen Karawansereien.',
+  '45': 'Das Grab und die Loge von Hadschi Bektasch Veli. Ein wichtiges Wallfahrts- und Kulturzentrum für Aleviten und Bektaschi.',
+  '46': 'Der älteste bekannte Tempelkomplex der Welt. Das erste monumentale Bauwerk der Menschheit mit T-förmigen Pfeilern aus 9600 v. Chr.',
+  '47': 'Das Tumulus des Kommagene-Königreichs umgeben von riesigen Götterfiguren auf 2150 Metern. Ihre Silhouetten beim Sonnenaufgang sind unvergleichlich.',
+  '48': 'Eine der ältesten dauerhaft bewohnten Städte der Welt. Die Stadt der bienenkorb-förmigen Häuser, wo Prophet Abraham gelebt haben soll.',
+  '49': 'Das weltgrößte Mosaik-Museum. Prächtige römische Mosaike, die aus der antiken Stadt Zeugma am Euphrat ausgegraben wurden, sind hier ausgestellt.',
+  '50': 'Die längsten Basaltstein-Mauern der Welt nach der Großen Mauer Chinas. 82 Türme auf 5,8 km Mauern aus der Römerzeit.',
+  '51': 'Eine goldsteinerne Stadt auf Terrassen mit Blick auf die mesopotamische Ebene. Das Deyrulzafaran-Kloster und die Kasimiye-Madrassa sind die Hauptbauwerke.',
+  '52': 'Wichtiger byzantinischer Militärstützpunkt an der mesopotamischen Grenze. Ein beeindruckendes antikes Bauwerk mit riesigen Zisternen und Stadtmauern.',
+  '53': 'Eine wichtige Stadt des Kommagene-Königreichs. Ein bedeutender Übergangspunkt der Antike an seiner Lage am Euphrat.',
+  '54': 'Ein monumentales Tumulus über dem Grab der kommagenischen Königsfamilie. Die Adlerstatue kann kilometerweit gesehen werden.',
+  '55': 'Die armenische Hauptstadt, eine der größten Städte des Mittelalters. Die allein in der Steppe stehenden Kathedralen bieten einen unvergesslichen Anblick.',
+  '56': 'Eine armenische Kirche aus dem 10. Jahrhundert auf einer kleinen Insel im Van-See. Die biblischen Szenen an der Außenfassade sind außergewöhnliche Kunstwerke.',
+  '57': 'Eine Urartu-Königsfestung aus dem 8. Jahrhundert v. Chr. Eine wenig bekannte, aber beeindruckende antike Struktur, die das Van-See-Tal dominiert.',
+  '58': 'Ein osmanischer Palast auf 2200 Metern am Fuß des Ararat-Gebirges. Faszinierend mit seiner einzigartigen Architektur, die seldschukische, osmanische und iranische Stile vereint.',
+  '59': 'Urartu-Felsenfestung am See. Die beeindruckendste antike Struktur Ostanatoliens mit Felsgräbern und Urartu-Inschriften.',
+  '60': 'Der weltgrößte seldschukische Friedhof. Enthält die wertvollsten Beispiele türkisch-islamischer Kunst mit Kümbet-Türmen und Grabsteinen.',
+  '61': 'Historische Stadtruinen am Fuß des Ararat. Ein wichtiger Stop an der historischen östlichen Seidenstraße, nahe dem Ishak-Pascha-Palast.',
+  '62': 'Das legendäre byzantinische Kloster, das an den steilen Klippen der Schwarzmeerberge klebt. Bemerkenswert durch seine Fresken und Ikonen aus dem 4. Jahrhundert.',
+  '63': 'Eine byzantinische Kirche aus dem 13. Jahrhundert. Als Juwel der byzantinischen Kunst mit seinen Fresken bekannt.',
+  '64': 'Antike Stadt mit dem besten natürlichen Hafen am Schwarzen Meer. Geburtsort des berühmten Philosophen Diogenes; römische Mauern stehen noch heute.',
+  '65': 'Das am besten erhaltene Beispiel osmanischer Wohnarchitektur. Seine Erkerhäuser aus Holz und der Basar vermitteln das Gefühl, die Zeit sei stehengeblieben.',
+  '66': 'Eine Felsenfestung, die das Yeşilırmak-Tal dominiert. Symbol der historischen Stadt, Hauptstadt des Pontos-Königreichs, voller Felsgräber und antiker Stätten.',
+  '67': 'Eine der ältesten griechischen Kolonien am Schwarzen Meer. Spielte als wichtige Handelsstadt des Pontos-Königreichs eine zentrale Rolle im Schwarzmeerhandel.',
+  '68': 'Die historische Burg über der Stadt. Ein strategischer Punkt, der die Verbindung zwischen dem Schwarzmeer-Hinterland und Anatolien kontrollierte.',
+};
+
+const ISIMLER_DE = {
+  '1':'Ephesos','2':'Aphrodisias','3':'Pergamon','4':'Hierapolis - Pamukkale',
+  '5':'Milet','6':'Didyma','7':'Sardes','8':'Priene','9':'Assos',
+  '10':'Aizanoi','11':'Laodikeia','12':'Stratonikeia','13':'Knidos','14':'Teos',
+  '15':'Kolophon','16':'Troja','17':'Historische Halbinsel Istanbul','18':'Bursa Große Moschee',
+  '19':'Kyzikos','20':'Daskyleion','21':'Aspendos','22':'Patara','23':'Xanthos',
+  '24':'Side','25':'Termessos','26':'Perge','27':'Myra - Demre','28':'Sagalassos',
+  '29':'Arykanda','30':'Selge','31':'Phaselis','32':'Anemurion','33':'Anavarza',
+  '34':'Çatalhöyük','35':'Hattuscha','36':'Kappadokien','37':'Unterstadt Derinkuyu',
+  '38':'Gordion','39':'Alacahöyük','40':'Divriği Große Moschee','41':'Mevlana-Museum',
+  '42':'Karahantepe','43':'Kültepe (Kanesch)','44':'Burg Ankara','45':'Hacibektasch-Komplex',
+  '46':'Göbekli Tepe','47':'Nemrut Dağ','48':'Harran','49':'Zeugma-Mosaik-Museum',
+  '50':'Diyarbakır-Mauern','51':'Mardin Altstadt','52':'Dara Antike Stadt',
+  '53':'Samosata','54':'Karakuş-Tumulus','55':'Ani-Ruinen','56':'Akdamar-Kirche',
+  '57':'Çavuştepe-Burg','58':'Ishak-Pascha-Palast','59':'Van-Burg',
+  '60':'Ahlat Seldschuken-Friedhof','61':'Doğubayazıt Altstadt','62':'Sumela-Kloster',
+  '63':'Trabzon Hagia Sophia','64':'Sinop-Burg','65':'Safranbolu',
+  '66':'Amasya-Burg','67':'Amisos (Samsun)','68':'Kastamonu-Burg',
+};
+
+// ── RUSÇA ────────────────────────────────────────────────────────────────────
+const ACIKLAMALAR_RU = {
+  '1': 'Один из крупнейших городов античного мира. Библиотека Цельса и огромный театр представляют вершину римской архитектуры.',
+  '2': 'Этот античный город, посвящённый Афродите, был одним из важнейших центров римского скульптурного искусства. Ворота Тетрапилон сохраняют своё великолепие.',
+  '3': 'Эллинистическая столица, в которой находилась одна из крупнейших библиотек античного мира. Знаменита алтарём Зевса и Асклепионом.',
+  '4': 'Уникальный природно-исторический объект с белыми травертинами и античным городом. Важный термальный и паломнический центр эпохи Рима.',
+  '5': 'Ионийский город, где родились первые философы — Фалес и Анаксимандр. Его театр на 15 000 мест сохранился до наших дней.',
+  '6': 'Знаменитый оракульный центр с огромным храмом Аполлона. Важнейший оракул античного мира после Дельф.',
+  '7': 'Столица Лидийского царства — первой цивилизации, чеканившей монеты. Здесь, по преданию, хранятся сокровища легендарного царя Крёза.',
+  '8': 'Известен как "Помпеи Анатолии". Его регулярная планировка улиц стала вдохновением для современного градостроительства.',
+  '9': 'Античный портовый город, где Аристотель основал свою философскую школу. Руины храма Афины с видом на море открывают захватывающие дух пейзажи.',
+  '10': 'Лучше всего сохранившийся храм Зевса в Анатолии. Колонны II века стоят на своих местах рядом с руинами стадиона и театра.',
+  '11': 'Одна из семи церквей, упомянутых в Новом Завете. Большой театр и византийские церкви восхищают посетителей.',
+  '12': 'Один из редких античных городов, поверх которого построена деревня. Жители использовали античный театр как амбар, а храмовый двор — как рынок.',
+  '13': 'Античный город, хранивший знаменитую статую Афродиты работы Праксителя. Важный торговый город, связывавший Эгейское и Средиземное моря двумя гаванями.',
+  '14': 'Знаменитый ионийский город с храмом Диониса, бога вина. Известен как родина поэта Анакреона.',
+  '15': 'Один из 12 ионийских городов. По преданию, здесь обучалась первая в мире кавалерия. Сегодня большинство руин скрыто среди оливковых рощ.',
+  '16': 'Легендарный город, увековеченный в "Илиаде" Гомера. Девять слоёв поселений хранят тысячелетнюю историю.',
+  '17': 'Многослойная история от византийского Константинополя до османского Стамбула. Здесь находятся Айя-София, дворец Топкапы и Гранд-базар.',
+  '18': 'Первая великая мечеть османской архитектуры. Интерьер под 20 куполами и 192 каллиграфических произведения — настоящий шедевр.',
+  '19': 'Сильнейший античный портовый город Мраморного моря. Посвящённый Зевсу храм считался одним из семи чудес античного мира.',
+  '20': 'Важнейший административный центр персов в Анатолии после фригийцев. Оставил богатое культурное наследие как столица персидской сатрапии.',
+  '21': 'Лучше всего сохранившийся античный римский театр в мире. Театр на 15 000 мест используется сегодня для оперы и балета.',
+  '22': 'Столица Ликийского союза и родина Деда Мороза. Расположена в уникальном месте с длинными пляжами и песчаными дюнами.',
+  '23': 'Столица ликийской цивилизации. Дважды сожжена и разрушена персами; знаменита легендарным памятником Гарпий.',
+  '24': 'Самый романтичный античный город у моря с храмами Аполлона и Афины. Силуэт храма на закате несравним.',
+  '25': 'Горный город, который не смог завоевать даже Александр Македонский. Один из самых загадочных античных городов с руинами среди лесов на высоте 1665 метров.',
+  '26': 'Город, через который прошёл Александр в своём анатолийском походе. Впечатляющий римский город со стадионом и колоннадой.',
+  '27': 'Родина Святого Николая, известного как Дед Мороз. Важный паломнический центр с ликийскими гробницами в скалах и церковью святого.',
+  '28': 'Фонтан Антонинов до сих пор течёт! Один из лучше всего сохранившихся античных городов Турции. Жемчужина Писидии эпохи Рима.',
+  '29': 'Ликийский город на высоте 1500 метров на склонах гор Тавра. Один из наименее исследованных античных городов с нетронутой природой.',
+  '30': 'Писидийский город на вершине каньона Кёпрюлю. Один из важнейших городов Писидии с театром на 10 000 мест и храмом Зевса.',
+  '31': 'Античный город с тремя гаванями как центр торговли. Место зимовки Александра; один из красивейших античных городов Турции среди сосновых лесов.',
+  '32': 'Античный город, вплетённый в море на мысе Анамур. Восхищает своим нетронутым состоянием после персидского нападения в 260 г. н.э.',
+  '33': 'Столица Киликии. Один из крупнейших античных городов мира со стенами длиной 1500 метров, стадионом и амфитеатром.',
+  '34': 'Одно из старейших известных городских поселений в мире. Этот неолитический город 7500 г. до н.э. является вехой в истории человечества.',
+  '35': 'Столица Хеттской империи. Одна из самых впечатляющих городских структур Бронзового века — Львиные и Сфинксовые ворота.',
+  '36': 'Самый уникальный природно-исторический регион мира с каменными грибами и подземными городами. Священные земли, где первые христиане вырубали пещерные церкви.',
+  '37': 'Самый глубокий подземный город мира: 18 этажей вместимостью 20 000 человек. Убежище первых христиан от римских преследований.',
+  '38': 'Столица Фригийского царства, которую посетил Александр, разрубив легендарный Гордиев узел. Страна царя Мидаса.',
+  '39': 'Содержит древнейшие следы анатолийской цивилизации: сфинксовые ворота и хеттские рельефы эпохи Бронзового века.',
+  '40': 'Шедевр сельджукского каменного зодчества. Дверные украшения и резьба михраба считаются уникальными в мировой истории архитектуры.',
+  '41': 'Гробница и обитель Мевляны Джалал ад-Дина Руми. Зелёный купол и зал сема-хане завораживают посетителей; сюда приезжают паломники со всего мира.',
+  '42': 'Новая находка, предположительно старше Гёбекли-Тепе. Хранит тайны неолита со статуями с человеческими лицами и Т-образными столбами.',
+  '43': 'Древнейший известный торговый центр Анатолии. Уникальный архивный город, пролившийся светом на историю Анатолии благодаря глиняным табличкам ассирийских купцов.',
+  '44': 'Историческая крепость в центре Анкары. Хранит память города со своими византийскими стенами и османскими ханами.',
+  '45': 'Гробница и обитель Хаджи Бекташа Вели. Важный паломнический и культурный центр для алевитов и бекташей.',
+  '46': 'Древнейший известный храмовый комплекс в мире. Первое монументальное сооружение человечества с Т-образными столбами, датируемое 9600 г. до н.э.',
+  '47': 'Тумулус Коммагенского царства, окружённый гигантскими статуями богов на высоте 2150 метров. Их силуэты на рассвете несравнимы.',
+  '48': 'Один из старейших постоянно обитаемых городов мира. Город домов с коническими крышами, где, по преданию, жил пророк Авраам.',
+  '49': 'Крупнейший мозаичный музей в мире. Здесь выставлены великолепные римские мозаики, обнаруженные в античном городе Зевгма на Евфрате.',
+  '50': 'Самые длинные базальтовые стены в мире после Великой Китайской стены. 82 башни на 5,8 км стен эпохи Рима.',
+  '51': 'Золотистый каменный город на террасах с видом на Месопотамскую равнину. Монастырь Дейрулзафаран и медресе Касимие — главные постройки.',
+  '52': 'Важный византийский военный форпост на месопотамской границе. Впечатляющее античное сооружение с огромными цистернами и городскими стенами.',
+  '53': 'Важный город Коммагенского царства. Значимый переправочный пункт античности благодаря своему положению на Евфрате.',
+  '54': 'Монументальный тумулус над гробницей коммагенской королевской семьи. Статую орла видно за километры.',
+  '55': 'Армянская столица — один из крупнейших городов Средневековья. Соборы, одиноко стоящие в степи, открывают незабываемый вид.',
+  '56': 'Армянская церковь X века на маленьком острове в озере Ван. Библейские сцены на внешнем фасаде — исключительные произведения искусства.',
+  '57': 'Крепость Урартского царства VIII века до н.э. Малоизвестное, но впечатляющее античное сооружение, господствующее над долиной озера Ван.',
+  '58': 'Османский дворец на высоте 2200 метров у подножия горы Арарат. Восхищает своей уникальной архитектурой, сочетающей сельджукский, османский и иранский стили.',
+  '59': 'Урартская скальная крепость у озера. Самое впечатляющее античное сооружение Восточной Анатолии со скальными гробницами и урартскими надписями.',
+  '60': 'Крупнейшее в мире сельджукское кладбище. Содержит ценнейшие образцы тюркско-исламского искусства — башни-кюмбет и надгробия.',
+  '61': 'Исторические руины города у подножия Арарата. Важная остановка на историческом Восточном шёлковом пути, вблизи дворца Исхак-Паши.',
+  '62': 'Легендарный византийский монастырь, прилепившийся к крутым скалам Черноморских гор. Примечателен фресками и иконами IV века.',
+  '63': 'Византийская церковь XIII века. Считается жемчужиной византийского искусства благодаря своим фрескам.',
+  '64': 'Античный город с лучшей естественной гаванью на Чёрном море. Родина знаменитого философа Диогена; римские стены стоят по сей день.',
+  '65': 'Лучший сохранившийся образец османской жилой архитектуры. Деревянные дома с эркерами и базар создают ощущение остановившегося времени.',
+  '66': 'Скальная крепость, господствующая над долиной Ешилырмак. Символ исторического города — столицы Понтийского царства, полного скальных гробниц.',
+  '67': 'Одна из старейших греческих колоний на Черном море. Играла центральную роль в черноморской торговле как важный торговый город Понтийского царства.',
+  '68': 'Историческая крепость над городом. Стратегическая точка, контролировавшая связь черноморского побережья с Анатолией.',
+};
+
+const ISIMLER_RU = {
+  '1':'Эфес','2':'Афродисиас','3':'Пергам','4':'Иераполис - Памуккале',
+  '5':'Милет','6':'Дидим','7':'Сарды','8':'Приена','9':'Ассос',
+  '10':'Айзанои','11':'Лаодикея','12':'Стратоникея','13':'Книд','14':'Теос',
+  '15':'Колофон','16':'Троя','17':'Исторический полуостров Стамбула','18':'Бурса Улу Джами',
+  '19':'Кизик','20':'Даскилеон','21':'Аспендос','22':'Патара','23':'Ксантос',
+  '24':'Сиде','25':'Термесс','26':'Перге','27':'Мира - Демре','28':'Сагалассос',
+  '29':'Арыканда','30':'Селге','31':'Фаселис','32':'Анемурион','33':'Анаварза',
+  '34':'Чатал-Хёюк','35':'Хаттуша','36':'Каппадокия','37':'Деринкуйу',
+  '38':'Гордион','39':'Алачахёюк','40':'Мечеть Улу в Дивриги','41':'Музей Мевляны',
+  '42':'Карахантепе','43':'Кюльтепе','44':'Анкарская крепость','45':'Комплекс Хаджибекташ',
+  '46':'Гёбекли-Тепе','47':'Гора Немрут','48':'Харран','49':'Зеугма',
+  '50':'Стены Диярбакыра','51':'Старый город Мардин','52':'Дара',
+  '53':'Самосата','54':'Тумулус Каракуш','55':'Руины Ани','56':'Церковь Акдамар',
+  '57':'Крепость Чавуштепе','58':'Дворец Исхак-Паши','59':'Ванская крепость',
+  '60':'Сельджукское кладбище Ахлат','61':'Старый Догубаязит','62':'Монастырь Сумела',
+  '63':'Трабзонская Айя-София','64':'Синопская крепость','65':'Сафранболу',
+  '66':'Амасийская крепость','67':'Амисос (Самсун)','68':'Крепость Кастамону',
+};
+
+const MEDENIYETLER_DE = {
+  'Yunan':'Griechisch','Roma':'Römisch','Bizans':'Byzantinisch','Helenistik':'Hellenistisch',
+  'İyon':'Ionisch','Pers':'Persisch','Lidya':'Lydisch','Hitit':'Hethitisch',
+  'Neolitik':'Neolithisch','Neolitik Öncesi':'Vor-Neolithisch','Tunç Çağı':'Bronzezeit',
+  'Kalkolitik':'Chalkolithisch','Frig':'Phrygisch','Urartu':'Urartäisch','Ermeni':'Armenisch',
+  'Selçuklu':'Seldschukisch','Osmanlı':'Osmanisch','Kommagene':'Kommagenisch',
+  'Sümer':'Sumerisch','Asur':'Assyrisch','İslam':'Islamisch','Dor':'Dorisch',
+  'Likya':'Lykisch','Pisidya':'Pisidisch','Pontus':'Pontisch','Artuklu':'Artuqidisch',
+  'Ahlatşahlar':'Schah-Armen','Trabzon İmparatorluğu':'Kaiserreich Trapezunt','Hristiyan':'Christlich',
+};
+
+const MEDENIYETLER_RU = {
+  'Yunan':'Греческий','Roma':'Римский','Bizans':'Византийский','Helenistik':'Эллинистический',
+  'İyon':'Ионийский','Pers':'Персидский','Lidya':'Лидийский','Hitit':'Хеттский',
+  'Neolitik':'Неолитический','Neolitik Öncesi':'Докерамический неолит','Tunç Çağı':'Бронзовый век',
+  'Kalkolitik':'Халколитический','Frig':'Фригийский','Urartu':'Урартский','Ermeni':'Армянский',
+  'Selçuklu':'Сельджукский','Osmanlı':'Османский','Kommagene':'Коммагенский',
+  'Sümer':'Шумерский','Asur':'Ассирийский','İslam':'Исламский','Dor':'Дорийский',
+  'Likya':'Ликийский','Pisidya':'Писидийский','Pontus':'Понтийский','Artuklu':'Артукидский',
+  'Ahlatşahlar':'Шах-Армены','Trabzon İmparatorluğu':'Трапезундская империя','Hristiyan':'Христианский',
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
 function t(key) { return (TERCUMELER[aktifDil] || TERCUMELER.tr)[key] || key; }
 
-function yerIsim(y) { return aktifDil==='en' && ISIMLER_EN[y.id] ? ISIMLER_EN[y.id] : y.isim; }
-function yerAciklama(y) { return aktifDil==='en' && ACIKLAMALAR_EN[y.id] ? ACIKLAMALAR_EN[y.id] : y.aciklama; }
-function medEnCevir(m) { return aktifDil==='en' && MEDENIYETLER_EN[m] ? MEDENIYETLER_EN[m] : m; }
+function yerIsim(y) {
+  if (aktifDil==='en' && ISIMLER_EN[y.id]) return ISIMLER_EN[y.id];
+  if (aktifDil==='de' && ISIMLER_DE[y.id]) return ISIMLER_DE[y.id];
+  if (aktifDil==='ru' && ISIMLER_RU[y.id]) return ISIMLER_RU[y.id];
+  return y.isim;
+}
+function yerAciklama(y) {
+  if (aktifDil==='en' && ACIKLAMALAR_EN[y.id]) return ACIKLAMALAR_EN[y.id];
+  if (aktifDil==='de' && ACIKLAMALAR_DE[y.id]) return ACIKLAMALAR_DE[y.id];
+  if (aktifDil==='ru' && ACIKLAMALAR_RU[y.id]) return ACIKLAMALAR_RU[y.id];
+  return y.aciklama;
+}
+function medEnCevir(m) {
+  if (aktifDil==='en') return MEDENIYETLER_EN[m] || m;
+  if (aktifDil==='de') return MEDENIYETLER_DE[m] || m;
+  if (aktifDil==='ru') return MEDENIYETLER_RU[m] || m;
+  return m;
+}
 
 function dilDegistir() {
-  aktifDil = aktifDil === 'tr' ? 'en' : 'tr';
-  const btn = document.getElementById('dilBtn');
-  btn.textContent = aktifDil === 'tr' ? '🇬🇧' : '🇹🇷';
+  const sirala = ['tr','en','de','ru'];
+  const simdiki = sirala.indexOf(aktifDil);
+  aktifDil = sirala[(simdiki + 1) % sirala.length];
+  const bayraklar = { tr:'🇹🇷', en:'🇬🇧', de:'🇩🇪', ru:'🇷🇺' };
+  const sonraki = sirala[(sirala.indexOf(aktifDil) + 1) % sirala.length];
+  document.getElementById('dilBtn').textContent = bayraklar[sonraki];
   arayuzGuncelle();
   kartlarGoster();
   if (aktifSekme === 'favori') favoriEkraniGoster();
