@@ -194,6 +194,7 @@
         <div class="logo-sub">Tarih Rehberi</div>
       </div>
       <div class="header-saglar">
+        <button id="dilBtn" onclick="dilDegistir()" style="width:36px;height:36px;border-radius:18px;border:0.5px solid #E8E6E0;background:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">🇬🇧</button>
         <button class="arama-ac-btn" onclick="aramaAc()">🔍</button>
         <button class="harita-btn" onclick="haritaAc()">🗺 Harita</button>
       </div>
@@ -260,22 +261,22 @@
       <div class="detay-isim" id="detayIsim"></div>
       <div class="detay-konum" id="detayKonum"></div>
       <div class="zaman-kart">
-        <div class="zi"><div class="zi-label">Kuruluş</div><div class="zi-deger" id="dBaslangic"></div></div>
+        <div class="zi"><div class="zi-label" id="lKuruluş">Kuruluş</div><div class="zi-deger" id="dBaslangic"></div></div>
         <div class="zayirac"></div>
-        <div class="zi"><div class="zi-label">Son aktif</div><div class="zi-deger" id="dBitis"></div></div>
+        <div class="zi"><div class="zi-label" id="lSonAktif">Son aktif</div><div class="zi-deger" id="dBitis"></div></div>
         <div class="zayirac"></div>
-        <div class="zi"><div class="zi-label">Süre</div><div class="zi-deger" id="dSure"></div></div>
+        <div class="zi"><div class="zi-label" id="lSure">Süre</div><div class="zi-deger" id="dSure"></div></div>
       </div>
-      <div class="bolum"><div class="bolum-baslik">Medeniyetler</div><div class="med-etiketler" id="dMed"></div></div>
-      <div class="bolum"><div class="bolum-baslik">Hakkında</div><div class="detay-aciklama" id="dAciklama"></div></div>
+      <div class="bolum"><div class="bolum-baslik" id="lMed">Medeniyetler</div><div class="med-etiketler" id="dMed"></div></div>
+      <div class="bolum"><div class="bolum-baslik" id="lHakkinda">Hakkında</div><div class="detay-aciklama" id="dAciklama"></div></div>
       <div class="bolum">
-        <div class="bolum-baslik">Ziyaret Bilgisi</div>
+        <div class="bolum-baslik" id="lZiyaret">Ziyaret Bilgisi</div>
         <div class="ziyaret-kart">
-          <div class="zrow"><span class="zlabel">Giriş ücreti</span><span class="zdeger" id="dUcret"></span></div>
+          <div class="zrow"><span class="zlabel" id="lGiris">Giriş ücreti</span><span class="zdeger" id="dUcret"></span></div>
           <div class="zayirac2"></div>
-          <div class="zrow"><span class="zlabel">Çalışma saatleri</span><span class="zdeger" id="dSaatler"></span></div>
+          <div class="zrow"><span class="zlabel" id="lSaatler">Çalışma saatleri</span><span class="zdeger" id="dSaatler"></span></div>
           <div class="zayirac2"></div>
-          <div class="zrow"><span class="zlabel">Otopark</span><span class="zdeger" id="dPark"></span></div>
+          <div class="zrow"><span class="zlabel" id="lPark">Otopark</span><span class="zdeger" id="dPark"></span></div>
         </div>
       </div>
       <button class="harita-btn-buyuk" id="detayHaritaBtn" onclick="haritaAc()">🗺  Haritada Göster</button>
@@ -468,6 +469,231 @@ const YERLER = [
 let aktifDonem=null, aktifBolge=null, aktifMod='donem', zamanYili=-200, aramaSorgusu='';
 let favoriler = new Set();
 let aktifSekme = 'kesif';
+let aktifDil = navigator.language?.startsWith('tr') ? 'tr' : 'en';
+
+// ── DİL SİSTEMİ ──────────────────────────────────────────────────────────────
+const TERCUMELER = {
+  tr: {
+    baslik: 'ANADOLU', baslikAlt: 'Tarih Rehberi',
+    harita: '🗺 Harita', ara: 'Ören yeri, şehir veya medeniyet ara...',
+    iptal: 'İptal', donem: 'Dönem', zamanCubugu: 'Zaman Çubuğu',
+    tumDon: 'Tümü', tumBol: 'Tümü',
+    tasDev: 'Taş Devri', tuncCag: 'Tunç Çağı', demirCag: 'Demir Çağı',
+    antik: 'Antik Çağ', bizans: 'Bizans', selcuklu: 'Selçuklu', osmanli: 'Osmanlı',
+    ege: 'Ege', marmara: 'Marmara', akdeniz: 'Akdeniz', ic: 'İç Anadolu',
+    karadeniz: 'Karadeniz', dogu: 'Doğu Anadolu', guneydogu: 'Güneydoğu',
+    orenYeri: 'ören yeri', kesif: 'Keşfet', favoriler: 'Favoriler',
+    kuruluş: 'Kuruluş', sonAktif: 'Son aktif', sure: 'Süre',
+    medeniyetler: 'Medeniyetler', hakkinda: 'Hakkında', ziyaret: 'Ziyaret Bilgisi',
+    giris: 'Giriş ücreti', saatler: 'Çalışma saatleri', park: 'Otopark',
+    mevcut: 'Mevcut', yok: 'Yok', haritaGoster: '🗺  Haritada Göster',
+    rehberBtn: '🧭  Profesyonel Rehberle Gez', yakin: 'Yakında',
+    yorumlar: 'Yorumlar & Puanlar', puanVer: 'Puan ver:',
+    adiniz: 'Adınız (örn: Ahmet)', sehriniz: 'Şehriniz (örn: İzmir) — isteğe bağlı',
+    yorumYaz: 'Ziyaret deneyiminizi paylaşın...', gonder: 'Yorumu Gönder',
+    gonderiliyor: 'Gönderiliyor...', gonderildi: '✓ Gönderildi!',
+    henuzYorum: 'Henüz yorum yok. İlk yorumu sen yap!',
+    degerlendirme: 'değerlendirme', yuklenemedi: 'Yorumlar yüklenemedi.',
+    gonderilemedi: 'Gönderilemedi, tekrar deneyin.',
+    lutfenAd: 'Lütfen adınızı girin.', lutfenYorum: 'Lütfen yorum yazın.',
+    lutfenPuan: 'Lütfen puan verin.',
+    favBos: 'Henüz favori eklemedin.<br>Keşfet sekmesinde kalp ikonuna bas!',
+    favKaydedildi: 'ören yeri kaydedildi',
+    cubukAciklama: 'Çubuğu sürükleyerek o yılı seç',
+    geri: '← Geri', unesco: 'UNESCO Dünya Mirası',
+    haritaBaslik: 'Ören Yeri', noktaIsaretlendi: 'nokta işaretlendi',
+    rehberBaslik: '🧭 Profesyonel Rehberle Gez',
+    rehberAlt: 'Bu özellik yakında geliyor! Sertifikalı rehberlerle unutulmaz bir tarih yolculuğuna çıkın.',
+    bildir: '🔔  Çıkınca Beni Bildir', bildirildi: '✓ Sizi haberdar edeceğiz!', kapat: 'Kapat',
+    yil: 'yıl',
+  },
+  en: {
+    baslik: 'ANADOLU', baslikAlt: 'History Guide',
+    harita: '🗺 Map', ara: 'Search sites, cities or civilizations...',
+    iptal: 'Cancel', donem: 'Period', zamanCubugu: 'Timeline',
+    tumDon: 'All', tumBol: 'All',
+    tasDev: 'Stone Age', tuncCag: 'Bronze Age', demirCag: 'Iron Age',
+    antik: 'Classical', bizans: 'Byzantine', selcuklu: 'Seljuk', osmanli: 'Ottoman',
+    ege: 'Aegean', marmara: 'Marmara', akdeniz: 'Mediterranean', ic: 'Central Anatolia',
+    karadeniz: 'Black Sea', dogu: 'East Anatolia', guneydogu: 'Southeast',
+    orenYeri: 'sites', kesif: 'Explore', favoriler: 'Favorites',
+    kuruluş: 'Founded', sonAktif: 'Last active', sure: 'Duration',
+    medeniyetler: 'Civilizations', hakkinda: 'About', ziyaret: 'Visit Info',
+    giris: 'Entrance fee', saatler: 'Opening hours', park: 'Parking',
+    mevcut: 'Available', yok: 'None', haritaGoster: '🗺  Show on Map',
+    rehberBtn: '🧭  Tour with a Pro Guide', yakin: 'Coming Soon',
+    yorumlar: 'Reviews & Ratings', puanVer: 'Rate:',
+    adiniz: 'Your name (e.g. John)', sehriniz: 'Your city (optional)',
+    yorumYaz: 'Share your visit experience...', gonder: 'Submit Review',
+    gonderiliyor: 'Submitting...', gonderildi: '✓ Submitted!',
+    henuzYorum: 'No reviews yet. Be the first!',
+    degerlendirme: 'reviews', yuklenemedi: 'Could not load reviews.',
+    gonderilemedi: 'Could not submit, please try again.',
+    lutfenAd: 'Please enter your name.', lutfenYorum: 'Please write a review.',
+    lutfenPuan: 'Please give a rating.',
+    favBos: 'No favorites yet.<br>Tap the heart icon to save places!',
+    favKaydedildi: 'sites saved',
+    cubukAciklama: 'Drag to travel through time',
+    geri: '← Back', unesco: 'UNESCO World Heritage',
+    haritaBaslik: 'Sites', noktaIsaretlendi: 'sites marked',
+    rehberBaslik: '🧭 Tour with a Professional Guide',
+    rehberAlt: 'Coming soon! Join certified local guides for an unforgettable journey through history.',
+    bildir: '🔔  Notify Me', bildirildi: '✓ We\'ll notify you!', kapat: 'Close',
+    yil: 'years',
+  }
+};
+
+// İngilizce ören yeri açıklamaları
+const ACIKLAMALAR_EN = {
+  '1': 'One of the largest cities of the ancient world. The Library of Celsus and its massive theatre represent the pinnacle of Roman architecture.',
+  '2': 'This ancient city dedicated to Aphrodite was one of the most important centers of Roman sculpture art. The Tetrapylon gate still stands in its splendor.',
+  '3': 'The Hellenistic capital that housed one of the greatest libraries of the ancient world. Famous for the Zeus Altar and Asklepion.',
+  '4': 'A unique natural-historical site with white travertines and an ancient city. An important thermal spa and pilgrimage center of the Roman era.',
+  '5': 'The Ionian city where first philosophers like Thales and Anaximander were born. Its 15,000-seat theatre still stands today.',
+  '6': 'A famous oracle center with a colossal temple dedicated to Apollo. The most important oracle center of the ancient world after Delphi.',
+  '7': 'Capital of the Lydian Kingdom, the first civilization to mint coins. The legendary treasures of King Croesus are said to be hidden here.',
+  '8': 'Known as the "Pompeii of Anatolia". Its grid street plan was the inspiration for modern urban planning.',
+  '9': 'The ancient harbor city where Aristotle founded his philosophy school. The ruins of the Athena temple overlooking the sea offer breathtaking views.',
+  '10': 'The best preserved Zeus temple in Anatolia. The 2nd century columns still stand in place, with stadium and theatre ruins.',
+  '11': 'One of the seven churches mentioned in the New Testament. The Great Theatre and Byzantine churches leave visitors in awe.',
+  '12': 'One of the rare ancient cities with a village built on top. Villagers used the ancient theatre as a barn and the temple courtyard as a market.',
+  '13': 'Ancient city that housed the famous Aphrodite statue by Praxiteles. An important trade city connecting the Aegean and Mediterranean with its two harbors.',
+  '14': 'Famous Ionian city with a temple dedicated to Dionysus, god of wine. Known as the birthplace of the poet Anacreon.',
+  '15': 'One of the 12 Ionian cities. Said to have trained the world\'s first cavalry. Today most ruins are hidden among olive groves.',
+  '16': 'The legendary city immortalized in Homer\'s Iliad. Nine settlement layers contain thousands of years of history.',
+  '17': 'Layered history from Byzantine Constantinople to Ottoman Istanbul. Hagia Sophia, Topkapi Palace and the Grand Bazaar are all here.',
+  '18': 'The first great mosque of Ottoman architecture. Its interior covered with 20 domes and 192 calligraphic works is a masterpiece.',
+  '19': 'The strongest ancient harbor city of the Marmara region. Its temple dedicated to Zeus was considered one of the Seven Wonders of the ancient world.',
+  '20': 'The most important administrative center of the Persians in Anatolia after the Phrygians. Left a rich cultural heritage as the capital of the Persian satrapy.',
+  '21': 'The best preserved ancient Roman theatre in the world. The 15,000-seat theatre is still used today for opera and ballet.',
+  '22': 'Capital of the Lycian League and birthplace of Santa Claus. Located in a unique setting with long beaches and sand dunes.',
+  '23': 'Capital of the Lycian civilization. Burned and destroyed twice by the Persians; famous for the legendary Harpy Monument.',
+  '24': 'The most romantic ancient city by the sea with the temples of Apollo and Athena. The temple silhouette at sunset is incomparable.',
+  '25': 'A mountain city that even Alexander the Great could not conquer. One of the most mysterious ancient cities with ruins covered in forest at 1665 meters.',
+  '26': 'The city where Alexander passed on his Anatolian campaign. An impressive Roman city with its stadium and colonnaded street.',
+  '27': 'Hometown of Saint Nicholas, known as Santa Claus. An important pilgrimage center with Lycian rock tombs and the saint\'s church.',
+  '28': 'The Antonine Fountain still flows! One of the best preserved ancient cities in Turkey. The jewel of Pisidia that lived through the Roman era.',
+  '29': 'A Lycian city at 1500 meters on the slopes of the Taurus Mountains. One of the least explored ancient cities with its pristine nature.',
+  '30': 'A Pisidian city built on top of Köprülü Canyon. One of the most important cities of Pisidia with its 10,000-seat theatre and Zeus temple.',
+  '31': 'An ancient city with three harbors as the center of trade. Where Alexander wintered; one of the most beautiful ancient cities of Turkey among pine forests.',
+  '32': 'An ancient city intertwined with the sea at Cape Anamur. Fascinating in its undisturbed state after being attacked and abandoned by Persian forces in 260 AD.',
+  '33': 'Capital of Cilicia. One of the largest ancient cities in the world with its 1500-meter walls, stadium and amphitheatre.',
+  '34': 'One of the oldest known urban settlements in the world. This Neolithic city dating back to 7500 BC is a milestone in human history.',
+  '35': 'Capital of the Hittite Empire. One of the most impressive Bronze Age urban structures with the Lion Gate and Sphinx Gate.',
+  '36': 'The most unique natural-historical region in the world with fairy chimneys and underground cities. Sacred lands where early Christians carved cave churches.',
+  '37': 'The deepest underground city in the world with 18 floors and capacity for 20,000 people. The structure where early Christians took refuge from Roman persecution.',
+  '38': 'Capital of the Phrygian Kingdom visited by Alexander who cut the legendary Gordian Knot. The land of King Midas.',
+  '39': 'Contains the earliest traces of Anatolian civilization with its Sphinx Gate and Hittite reliefs from the Bronze Age.',
+  '40': 'Masterpiece of Seljuk stonework. The door ornaments and carved decorations on the mihrab are considered unique in world architectural history.',
+  '41': 'The tomb and lodge of Mevlana Celaleddin Rumi. Its green dome and semahane hall enchant visitors; people come on pilgrimage from all over the world.',
+  '42': 'A new discovery thought to be older than Göbekli Tepe. Hiding the secrets of the Neolithic period with its human-faced statues and T-shaped pillars.',
+  '43': 'The oldest known trading center of Anatolia. A unique archive city that shed light on Anatolian history thanks to Assyrian merchants\' clay tablets.',
+  '44': 'The historic castle rising in the center of Ankara. Carries the memory of the city with its Byzantine-era walls and Ottoman inns.',
+  '45': 'The tomb and lodge of Haji Bektash Veli. An important pilgrimage and cultural center for Alevis and Bektashis.',
+  '46': 'The oldest known temple complex in the world. The first monumental structure built by humanity, with T-shaped pillars dating back to 9600 BC.',
+  '47': 'The tumulus of the Commagene Kingdom surrounded by giant god statues at 2150 meters. Their silhouettes at sunrise are incomparable.',
+  '48': 'One of the oldest continuously inhabited cities in the world. The city of beehive-shaped houses where the Prophet Abraham is said to have lived.',
+  '49': 'The world\'s largest mosaic museum. Magnificent Roman mosaics excavated from the ancient city of Zeugma on the Euphrates are displayed here.',
+  '50': 'The world\'s longest basalt stone walls after the Great Wall of China. 82 towers on 5.8 km of walls from the Roman era.',
+  '51': 'A golden stone city built on terraces overlooking the Mesopotamian plain. Deyrulzafaran Monastery and Kasimiye Madrassa are the main structures.',
+  '52': 'Important Byzantine military base on the Mesopotamian border. An impressive ancient structure with giant cisterns and city walls.',
+  '53': 'An important city of the Commagene Kingdom. A significant crossing point of the ancient era with its location on the Euphrates.',
+  '54': 'A monumental tumulus built over the tomb of the Commagene royal family. The eagle statue on top can be seen from kilometers away.',
+  '55': 'The Armenian capital, one of the greatest cities of the Middle Ages. The cathedrals standing alone on the steppe offer an unforgettable view.',
+  '56': 'A 10th century Armenian church rising on a small island in Lake Van. The Biblical scenes on its exterior facade are extraordinary works of art.',
+  '57': 'A Urartu Kingdom fortress from the 8th century BC. One of the little-known but impressive ancient structures dominating the Lake Van valley.',
+  '58': 'An Ottoman palace built at 2200 meters at the foot of Mount Ararat. Fascinating with its unique architecture combining Seljuk, Ottoman and Iranian styles.',
+  '59': 'Urartu rock fortress rising by the lake. The most impressive ancient structure in Eastern Anatolia with rock tombs and Urartu inscriptions.',
+  '60': 'The world\'s largest Seljuk cemetery. Contains the most valuable examples of Turkish-Islamic art with its kumbets and tombstones.',
+  '61': 'Historical city ruins at the foot of Mount Ararat. An important stop on the historic Eastern Silk Road, close to Ishak Pasha Palace.',
+  '62': 'The legendary Byzantine monastery clinging to the steep cliffs of the Black Sea mountains. Notable for its frescoes and icons from the 4th century.',
+  '63': 'A Byzantine church from the 13th century. Considered the jewel of Byzantine art with its frescoes.',
+  '64': 'Ancient city with the best natural harbor on the Black Sea. The birthplace of the famous philosopher Diogenes; Roman-era walls still stand today.',
+  '65': 'The best preserved example of Ottoman residential architecture. Its bay-windowed wooden houses and bazaar give the feeling that time has stopped.',
+  '66': 'A rock fortress dominating the Yeşilırmak valley. Symbol of the historic city, capital of the Pontus Kingdom, full of rock tombs and ancient sites.',
+  '67': 'One of the oldest Greek colonies on the Black Sea. Played a central role in Black Sea trade as an important trading city of the Pontus Kingdom.',
+  '68': 'The historic castle rising above the town. A strategic point controlling the connection between the Black Sea hinterland and Anatolia.',
+};
+
+// İngilizce isimler
+const ISIMLER_EN = {
+  '1':'Ephesus','2':'Aphrodisias','3':'Pergamon','4':'Hierapolis - Pamukkale',
+  '5':'Miletus','6':'Didyma','7':'Sardis','8':'Priene','9':'Assos',
+  '10':'Aizanoi','11':'Laodicea','12':'Stratonikeia','13':'Cnidus','14':'Teos',
+  '15':'Colophon','16':'Troy','17':'Istanbul Historic Peninsula','18':'Bursa Grand Mosque',
+  '19':'Cyzicus','20':'Dascylium','21':'Aspendos','22':'Patara','23':'Xanthos',
+  '24':'Side','25':'Termessos','26':'Perge','27':'Myra - Demre','28':'Sagalassos',
+  '29':'Arykanda','30':'Selge','31':'Phaselis','32':'Anemurion','33':'Anavarza',
+  '34':'Çatalhöyük','35':'Hattusha','36':'Cappadocia','37':'Derinkuyu Underground City',
+  '38':'Gordion','39':'Alacahöyük','40':'Divriği Great Mosque','41':'Mevlana Museum',
+  '42':'Karahantepe','43':'Kültepe (Kanesh)','44':'Ankara Castle','45':'Hacibektash Complex',
+  '46':'Göbekli Tepe','47':'Mount Nemrut','48':'Harran','49':'Zeugma Mosaic Museum',
+  '50':'Diyarbakır Walls','51':'Mardin Old City','52':'Dara Ancient City',
+  '53':'Samosata','54':'Karakuş Tumulus','55':'Ani Ruins','56':'Akdamar Church',
+  '57':'Çavuştepe Castle','58':'İshak Pasha Palace','59':'Van Castle',
+  '60':'Ahlat Seljuk Cemetery','61':'Doğubayazıt Old Town','62':'Sumela Monastery',
+  '63':'Trabzon Hagia Sophia','64':'Sinop Castle','65':'Safranbolu',
+  '66':'Amasya Castle','67':'Amisos (Samsun)','68':'Kastamonu Castle',
+};
+
+const MEDENIYETLER_EN = {
+  'Yunan':'Greek','Roma':'Roman','Bizans':'Byzantine','Helenistik':'Hellenistic',
+  'İyon':'Ionian','Pers':'Persian','Lidya':'Lydian','Hitit':'Hittite',
+  'Neolitik':'Neolithic','Neolitik Öncesi':'Pre-Neolithic','Tunç Çağı':'Bronze Age',
+  'Kalkolitik':'Chalcolithic','Frig':'Phrygian','Urartu':'Urartian','Ermeni':'Armenian',
+  'Selçuklu':'Seljuk','Osmanlı':'Ottoman','Kommagene':'Commagene','Sümer':'Sumerian',
+  'Asur':'Assyrian','İslam':'Islamic','Dor':'Dorian','Likya':'Lycian',
+  'Pisidya':'Pisidian','Pontus':'Pontic','Artuklu':'Artuqid','Ahlatşahlar':'Shah-Armens',
+  'Trabzon İmparatorluğu':'Empire of Trebizond','Hristiyan':'Christian',
+};
+
+const BOLGELER_EN = {
+  'ege':'Aegean','marmara':'Marmara','akdeniz':'Mediterranean',
+  'ic':'Central Anatolia','karadeniz':'Black Sea','dogu':'East Anatolia','guneydogu':'Southeast'
+};
+
+function t(key) { return (TERCUMELER[aktifDil] || TERCUMELER.tr)[key] || key; }
+
+function yerIsim(y) { return aktifDil==='en' && ISIMLER_EN[y.id] ? ISIMLER_EN[y.id] : y.isim; }
+function yerAciklama(y) { return aktifDil==='en' && ACIKLAMALAR_EN[y.id] ? ACIKLAMALAR_EN[y.id] : y.aciklama; }
+function medEnCevir(m) { return aktifDil==='en' && MEDENIYETLER_EN[m] ? MEDENIYETLER_EN[m] : m; }
+
+function dilDegistir() {
+  aktifDil = aktifDil === 'tr' ? 'en' : 'tr';
+  const btn = document.getElementById('dilBtn');
+  btn.textContent = aktifDil === 'tr' ? '🇬🇧' : '🇹🇷';
+  arayuzGuncelle();
+  kartlarGoster();
+  if (aktifSekme === 'favori') favoriEkraniGoster();
+}
+
+function arayuzGuncelle() {
+  // Header
+  document.querySelector('.logo-sub').textContent = t('baslikAlt');
+  document.querySelector('.harita-btn').textContent = t('harita');
+  document.querySelector('.arama-input').placeholder = t('ara');
+  document.querySelector('.arama-iptal').textContent = t('iptal');
+  // Toggle
+  document.getElementById('btnDonem').textContent = t('donem');
+  document.getElementById('btnZaman').textContent = t('zamanCubugu');
+  // Dönem pilleri
+  const donemler = document.querySelectorAll('#donemScroll .pill');
+  const donemKeys = ['tumDon','tasDev','tuncCag','demirCag','antik','bizans','selcuklu','osmanli'];
+  donemler.forEach((p,i) => { if(donemKeys[i]) p.textContent = t(donemKeys[i]); });
+  // Bölge pilleri
+  const bolgePills = document.querySelectorAll('#bolgeScroll .pill');
+  const bolgeKeys = ['tumBol','ege','marmara','akdeniz','ic','guneydogu'];
+  bolgePills.forEach((p,i) => { if(bolgeKeys[i]) p.textContent = t(bolgeKeys[i]); });
+  // Zaman
+  document.querySelector('.zaman-aciklama').textContent = t('cubukAciklama');
+  // Nav
+  document.querySelector('#navKesif .nav-label').textContent = t('kesif');
+  document.querySelector('#navFavori .nav-label').textContent = t('favoriler');
+  // Fav header
+  const favAlt = document.getElementById('favAlt');
+  if (favAlt) favAlt.textContent = `${favoriler.size} ${t('favKaydedildi')}`;
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 // ── CLOUDINARY + GALERİ SİSTEMİ ─────────────────────────────────────────────
 const CLOUD = 'dsnmabr1p';
@@ -606,8 +832,10 @@ function favoriEkraniGoster() {
 function kartHtml(y) {
   const favAktif = favoriler.has(y.id);
   const foto = fotoUrl(y);
+  const isim = yerIsim(y);
+  const aciklama = yerAciklama(y);
   const imgHtml = foto
-    ? `<img src="${foto}" alt="${y.isim}" class="yukleniyor"
+    ? `<img src="${foto}" alt="${isim}" class="yukleniyor"
         onload="this.classList.remove('yukleniyor');this.classList.add('yuklendi')"
         onerror="this.classList.add('foto-hata');this.style.display='none'">`
     : '';
@@ -616,18 +844,18 @@ function kartHtml(y) {
       <div class="kart-gorsel" style="background:${y.renk}">
         ${imgHtml}
         <span class="kart-gorsel-fallback" style="${foto?'opacity:0.15':'opacity:1'}">${y.emoji}</span>
-        ${y.unesco?'<div class="unesco-badge">UNESCO</div>':''}
+        ${y.unesco?`<div class="unesco-badge">UNESCO</div>`:''}
         <button class="favori-btn ${favAktif?'aktif':''}" onclick="favoriToggle('${y.id}',event)" style="position:absolute;top:10px;left:10px">
           ${favAktif ? '🧡' : '🤍'}
         </button>
       </div>
       <div class="kart-icerik">
         <div class="kart-ust">
-          <div><div class="kart-isim">${vurgula(y.isim,aramaSorgusu)}</div><div class="kart-konum">${vurgula(y.sehir,aramaSorgusu)}</div></div>
+          <div><div class="kart-isim">${vurgula(isim,aramaSorgusu)}</div><div class="kart-konum">${vurgula(y.sehir,aramaSorgusu)}</div></div>
           <div class="kart-yil">${yilGoster(y.baslangic)}</div>
         </div>
-        <div class="kart-aciklama">${y.aciklama}</div>
-        <div class="kart-etiketler">${y.medeniyetler.slice(0,3).map(m=>`<div class="kart-etiket">${vurgula(m,aramaSorgusu)}</div>`).join('')}</div>
+        <div class="kart-aciklama">${aciklama}</div>
+        <div class="kart-etiketler">${y.medeniyetler.slice(0,3).map(m=>`<div class="kart-etiket">${vurgula(medEnCevir(m),aramaSorgusu)}</div>`).join('')}</div>
       </div>
     </div>`;
 }
@@ -742,16 +970,30 @@ function detayAc(id) {
   window.galeriSol = () => { aktifFoto = (aktifFoto - 1 + fotolar.length) % fotolar.length; galeriGuncelle(); };
   window.galeriSag = () => { aktifFoto = (aktifFoto + 1) % fotolar.length; galeriGuncelle(); };
 
-  document.getElementById('detayIsim').textContent=y.isim;
+  document.getElementById('detayIsim').textContent=yerIsim(y);
   document.getElementById('detayKonum').textContent=y.sehir;
   document.getElementById('dBaslangic').textContent=yilGoster(y.baslangic);
   document.getElementById('dBitis').textContent=yilGoster(y.bitis);
-  document.getElementById('dSure').textContent=Math.abs(y.bitis-y.baslangic)+' yıl';
-  document.getElementById('dAciklama').textContent=y.aciklama;
-  document.getElementById('dMed').innerHTML=y.medeniyetler.map((m,i)=>`<div class="med-etiket ${i===0?'birincil':''}">${m}</div>`).join('');
+  document.getElementById('dSure').textContent=Math.abs(y.bitis-y.baslangic)+' '+t('yil');
+  document.getElementById('dAciklama').textContent=yerAciklama(y);
+  document.getElementById('dMed').innerHTML=y.medeniyetler.map((m,i)=>`<div class="med-etiket ${i===0?'birincil':''}">${medEnCevir(m)}</div>`).join('');
   document.getElementById('dUcret').textContent=`₺${y.ucret}`;
   document.getElementById('dSaatler').textContent=y.saatler;
-  const p=document.getElementById('dPark'); p.textContent=y.park?'Mevcut':'Yok'; p.style.color=y.park?'#2E7D52':'#B85C2A';
+  const p=document.getElementById('dPark'); p.textContent=y.park?t('mevcut'):t('yok'); p.style.color=y.park?'#2E7D52':'#B85C2A';
+  // Detay etiketleri çevir
+  document.getElementById('lKuruluş').textContent=t('kuruluş');
+  document.getElementById('lSonAktif').textContent=t('sonAktif');
+  document.getElementById('lSure').textContent=t('sure');
+  document.getElementById('lMed').textContent=t('medeniyetler');
+  document.getElementById('lHakkinda').textContent=t('hakkinda');
+  document.getElementById('lZiyaret').textContent=t('ziyaret');
+  document.getElementById('lGiris').textContent=t('giris');
+  document.getElementById('lSaatler').textContent=t('saatler');
+  document.getElementById('lPark').textContent=t('park');
+  document.getElementById('detayHaritaBtn').textContent=t('haritaGoster');
+  // Rehber butonu
+  const rehberBtn = document.querySelector('.rehber-btn');
+  if(rehberBtn) { rehberBtn.childNodes[0].textContent=t('rehberBtn')+' '; }
   document.getElementById('detayHaritaBtn').onclick = () => { haritaKapat(); haritaAc(y.id); };
   document.getElementById('detayEkrani').classList.add('acik');
   // Yorumları yükle
