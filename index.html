@@ -114,9 +114,40 @@
   .rehber-btn-yakin { position: absolute; top: 6px; right: 10px; background: rgba(255,255,255,0.25); padding: 2px 8px; border-radius: 10px; font-size: 10px; letter-spacing: 0.5px; }
   .rehber-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
   .rehber-modal.acik { opacity: 1; pointer-events: all; }
-  .rehber-modal-icerik { background: #FAFAF8; border-radius: 24px 24px 0 0; padding: 28px 24px 40px; width: 100%; }
-  .rehber-modal-baslik { font-family: 'Cinzel', serif; font-size: 20px; color: #1A1A18; margin-bottom: 6px; }
-  .rehber-modal-alt { font-size: 14px; color: #9B9B97; margin-bottom: 24px; line-height: 1.6; }
+  .rehber-modal-icerik { background: #FAFAF8; border-radius: 24px 24px 0 0; padding: 0; width: 100%; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+  .rehber-modal-header { padding: 20px 20px 0; flex-shrink: 0; }
+  .rehber-modal-baslik { font-family: 'Cinzel', serif; font-size: 18px; color: #1A1A18; margin-bottom: 4px; }
+  .rehber-modal-alt { font-size: 13px; color: #9B9B97; margin-bottom: 16px; }
+  .rehber-tabs { display: flex; border-bottom: 0.5px solid #E8E6E0; padding: 0 20px; flex-shrink: 0; }
+  .rehber-tab { padding: 10px 16px; font-size: 13px; color: #9B9B97; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+  .rehber-tab.aktif { color: #B85C2A; border-bottom-color: #B85C2A; font-weight: 500; }
+  .rehber-tab-icerik { flex: 1; overflow-y: auto; padding: 16px 20px 30px; }
+  .rehber-tab-icerik.gizli { display: none; }
+  .rehber-kart { background: #fff; border-radius: 14px; border: 0.5px solid #E8E6E0; padding: 14px; margin-bottom: 12px; }
+  .rehber-kart-ust { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .rehber-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #B85C2A, #8B3A1A); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; color: #fff; font-family: 'Cinzel', serif; font-weight: 600; }
+  .rehber-bilgi { flex: 1; }
+  .rehber-ad { font-family: 'Cinzel', serif; font-size: 14px; color: #1A1A18; margin-bottom: 2px; }
+  .rehber-sehir { font-size: 12px; color: #9B9B97; }
+  .rehber-ucret { font-size: 13px; color: #B85C2A; font-weight: 500; }
+  .rehber-diller { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+  .rehber-dil-badge { padding: 2px 8px; border-radius: 10px; background: #F5F4F0; border: 0.5px solid #E8E6E0; font-size: 11px; color: #6B6B67; }
+  .rehber-hakkinda { font-size: 12px; color: #6B6B67; line-height: 1.5; margin-bottom: 10px; }
+  .rehber-rezerve-btn { background: #B85C2A; color: #fff; border: none; border-radius: 10px; padding: 9px; font-family: 'Crimson Pro', serif; font-size: 13px; cursor: pointer; width: 100%; }
+  .form-grup { margin-bottom: 12px; }
+  .form-label { font-size: 12px; color: #6B6B67; margin-bottom: 5px; display: block; }
+  .form-input { width: 100%; border: 0.5px solid #E8E6E0; border-radius: 10px; padding: 10px 12px; font-family: 'Crimson Pro', serif; font-size: 14px; color: #1A1A18; outline: none; background: #fff; }
+  .form-input:focus { border-color: #B85C2A; }
+  .form-select { width: 100%; border: 0.5px solid #E8E6E0; border-radius: 10px; padding: 10px 12px; font-family: 'Crimson Pro', serif; font-size: 14px; color: #1A1A18; outline: none; background: #fff; appearance: none; }
+  .form-checkbox-grup { display: flex; flex-wrap: wrap; gap: 8px; }
+  .form-checkbox { display: flex; align-items: center; gap: 6px; }
+  .form-checkbox input { width: 16px; height: 16px; accent-color: #B85C2A; }
+  .form-checkbox label { font-size: 13px; color: #1A1A18; cursor: pointer; }
+  .form-gonder-btn { background: #B85C2A; color: #fff; border: none; border-radius: 12px; padding: 14px; font-family: 'Crimson Pro', serif; font-size: 15px; font-weight: 500; cursor: pointer; width: 100%; margin-top: 8px; }
+  .rehber-bos { text-align: center; padding: 30px 20px; font-size: 13px; color: #9B9B97; font-style: italic; }
+  .rezerv-basarili { background: #E8F5EE; border: 0.5px solid #2E7D52; border-radius: 12px; padding: 16px; text-align: center; margin-top: 12px; }
+  .rezerv-basarili-ikon { font-size: 32px; margin-bottom: 8px; }
+  .rezerv-basarili-text { font-size: 14px; color: #2E7D52; font-weight: 500; }
   .rehber-ozellik { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 0.5px solid #E8E6E0; }
   .rehber-ozellik:last-of-type { border: none; }
   .rehber-ozellik-ikon { font-size: 28px; width: 44px; text-align: center; flex-shrink: 0; }
@@ -313,38 +344,135 @@
   <!-- REHBER MODAL -->
   <div class="rehber-modal" id="rehberModal" onclick="rehberModalKapat()">
     <div class="rehber-modal-icerik" onclick="event.stopPropagation()">
-      <div class="rehber-modal-baslik">🧭 Profesyonel Rehberle Gez</div>
-      <div class="rehber-modal-alt">Bu özellik yakında geliyor! Sertifikalı rehberlerle unutulmaz bir tarih yolculuğuna çıkın.</div>
-      <div class="rehber-ozellik">
-        <div class="rehber-ozellik-ikon">🏛</div>
-        <div class="rehber-ozellik-text">
-          <div class="rehber-ozellik-baslik">Sertifikalı Yerel Rehberler</div>
-          <div class="rehber-ozellik-acik">Bölge uzmanı, lisanslı profesyonel rehberler</div>
+      <div class="rehber-modal-header">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="rehber-modal-baslik">🧭 Rehberle Gez</div>
+          <button onclick="rehberModalKapat()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#9B9B97">✕</button>
+        </div>
+        <div class="rehber-modal-alt" id="rehberModalAlt">Bu bölge için sertifikalı rehberler</div>
+      </div>
+      <div class="rehber-tabs">
+        <div class="rehber-tab aktif" onclick="rehberTabSec('liste',this)">Rehberler</div>
+        <div class="rehber-tab" onclick="rehberTabSec('rezasyon',this)">Rezervasyon</div>
+        <div class="rehber-tab" onclick="rehberTabSec('basvuru',this)">Rehber Ol</div>
+      </div>
+      <!-- REHBER LİSTESİ -->
+      <div class="rehber-tab-icerik" id="tabListe">
+        <div id="rehberListesiDiv"><div class="rehber-bos">Yükleniyor...</div></div>
+      </div>
+      <!-- REZERVASYON FORMU -->
+      <div class="rehber-tab-icerik gizli" id="tabRezasyon">
+        <div id="rezervBasarili" style="display:none" class="rezerv-basarili">
+          <div class="rezerv-basarili-ikon">✅</div>
+          <div class="rezerv-basarili-text">Rezervasyonunuz alındı!<br>Rehber en kısa sürede sizinle iletişime geçecek.</div>
+        </div>
+        <div id="rezervForm">
+          <div class="form-grup">
+            <label class="form-label">Adınız Soyadınız *</label>
+            <input class="form-input" id="rMusteriAd" placeholder="Ahmet Yılmaz">
+          </div>
+          <div class="form-grup">
+            <label class="form-label">E-posta *</label>
+            <input class="form-input" id="rMusteriEmail" type="email" placeholder="ahmet@email.com">
+          </div>
+          <div class="form-grup">
+            <label class="form-label">Telefon</label>
+            <input class="form-input" id="rMusteriTel" placeholder="+90 555 000 0000">
+          </div>
+          <div class="form-grup">
+            <label class="form-label">Tur Tarihi *</label>
+            <input class="form-input" id="rTurTarihi" type="date">
+          </div>
+          <div class="form-grup">
+            <label class="form-label">Kişi Sayısı</label>
+            <select class="form-select" id="rKisiSayisi">
+              <option>1</option><option>2</option><option>3</option>
+              <option>4</option><option>5+</option>
+            </select>
+          </div>
+          <div class="form-grup">
+            <label class="form-label">Tur Dili</label>
+            <select class="form-select" id="rDil">
+              <option>Türkçe</option><option>İngilizce</option>
+              <option>Almanca</option><option>Rusça</option>
+            </select>
+          </div>
+          <div class="form-grup">
+            <label class="form-label">Notlar</label>
+            <input class="form-input" id="rNotlar" placeholder="Özel istek veya bilgi...">
+          </div>
+          <button class="form-gonder-btn" onclick="rezervasyonGonder()">📅  Rezervasyon Yap</button>
         </div>
       </div>
-      <div class="rehber-ozellik">
-        <div class="rehber-ozellik-ikon">📅</div>
-        <div class="rehber-ozellik-text">
-          <div class="rehber-ozellik-baslik">Önceden veya Anlık Rezervasyon</div>
-          <div class="rehber-ozellik-acik">Ziyaretinizden önce planlayın ya da anlık rehber bulun</div>
+      <!-- REHBER BAŞVURU FORMU -->
+      <div class="rehber-tab-icerik gizli" id="tabBasvuru">
+        <div id="basvuruBasarili" style="display:none" class="rezerv-basarili">
+          <div class="rezerv-basarili-ikon">🎉</div>
+          <div class="rezerv-basarili-text">Başvurunuz alındı!<br>En kısa sürede sizinle iletişime geçeceğiz.</div>
+        </div>
+        <div id="basvuruForm">
+          <div class="form-grup">
+            <label class="form-label">Ad Soyad *</label>
+            <input class="form-input" id="bAdSoyad" placeholder="Mehmet Kaya">
+          </div>
+          <div class="form-grup">
+            <label class="form-label">E-posta *</label>
+            <input class="form-input" id="bEmail" type="email" placeholder="mehmet@email.com">
+          </div>
+          <div class="form-grup">
+            <label class="form-label">Telefon</label>
+            <input class="form-input" id="bTelefon" placeholder="+90 555 000 0000">
+          </div>
+          <div class="form-grup">
+            <label class="form-label">Şehir *</label>
+            <input class="form-input" id="bSehir" placeholder="İzmir">
+          </div>
+          <div class="form-grup">
+            <label class="form-label">Konuştuğunuz Diller *</label>
+            <div class="form-checkbox-grup">
+              <div class="form-checkbox"><input type="checkbox" id="dTr" value="Türkçe" checked><label for="dTr">Türkçe</label></div>
+              <div class="form-checkbox"><input type="checkbox" id="dEn" value="İngilizce"><label for="dEn">İngilizce</label></div>
+              <div class="form-checkbox"><input type="checkbox" id="dDe" value="Almanca"><label for="dDe">Almanca</label></div>
+              <div class="form-checkbox"><input type="checkbox" id="dRu" value="Rusça"><label for="dRu">Rusça</label></div>
+              <div class="form-checkbox"><input type="checkbox" id="dFr" value="Fransızca"><label for="dFr">Fransızca</label></div>
+            </div>
+          </div>
+          <div class="form-grup">
+            <label class="form-label">Uzmanlık Bölgeleri *</label>
+            <div class="form-checkbox-grup">
+              <div class="form-checkbox"><input type="checkbox" id="bolEge" value="ege"><label for="bolEge">Ege</label></div>
+              <div class="form-checkbox"><input type="checkbox" id="bolAkd" value="akdeniz"><label for="bolAkd">Akdeniz</label></div>
+              <div class="form-checkbox"><input type="checkbox" id="bolIc" value="ic"><label for="bolIc">İç Anadolu</label></div>
+              <div class="form-checkbox"><input type="checkbox" id="bolKar" value="karadeniz"><label for="bolKar">Karadeniz</label></div>
+              <div class="form-checkbox"><input type="checkbox" id="bolDog" value="dogu"><label for="bolDog">Doğu</label></div>
+              <div class="form-checkbox"><input type="checkbox" id="bolGun" value="guneydogu"><label for="bolGun">Güneydoğu</label></div>
+            </div>
+          </div>
+          <div class="form-grup">
+            <label class="form-label">Rehberlik Sertifikası</label>
+            <input class="form-input" id="bSertifika" placeholder="Sertifika no (varsa)">
+          </div>
+          <div class="form-grup">
+            <label class="form-label">Deneyim (yıl)</label>
+            <select class="form-select" id="bDeneyim">
+              <option value="0">Yeni başlıyorum</option>
+              <option value="1">1-2 yıl</option>
+              <option value="3">3-5 yıl</option>
+              <option value="6">6-10 yıl</option>
+              <option value="11">10+ yıl</option>
+            </select>
+          </div>
+          <div class="form-grup">
+            <label class="form-label">Günlük Ücret (₺)</label>
+            <input class="form-input" id="bUcret" type="number" placeholder="1500">
+          </div>
+          <div class="form-grup">
+            <label class="form-label">Hakkınızda</label>
+            <input class="form-input" id="bHakkinda" placeholder="Kendinizi kısaca tanıtın...">
+          </div>
+          <button class="form-gonder-btn" onclick="rehberBasvuruGonder()">🧭  Başvuruyu Gönder</button>
         </div>
       </div>
-      <div class="rehber-ozellik">
-        <div class="rehber-ozellik-ikon">🌍</div>
-        <div class="rehber-ozellik-text">
-          <div class="rehber-ozellik-baslik">Çoklu Dil Desteği</div>
-          <div class="rehber-ozellik-acik">Türkçe, İngilizce, Almanca ve daha fazlası</div>
-        </div>
-      </div>
-      <div class="rehber-ozellik">
-        <div class="rehber-ozellik-ikon">⭐</div>
-        <div class="rehber-ozellik-text">
-          <div class="rehber-ozellik-baslik">Değerlendirmeli Güven Sistemi</div>
-          <div class="rehber-ozellik-acik">Önceki kullanıcıların yorumlarıyla doğru rehberi seç</div>
-        </div>
-      </div>
-      <button class="rehber-bildir-btn" onclick="rehberBildir()">🔔  Çıkınca Beni Bildir</button>
-      <button class="rehber-kapat" onclick="rehberModalKapat()">Kapat</button>
     </div>
   </div>
 
@@ -1287,7 +1415,10 @@ function detayAc(id) {
   document.getElementById('detayHaritaBtn').textContent=t('haritaGoster');
   // Rehber butonu
   const rehberBtn = document.querySelector('.rehber-btn');
-  if(rehberBtn) { rehberBtn.childNodes[0].textContent=t('rehberBtn')+' '; }
+  if(rehberBtn) {
+    rehberBtn.childNodes[0].textContent=t('rehberBtn')+' ';
+    rehberBtn.onclick = () => rehberModalAc(y.id);
+  }
   document.getElementById('detayHaritaBtn').onclick = () => { haritaKapat(); haritaAc(y.id); };
   document.getElementById('detayEkrani').classList.add('acik');
   // Yorumları yükle
@@ -1489,18 +1620,163 @@ async function yorumGonder() {
 }
 // ────────────────────────────────────────────────────────────────────────────
 
-// ── REHBER MODAL ────────────────────────────────────────────────────────────
-function rehberModalAc() {
+// ── REHBER SİSTEMİ ───────────────────────────────────────────────────────────
+let aktifRehberId = null;
+let aktifOrenYeriIdRehber = null;
+
+function rehberModalAc(orenYeriId) {
+  aktifOrenYeriIdRehber = orenYeriId;
+  const y = YERLER.find(x => x.id === orenYeriId);
+  if (y) {
+    document.getElementById('rehberModalAlt').textContent = `${yerIsim(y)} için sertifikalı rehberler`;
+  }
+  // Min tarih bugün
+  document.getElementById('rTurTarihi').min = new Date().toISOString().split('T')[0];
+  document.getElementById('rTurTarihi').value = '';
+  document.getElementById('rezervBasarili').style.display = 'none';
+  document.getElementById('rezervForm').style.display = 'block';
+  document.getElementById('basvuruBasarili').style.display = 'none';
+  document.getElementById('basvuruForm').style.display = 'block';
+  const ilkTab = document.querySelector('.rehber-tab');
+  rehberTabSec('liste', ilkTab);
   document.getElementById('rehberModal').classList.add('acik');
+  rehberlerYukle(y?.bolge);
 }
+
 function rehberModalKapat() {
   document.getElementById('rehberModal').classList.remove('acik');
 }
-function rehberBildir() {
-  const btn = document.querySelector('.rehber-bildir-btn');
-  btn.textContent = '✓ Sizi haberdar edeceğiz!';
-  btn.style.background = '#2E7D52';
-  setTimeout(() => rehberModalKapat(), 1500);
+
+function rehberTabSec(tab, el) {
+  document.querySelectorAll('.rehber-tab').forEach(t => t.classList.remove('aktif'));
+  document.querySelectorAll('.rehber-tab-icerik').forEach(t => t.classList.add('gizli'));
+  if (el) el.classList.add('aktif');
+  const tabId = 'tab' + tab.charAt(0).toUpperCase() + tab.slice(1);
+  const tabEl = document.getElementById(tabId);
+  if (tabEl) tabEl.classList.remove('gizli');
+}
+
+async function rehberlerYukle(bolge) {
+  const div = document.getElementById('rehberListesiDiv');
+  div.innerHTML = '<div class="rehber-bos">Yükleniyor...</div>';
+  try {
+    const url = bolge
+      ? `${SAPI}/rehberler?bolgeler=cs.{${bolge}}&onaylandi=eq.true&order=deneyim_yil.desc`
+      : `${SAPI}/rehberler?onaylandi=eq.true&order=deneyim_yil.desc`;
+    const res = await fetch(url, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    const rehberler = await res.json();
+    if (!rehberler.length) {
+      div.innerHTML = '<div class="rehber-bos">Bu bölge için henüz rehber bulunmuyor.<br>İlk rehber siz olun! "Rehber Ol" sekmesine bakın.</div>';
+      return;
+    }
+    div.innerHTML = rehberler.map(r => `
+      <div class="rehber-kart">
+        <div class="rehber-kart-ust">
+          <div class="rehber-avatar">${r.ad_soyad.charAt(0)}</div>
+          <div class="rehber-bilgi">
+            <div class="rehber-ad">${r.ad_soyad}</div>
+            <div class="rehber-sehir">📍 ${r.sehir} · ${r.deneyim_yil}+ yıl deneyim</div>
+          </div>
+          <div class="rehber-ucret">₺${r.gunluk_ucret || '?'}/gün</div>
+        </div>
+        <div class="rehber-diller">${(r.diller||[]).map(d=>`<span class="rehber-dil-badge">${d}</span>`).join('')}</div>
+        ${r.hakkinda ? `<div class="rehber-hakkinda">${r.hakkinda}</div>` : ''}
+        <button class="rehber-rezerve-btn" onclick="rehberSec('${r.id}','${r.ad_soyad}')">📅 Bu Rehberle Rezervasyon Yap</button>
+      </div>`).join('');
+  } catch(e) {
+    div.innerHTML = '<div class="rehber-bos">Rehberler yüklenemedi.</div>';
+  }
+}
+
+function rehberSec(rehberId, adSoyad) {
+  aktifRehberId = rehberId;
+  const tabs = document.querySelectorAll('.rehber-tab');
+  rehberTabSec('rezasyon', tabs[1]);
+  document.getElementById('rNotlar').placeholder = `${adSoyad} ile tur - özel istek veya bilgi...`;
+}
+
+async function rezervasyonGonder() {
+  const ad = document.getElementById('rMusteriAd').value.trim();
+  const email = document.getElementById('rMusteriEmail').value.trim();
+  const tarih = document.getElementById('rTurTarihi').value;
+  const kisi = document.getElementById('rKisiSayisi').value;
+  const dil = document.getElementById('rDil').value;
+  const notlar = document.getElementById('rNotlar').value.trim();
+  const tel = document.getElementById('rMusteriTel').value.trim();
+
+  if (!ad) { alert('Lütfen adınızı girin.'); return; }
+  if (!email) { alert('Lütfen e-posta adresinizi girin.'); return; }
+  if (!tarih) { alert('Lütfen tur tarihini seçin.'); return; }
+
+  const btn = document.querySelector('#tabRezasyon .form-gonder-btn');
+  btn.disabled = true; btn.textContent = 'Gönderiliyor...';
+
+  try {
+    const res = await fetch(`${SAPI}/rezervasyonlar`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({
+        rehber_id: aktifRehberId || null,
+        musteri_adi: ad,
+        musteri_email: email,
+        musteri_telefon: tel || null,
+        oren_yeri_id: aktifOrenYeriIdRehber,
+        tur_tarihi: tarih,
+        kisi_sayisi: parseInt(kisi) || 1,
+        dil: dil,
+        notlar: notlar || null,
+      })
+    });
+    if (res.ok) {
+      document.getElementById('rezervForm').style.display = 'none';
+      document.getElementById('rezervBasarili').style.display = 'block';
+    } else { throw new Error(); }
+  } catch(e) { alert('Rezervasyon gönderilemedi, tekrar deneyin.'); }
+  btn.disabled = false; btn.textContent = '📅  Rezervasyon Yap';
+}
+
+async function rehberBasvuruGonder() {
+  const ad = document.getElementById('bAdSoyad').value.trim();
+  const email = document.getElementById('bEmail').value.trim();
+  const sehir = document.getElementById('bSehir').value.trim();
+
+  if (!ad || !email || !sehir) { alert('Lütfen zorunlu alanları doldurun.'); return; }
+
+  const diller = ['dTr','dEn','dDe','dRu','dFr'].filter(id => document.getElementById(id).checked).map(id => document.getElementById(id).value);
+  const bolgeler = ['bolEge','bolAkd','bolIc','bolKar','bolDog','bolGun'].filter(id => document.getElementById(id).checked).map(id => document.getElementById(id).value);
+
+  if (!diller.length) { alert('En az bir dil seçin.'); return; }
+  if (!bolgeler.length) { alert('En az bir bölge seçin.'); return; }
+
+  const btn = document.querySelector('#tabBasvuru .form-gonder-btn');
+  btn.disabled = true; btn.textContent = 'Gönderiliyor...';
+
+  try {
+    const res = await fetch(`${SAPI}/rehberler`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({
+        ad_soyad: ad,
+        email: email,
+        telefon: document.getElementById('bTelefon').value.trim() || null,
+        sehir: sehir,
+        diller: diller,
+        bolgeler: bolgeler,
+        sertifika: document.getElementById('bSertifika').value.trim() || null,
+        deneyim_yil: parseInt(document.getElementById('bDeneyim').value) || 0,
+        gunluk_ucret: parseInt(document.getElementById('bUcret').value) || null,
+        hakkinda: document.getElementById('bHakkinda').value.trim() || null,
+        onaylandi: false,
+      })
+    });
+    if (res.ok) {
+      document.getElementById('basvuruForm').style.display = 'none';
+      document.getElementById('basvuruBasarili').style.display = 'block';
+    } else { throw new Error(); }
+  } catch(e) { alert('Başvuru gönderilemedi, tekrar deneyin.'); }
+  btn.disabled = false; btn.textContent = '🧭  Başvuruyu Gönder';
 }
 // ────────────────────────────────────────────────────────────────────────────
 
