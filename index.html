@@ -100,6 +100,23 @@
   .zayirac { width: 0.5px; background: #E8E6E0; }
   .bolum { margin-bottom: 22px; }
   .bolum-baslik { font-size: 11px; color: #9B9B97; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 10px; }
+  .unlu-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+  .unlu-scroll::-webkit-scrollbar { display: none; }
+  .unlu-kart { background: #fff; border-radius: 14px; border: 0.5px solid #E8E6E0; padding: 12px; min-width: 160px; max-width: 160px; cursor: pointer; flex-shrink: 0; }
+  .unlu-foto { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; background: linear-gradient(135deg, #B85C2A22, #8B3A1A22); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+  .unlu-foto img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+  .unlu-isim { font-family: 'Cinzel', serif; font-size: 12px; color: #1A1A18; margin-bottom: 2px; line-height: 1.3; }
+  .unlu-unvan { font-size: 10px; color: #B85C2A; margin-bottom: 3px; }
+  .unlu-donem { font-size: 10px; color: #9B9B97; }
+  .unlu-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .unlu-modal.acik { opacity: 1; pointer-events: all; }
+  .unlu-modal-icerik { background: #FAFAF8; border-radius: 24px 24px 0 0; padding: 28px 24px 40px; width: 100%; }
+  .unlu-modal-foto { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 16px; display: block; background: linear-gradient(135deg, #B85C2A33, #8B3A1A33); font-size: 40px; text-align: center; line-height: 80px; }
+  .unlu-modal-isim { font-family: 'Cinzel', serif; font-size: 20px; color: #1A1A18; text-align: center; margin-bottom: 4px; }
+  .unlu-modal-unvan { font-size: 13px; color: #B85C2A; text-align: center; margin-bottom: 4px; }
+  .unlu-modal-donem { font-size: 12px; color: #9B9B97; text-align: center; margin-bottom: 16px; }
+  .unlu-modal-ozet { font-size: 14px; color: #4A4A48; line-height: 1.7; text-align: center; }
+  .unlu-modal-kapat { background: #F5F4F0; color: #1A1A18; border: none; border-radius: 12px; padding: 13px; font-family: 'Crimson Pro', serif; font-size: 14px; cursor: pointer; width: 100%; margin-top: 20px; }
   .detay-aciklama { font-size: 15px; color: #1A1A18; line-height: 1.7; }
   .med-etiketler { display: flex; flex-wrap: wrap; gap: 8px; }
   .med-etiket { padding: 7px 14px; border-radius: 20px; border: 0.5px solid #E8E6E0; background: #fff; font-size: 13px; color: #6B6B67; }
@@ -299,6 +316,10 @@
         <div class="zi"><div class="zi-label" id="lSure">Süre</div><div class="zi-deger" id="dSure"></div></div>
       </div>
       <div class="bolum"><div class="bolum-baslik" id="lMed">Medeniyetler</div><div class="med-etiketler" id="dMed"></div></div>
+      <div class="bolum" id="unlulerBolum" style="display:none">
+        <div class="bolum-baslik" id="lUnluler">Bu Topraklarda Yaşayanlar</div>
+        <div class="unlu-scroll" id="unlulerScroll"></div>
+      </div>
       <div class="bolum"><div class="bolum-baslik" id="lHakkinda">Hakkında</div><div class="detay-aciklama" id="dAciklama"></div></div>
       <div class="bolum">
         <div class="bolum-baslik" id="lZiyaret">Ziyaret Bilgisi</div>
@@ -338,6 +359,18 @@
       </div>
 
       <div style="height:30px"></div>
+    </div>
+  </div>
+
+  <!-- ÜNLÜ KİŞİ MODAL -->
+  <div class="unlu-modal" id="unluModal" onclick="unluModalKapat()">
+    <div class="unlu-modal-icerik" onclick="event.stopPropagation()">
+      <div id="unluModalFoto" class="unlu-modal-foto">👤</div>
+      <div id="unluModalIsim" class="unlu-modal-isim"></div>
+      <div id="unluModalUnvan" class="unlu-modal-unvan"></div>
+      <div id="unluModalDonem" class="unlu-modal-donem"></div>
+      <div id="unluModalOzet" class="unlu-modal-ozet"></div>
+      <button class="unlu-modal-kapat" onclick="unluModalKapat()">Kapat</button>
     </div>
   </div>
 
@@ -1510,6 +1543,7 @@ function detayAc(id) {
   document.getElementById('dBitis').textContent=yilGoster(y.bitis);
   document.getElementById('dSure').textContent=Math.abs(y.bitis-y.baslangic)+' '+t('yil');
   document.getElementById('dAciklama').textContent=yerAciklama(y);
+  unlulerGoster(y.id);
   document.getElementById('dMed').innerHTML=y.medeniyetler.map((m,i)=>`<div class="med-etiket ${i===0?'birincil':''}">${medEnCevir(m)}</div>`).join('');
   document.getElementById('dUcret').textContent=`₺${y.ucret}`;
   document.getElementById('dSaatler').textContent=y.saatler;
@@ -1655,6 +1689,125 @@ function haritaKapat() {
   document.getElementById('haritaEkrani').classList.remove('acik');
   document.getElementById('pinListesi').classList.remove('acik');
 }
+
+// ── ÜNLÜ KİŞİLER ─────────────────────────────────────────────────────────────
+const UNLULER = {
+  '1': [
+    {isim:'Herakleitos',unvan:'Filozof',donem:'M.Ö. 535–475',ozet:'"Aynı nehre iki kez giremezsin" diyen karanlık filozof. Ateşin evrenin ana maddesi olduğunu savundu.',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Heraclitus_Hendrick_ter_Brugghen.jpg/440px-Heraclitus_Hendrick_ter_Brugghen.jpg'},
+    {isim:'Aziz Yuhanna',unvan:'Havari',donem:'M.S. 6–100',ozet:'İncil yazarı ve İsa\'nın sevdiği havari. Efes\'te uzun yıllar yaşadı ve Meryem Ana\'ya burada baktı.',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Saint_John_the_Evangelist_-_Guercino.jpg/440px-Saint_John_the_Evangelist_-_Guercino.jpg'},
+  ],
+  '2': [
+    {isim:'Aleksandros Afrodisyaslı',unvan:'Filozof',donem:'M.S. 200',ozet:'"Yorumcu" lakabıyla anılan Aristoteles felsefesinin en önemli yorumcusu. Eserleri Ortaçağ İslam ve Hristiyan düşüncesini etkiledi.',foto:null},
+  ],
+  '3': [
+    {isim:'Galenos',unvan:'Hekim',donem:'M.S. 129–216',ozet:'Antik çağın en büyük hekimi. Anatomi eserleri 1400 yıl boyunca tıbbı yönlendirdi.',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Galenus.jpg/440px-Galenus.jpg'},
+  ],
+  '5': [
+    {isim:'Thales',unvan:'Filozof & Matematikçi',donem:'M.Ö. 624–546',ozet:'Batı felsefesinin kurucusu. Güneş tutulmasını öngördü; suyun her şeyin temeli olduğunu savundu.',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Thales_of_Miletus.jpg/440px-Thales_of_Miletus.jpg'},
+    {isim:'Anaximandros',unvan:'Filozof',donem:'M.Ö. 610–546',ozet:'İlk dünya haritasını çizen düşünür. Sonsuz madde (apeiron) kavramını geliştirdi.',foto:null},
+    {isim:'Anaximenes',unvan:'Filozof',donem:'M.Ö. 585–528',ozet:'Havanın evrenin temel maddesi olduğunu savunan Miletli düşünür.',foto:null},
+  ],
+  '7': [
+    {isim:'Kral Kroisos',unvan:'Kral',donem:'M.Ö. 595–547',ozet:'Tarihin ilk madeni parasını basan Lidya Kralı. Zenginliğiyle efsaneleşti.',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Croesus_on_the_pyre.jpg/440px-Croesus_on_the_pyre.jpg'},
+  ],
+  '8': [
+    {isim:'Bias',unvan:'Bilge',donem:'M.Ö. 625–540',ozet:'Antik Yunan\'ın yedi bilgesinden biri. Adil yargılamasıyla tanınmış devlet adamı ve düşünür.',foto:null},
+  ],
+  '9': [
+    {isim:'Aristoteles',unvan:'Filozof',donem:'M.Ö. 384–322',ozet:'Batı felsefesinin en büyük ismi. Platon\'un öğrencisi, İskender\'in öğretmeni. Assos\'ta okul kurdu.',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Aristotle_Altemps_Inv8575.jpg/440px-Aristotle_Altemps_Inv8575.jpg'},
+  ],
+  '13': [
+    {isim:'Praksiteles',unvan:'Heykeltıraş',donem:'M.Ö. 400–330',ozet:'Knidos Afroditi\'nin yaratıcısı. Tarihte ilk çıplak kadın heykeli sanat tarihinde devrim yarattı.',foto:null},
+    {isim:'Eudoksos',unvan:'Matematikçi',donem:'M.Ö. 408–355',ozet:'Gezegen hareketlerini küre modelleriyle açıklayan matematikçi. Entegral hesabının öncüsü.',foto:null},
+  ],
+  '14': [
+    {isim:'Anakreon',unvan:'Şair',donem:'M.Ö. 582–485',ozet:'Aşk ve şarap şiirleriyle ünlü lirik şair. "Anakreontik" şiir türüne adını verdi.',foto:null},
+  ],
+  '15': [
+    {isim:'Xenophanes',unvan:'Filozof',donem:'M.Ö. 570–475',ozet:'Tek tanrı anlayışını savunan düşünür. İnsanların tanrıları kendi suretlerinde yarattığını öne sürdü.',foto:null},
+  ],
+  '16': [
+    {isim:'Homeros',unvan:'Ozan',donem:'M.Ö. 8. yüzyıl',ozet:'İlyada destanının yazarı. Truva Savaşı\'nı ölümsüzleştiren en büyük Yunan ozanı.',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Homer_British_Museum.jpg/440px-Homer_British_Museum.jpg'},
+  ],
+  '17': [
+    {isim:'Fatih Sultan Mehmed',unvan:'Osmanlı Padişahı',donem:'1432–1481',ozet:'İstanbul\'u 1453\'te fetheden padişah. Bizans\'a son verdi, kente yeni bir çağ açtı.',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Fatih_Sultan_Mehmed_2.jpg/440px-Fatih_Sultan_Mehmed_2.jpg'},
+    {isim:'Mimar Sinan',unvan:'Mimar',donem:'1489–1588',ozet:'400\'den fazla eser inşa eden büyük mimar. Süleymaniye ve Selimiye camileri şaheserleridir.',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Mimar_Sinan.jpg/440px-Mimar_Sinan.jpg'},
+  ],
+  '26': [
+    {isim:'Apollonios',unvan:'Matematikçi',donem:'M.Ö. 262–190',ozet:'"Büyük Geometrist" lakaplı Pergeli matematikçi. Konik kesitler teorisi Newton\'u etkiledi.',foto:null},
+  ],
+  '27': [
+    {isim:'Aziz Nikolaos',unvan:'Din Adamı',donem:'M.S. 270–343',ozet:'Noel Baba geleneğinin kaynağı. Çocuklara ve yoksullara yardımıyla efsaneleşen Myralı piskopos.',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Saint_Nicholas_-_Gentile_da_Fabriano.jpg/440px-Saint_Nicholas_-_Gentile_da_Fabriano.jpg'},
+  ],
+  '41': [
+    {isim:'Mevlana Celaleddin Rumi',unvan:'Şair & Sufi',donem:'1207–1273',ozet:'İslam mistisizminin en büyük şairi. Mesnevi ve hoşgörü felsefesiyle tüm insanlığa seslendi.',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Mevlana_Celaleddin_Rumi.jpg/440px-Mevlana_Celaleddin_Rumi.jpg'},
+  ],
+  '46': [
+    {isim:'Klaus Schmidt',unvan:'Arkeolog',donem:'1953–2014',ozet:'Göbeklitepe\'yi dünyaya tanıtan Alman arkeolog. Hayatını bu alanda kazıya adadı.',foto:null},
+  ],
+  '47': [
+    {isim:'I. Antiokhos',unvan:'Kral',donem:'M.Ö. 86–38',ozet:'Nemrut\'taki dev heykelleri yaptıran Kommagene Kralı. Yunan ve Pers kültürünü harmanlayan özgün bir uygarlık kurdu.',foto:null},
+  ],
+  '55': [
+    {isim:'I. Gagik',unvan:'Kral',donem:'990–1020',ozet:'Ani\'yi Ortaçağ\'ın en büyük şehirlerinden birine dönüştüren Bagratid Ermeni Kralı.',foto:null},
+  ],
+  '58': [
+    {isim:'İshak Paşa',unvan:'Osmanlı Veziri',donem:'18. yüzyıl',ozet:'Adını taşıyan muhteşem sarayı inşa ettiren Osmanlı veziri. Doğu Anadolu\'nun en görkemli yapısının mimarisi.',foto:null},
+  ],
+  '64': [
+    {isim:'Diyojen',unvan:'Filozof',donem:'M.Ö. 412–323',ozet:'"Gölgemi geçme" diyerek İskender\'i şaşırtan Sinoplu filozof. Kinik felsefenin kurucusu.',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Diogenes_Sinope_BM_1842.jpg/440px-Diogenes_Sinope_BM_1842.jpg'},
+  ],
+  '89': [
+    {isim:'Aziz Pavlus',unvan:'Havari',donem:'M.S. 5–67',ozet:'Hristiyanlığı Anadolu\'ya ve Avrupa\'ya yayan havari. İlk vaazını burada verdi.',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Saint_Paul_Reni.jpg/440px-Saint_Paul_Reni.jpg'},
+  ],
+  '92': [
+    {isim:'Aratos',unvan:'Şair & Astronom',donem:'M.Ö. 315–240',ozet:'Yıldızlar üzerine yazdığı Phainomena şiiriyle ünlü Solili şair.',foto:null},
+  ],
+  '100': [
+    {isim:'Anaksagoras',unvan:'Filozof',donem:'M.Ö. 500–428',ozet:'Güneşin ateşten kaya kütlesi olduğunu öne süren düşünür. Perikles\'in öğretmeni.',foto:null},
+  ],
+  '101': [
+    {isim:'Homeros',unvan:'Ozan',donem:'M.Ö. 8. yüzyıl',ozet:'İzmir de Homeros\'un doğum yeri olarak iddia edilir. Şehirde bugün hâlâ Homeros heykeli bulunur.',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Homer_British_Museum.jpg/440px-Homer_British_Museum.jpg'},
+  ],
+  '110': [
+    {isim:'I. Konstantinos',unvan:'Roma İmparatoru',donem:'272–337',ozet:'İznik Konsili\'ni toplayarak Hristiyan inancının temel ilkelerini belirleyen imparator.',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Colossus_of_Constantine_face.jpg/440px-Colossus_of_Constantine_face.jpg'},
+  ],
+};
+
+function unlulerGoster(yerId) {
+  const kisiler = UNLULER[yerId];
+  const bolum = document.getElementById('unlulerBolum');
+  const scroll = document.getElementById('unlulerScroll');
+  if (!kisiler || !kisiler.length) { bolum.style.display='none'; return; }
+  bolum.style.display='block';
+  scroll.innerHTML = kisiler.map(k => `
+    <div class="unlu-kart" onclick="unluModalAc(${JSON.stringify(k).replace(/"/g,'&quot;')})">
+      <div class="unlu-foto">
+        ${k.foto ? `<img src="${k.foto}" alt="${k.isim}" onerror="this.parentNode.textContent='👤'">` : '👤'}
+      </div>
+      <div class="unlu-isim">${k.isim}</div>
+      <div class="unlu-unvan">${k.unvan}</div>
+      <div class="unlu-donem">${k.donem}</div>
+    </div>`).join('');
+}
+
+function unluModalAc(kisi) {
+  const modal = document.getElementById('unluModal');
+  const fotoDiv = document.getElementById('unluModalFoto');
+  fotoDiv.innerHTML = kisi.foto
+    ? `<img src="${kisi.foto}" alt="${kisi.isim}" onerror="this.parentNode.textContent='👤'">`
+    : '👤';
+  document.getElementById('unluModalIsim').textContent = kisi.isim;
+  document.getElementById('unluModalUnvan').textContent = kisi.unvan;
+  document.getElementById('unluModalDonem').textContent = kisi.donem;
+  document.getElementById('unluModalOzet').textContent = kisi.ozet;
+  modal.classList.add('acik');
+}
+
+function unluModalKapat() {
+  document.getElementById('unluModal').classList.remove('acik');
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 // ── SUPABASE YORUM SİSTEMİ ───────────────────────────────────────────────────
 const SUPABASE_URL = 'https://vdtfjxyktzbuyyvwbufl.supabase.co';
