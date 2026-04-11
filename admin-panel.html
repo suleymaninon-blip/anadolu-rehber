@@ -678,8 +678,8 @@
           <div class="section-count" id="rezvCount">0 rezervasyon</div>
         </div>
         <div class="data-table">
-          <div class="table-head" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr auto">
-            <span>Müşteri</span><span>Rehber</span><span>Ören Yeri</span><span>Tarih</span><span>Dil</span><span>Durum</span>
+          <div class="table-head" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr auto auto">
+            <span>Müşteri</span><span>Rehber</span><span>Ören Yeri</span><span>Tarih / Kişi</span><span>Durum</span><span>İşlem</span>
           </div>
           <div id="rezvListesi"><div class="loading">Yükleniyor...</div></div>
         </div>
@@ -1042,18 +1042,32 @@ async function rezervasyonlariYukle() {
   const el = document.getElementById('rezvListesi');
   if (!data.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-text">Rezervasyon yok</div></div>'; return; }
   el.innerHTML = data.map(r => `
-    <div class="table-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr auto">
+    <div class="table-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr auto auto">
       <div>
         <div>${r.musteri_adi}</div>
         <div style="font-size:11px;color:var(--text3)">${r.musteri_email}</div>
+        ${r.musteri_telefon ? `<div style="font-size:11px;color:var(--text3)">${r.musteri_telefon}</div>` : ''}
       </div>
       <span style="color:var(--text2)">${r.rehber_id ? 'Rehberli' : 'Rehbersiz'}</span>
       <span style="color:var(--text3)">${orenIsim(r.oren_yeri_id)}</span>
-      <span style="color:var(--text2)">${tarihFormat(r.tur_tarihi)}</span>
-      <span style="color:var(--text3)">${r.dil || '—'}</span>
+      <span style="color:var(--text2)">${tarihFormat(r.tur_tarihi)}<br><span style="font-size:11px;color:var(--text3)">${r.kisi_sayisi || 1} kişi · ${r.dil || '—'}</span></span>
       <span class="badge badge-${r.durum || 'bekliyor'}">${r.durum || 'bekliyor'}</span>
+      <div>
+        ${r.durum !== 'onaylandi' ? `<button class="action-btn btn-onayla" onclick="rezvDurumGuncelle('${r.id}', 'onaylandi', this)">✓</button>` : ''}
+        ${r.durum !== 'iptal' ? `<button class="action-btn btn-red" onclick="rezvDurumGuncelle('${r.id}', 'iptal', this)">✗</button>` : ''}
+      </div>
     </div>`).join('');
 }
+
+async function rezvDurumGuncelle(id, durum, btn) {
+  btn.disabled = true; btn.textContent = '...';
+  const res = await sbPatch('rezervasyonlar', id, { durum });
+  if (res.ok) {
+    bildirim(durum === 'onaylandi' ? 'Rezervasyon onaylandı! ✓' : 'Rezervasyon iptal edildi');
+    rezervasyonlariYukle();
+  } else { bildirim('Hata oluştu', 'hata'); btn.disabled = false; }
+}
+
 
 // KOMİSYONLAR
 async function komisyonlariYukle() {
