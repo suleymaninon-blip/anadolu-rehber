@@ -270,6 +270,32 @@
   .nav-ikon { font-size: 20px; }
   .nav-label { font-size: 10px; color: #9B9B97; font-family: 'Crimson Pro', serif; }
   .nav-btn.aktif .nav-label { color: #B85C2A; font-weight: 500; }
+  /* TUR PLANLAYICI */
+  .plan-ekran { position: fixed; inset: 0; background: #FAFAF8; z-index: 150; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
+  .plan-ekran.acik { transform: translateY(0); }
+  .plan-header { padding: 16px 20px 12px; border-bottom: 0.5px solid #E8E6E0; display: flex; align-items: center; justify-content: space-between; background: #fff; }
+  .plan-baslik { font-family: 'Cinzel', serif; font-size: 18px; color: #1A1A18; letter-spacing: 1px; }
+  .plan-kapat { background: none; border: none; font-size: 22px; cursor: pointer; color: #9B9B97; padding: 4px; }
+  .plan-icerik { flex: 1; overflow-y: auto; padding: 20px; }
+  .plan-form-grup { margin-bottom: 16px; }
+  .plan-label { font-size: 11px; color: #9B9B97; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; display: block; }
+  .plan-input { width: 100%; background: #fff; border: 0.5px solid #E8E6E0; border-radius: 12px; padding: 12px 14px; font-family: 'Crimson Pro', serif; font-size: 15px; color: #1A1A18; outline: none; }
+  .plan-input:focus { border-color: #B85C2A; }
+  .plan-select { width: 100%; background: #fff; border: 0.5px solid #E8E6E0; border-radius: 12px; padding: 12px 14px; font-family: 'Crimson Pro', serif; font-size: 15px; color: #1A1A18; outline: none; appearance: none; }
+  .plan-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .plan-chip { background: #F5F4F0; border: 1px solid #E8E6E0; border-radius: 20px; padding: 7px 14px; font-family: 'Crimson Pro', serif; font-size: 13px; color: #6B6B67; cursor: pointer; transition: all 0.15s; }
+  .plan-chip.secili { background: #FFF0E8; border-color: #B85C2A; color: #B85C2A; }
+  .plan-gonder-btn { width: 100%; background: #B85C2A; color: #fff; border: none; border-radius: 14px; padding: 16px; font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 1px; cursor: pointer; margin-top: 8px; transition: background 0.2s; }
+  .plan-gonder-btn:disabled { opacity: 0.6; }
+  .plan-gonder-btn:hover:not(:disabled) { background: #D4783C; }
+  .plan-sonuc { background: #fff; border: 0.5px solid #E8E6E0; border-radius: 16px; padding: 20px; margin-top: 16px; display: none; }
+  .plan-sonuc-baslik { font-family: 'Cinzel', serif; font-size: 16px; color: #B85C2A; margin-bottom: 12px; }
+  .plan-sonuc-metin { font-size: 14px; color: #4A4A48; line-height: 1.8; white-space: pre-wrap; }
+  .plan-indir-btn { width: 100%; background: #1A1A18; color: #fff; border: none; border-radius: 14px; padding: 14px; font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 1px; cursor: pointer; margin-top: 12px; }
+  .plan-yukleniyor { text-align: center; padding: 40px 20px; }
+  .plan-yukleniyor-ikon { font-size: 40px; animation: donus 2s linear infinite; display: inline-block; margin-bottom: 12px; }
+  @keyframes donus { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .plan-yukleniyor-text { font-size: 14px; color: #9B9B97; }
   .nav-sayac { position: relative; }
   .nav-sayac-no { position: absolute; top: -3px; right: -10px; background: #B85C2A; color: #fff; font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 8px; min-width: 14px; text-align: center; display: none; }
   .nav-sayac-no.gorsel { display: block; }
@@ -435,6 +461,75 @@
   <div class="kullanici-foto-modal" id="kullFotoModal" onclick="kullFotoModalKapat()">
     <button class="kullanici-foto-modal-kapat" onclick="kullFotoModalKapat()">✕</button>
     <img id="kullFotoModalImg" src="" alt="">
+  </div>
+
+  <!-- TUR PLANLAYICI -->
+  <div class="plan-ekran" id="planEkran">
+    <div class="plan-header">
+      <div class="plan-baslik">🗺️ Tur Planla</div>
+      <button class="plan-kapat" onclick="turPlanlaKapat()">✕</button>
+    </div>
+    <div class="plan-icerik" id="planIcerik">
+      <div class="plan-form-grup">
+        <label class="plan-label" id="plKacinGun">Kaç gününüz var?</label>
+        <select class="plan-select" id="planGun">
+          <option value="1">1 gün</option>
+          <option value="2">2 gün</option>
+          <option value="3" selected>3 gün</option>
+          <option value="5">5 gün</option>
+          <option value="7">1 hafta</option>
+          <option value="10">10 gün</option>
+          <option value="14">2 hafta</option>
+        </select>
+      </div>
+      <div class="plan-form-grup">
+        <label class="plan-label" id="plNereden">Neredesiniz / nereden başlıyorsunuz?</label>
+        <input type="text" class="plan-input" id="planKonum" placeholder="örn: İzmir, Ankara, İstanbul...">
+      </div>
+      <div class="plan-form-grup">
+        <label class="plan-label" id="plIlgi">İlgi alanlarınız</label>
+        <div class="plan-chips" id="planIlgiChips">
+          <div class="plan-chip secili" onclick="planChipSec(this)">🏛 Antik kentler</div>
+          <div class="plan-chip" onclick="planChipSec(this)">⛪ Bizans & Hristiyan</div>
+          <div class="plan-chip" onclick="planChipSec(this)">🕌 İslam mimarisi</div>
+          <div class="plan-chip" onclick="planChipSec(this)">🗿 Prehistorik</div>
+          <div class="plan-chip" onclick="planChipSec(this)">👑 Osmanlı tarihi</div>
+          <div class="plan-chip" onclick="planChipSec(this)">🌿 Doğa & manzara</div>
+          <div class="plan-chip" onclick="planChipSec(this)">🎭 Sanat & heykel</div>
+          <div class="plan-chip" onclick="planChipSec(this)">📚 Felsefe & bilim</div>
+        </div>
+      </div>
+      <div class="plan-form-grup">
+        <label class="plan-label" id="plBolge">Bölge tercihi</label>
+        <div class="plan-chips" id="planBolgeChips">
+          <div class="plan-chip secili" onclick="planChipSec(this)">🌊 Ege</div>
+          <div class="plan-chip" onclick="planChipSec(this)">☀️ Akdeniz</div>
+          <div class="plan-chip" onclick="planChipSec(this)">🏔 Kapadokya</div>
+          <div class="plan-chip" onclick="planChipSec(this)">🦅 Doğu Anadolu</div>
+          <div class="plan-chip" onclick="planChipSec(this)">🌙 Güneydoğu</div>
+          <div class="plan-chip" onclick="planChipSec(this)">🌲 Karadeniz</div>
+          <div class="plan-chip" onclick="planChipSec(this)">🏙 Marmara</div>
+        </div>
+      </div>
+      <div class="plan-form-grup">
+        <label class="plan-label" id="plButce">Bütçe</label>
+        <select class="plan-select" id="planButce">
+          <option value="ekonomik">💰 Ekonomik</option>
+          <option value="orta" selected>💰💰 Orta</option>
+          <option value="konforlu">💰💰💰 Konforlu</option>
+        </select>
+      </div>
+      <div class="plan-form-grup">
+        <label class="plan-label" id="plEkBilgi">Ekstra bilgi (isteğe bağlı)</label>
+        <input type="text" class="plan-input" id="planEkBilgi" placeholder="örn: 2 çocuklu aile, fotoğrafçılık ilgim var...">
+      </div>
+      <button class="plan-gonder-btn" id="planGonderBtn" onclick="turPlaniOlustur()">✨ Tur Planımı Oluştur</button>
+      <div id="planSonuc" class="plan-sonuc">
+        <div class="plan-sonuc-baslik">🗺️ Kişisel Tur Planınız</div>
+        <div class="plan-sonuc-metin" id="planSonucMetin"></div>
+        <button class="plan-indir-btn" onclick="planPdfIndir()">📥 PDF Olarak İndir & Paylaş</button>
+      </div>
+    </div>
   </div>
 
   <!-- REHBER YORUM MODAL -->
@@ -646,6 +741,10 @@
       <span class="nav-ikon">🏛</span>
       <span class="nav-label">Keşfet</span>
     </button>
+    <button class="nav-btn" id="navPlan" onclick="turPlanlaAc()">
+      <span class="nav-ikon">🗺️</span>
+      <span class="nav-label">Tur Planla</span>
+    </button>
     <button class="nav-btn" id="navFavori" onclick="sekmeGec('favori')">
       <span class="nav-sayac">
         <span class="nav-ikon">🤍</span>
@@ -814,7 +913,7 @@ const TERCUMELER = {
     kuruluş: 'Kuruluş', sonAktif: 'Son aktif', sure: 'Süre',
     medeniyetler: 'Medeniyetler', hakkinda: 'Hakkında', ziyaret: 'Ziyaret Bilgisi',
     giris: 'Giriş ücreti', saatler: 'Çalışma saatleri', park: 'Otopark',
-    mevcut: 'Mevcut', yok: 'Yok', haritaGoster: '🗺  Haritada Göster', yolTarifi: '🧭  Yol Tarifi',
+    mevcut: 'Mevcut', yok: 'Yok', haritaGoster: '🗺  Haritada Göster', yolTarifi: '🧭  Yol Tarifi', plKacinGun: 'Kaç gününüz var?', plNereden: 'Neredesiniz?', plIlgi: 'İlgi alanlarınız', plBolge: 'Bölge tercihi', plButce: 'Bütçe', plEkBilgi: 'Ekstra bilgi', planGonderBtn: '✨ Tur Planımı Oluştur', planHazirlanıyor: '⏳ Planınız hazırlanıyor...',
     rehberBtn: '🧭  Profesyonel Rehberle Gez', yakin: 'Yakında',
     yorumlar: 'Yorumlar & Puanlar', puanVer: 'Puan ver:',
     adiniz: 'Adınız (örn: Ahmet)', sehriniz: 'Şehriniz (örn: İzmir) — isteğe bağlı',
@@ -848,7 +947,7 @@ const TERCUMELER = {
     kuruluş: 'Founded', sonAktif: 'Last active', sure: 'Duration',
     medeniyetler: 'Civilizations', hakkinda: 'About', ziyaret: 'Visit Info',
     giris: 'Entrance fee', saatler: 'Opening hours', park: 'Parking',
-    mevcut: 'Available', yok: 'None', haritaGoster: '🗺  Show on Map', yolTarifi: '🧭  Directions',
+    mevcut: 'Available', yok: 'None', haritaGoster: '🗺  Show on Map', yolTarifi: '🧭  Directions', plKacinGun: 'How many days?', plNereden: 'Where are you starting?', plIlgi: 'Your interests', plBolge: 'Region preference', plButce: 'Budget', plEkBilgi: 'Extra info', planGonderBtn: '✨ Create My Tour Plan', planHazirlanıyor: '⏳ Creating your plan...',
     rehberBtn: '🧭  Tour with a Pro Guide', yakin: 'Coming Soon',
     yorumlar: 'Reviews & Ratings', puanVer: 'Rate:',
     adiniz: 'Your name (e.g. John)', sehriniz: 'Your city (optional)',
@@ -882,7 +981,7 @@ const TERCUMELER = {
     kuruluş: 'Gegründet', sonAktif: 'Zuletzt aktiv', sure: 'Dauer',
     medeniyetler: 'Zivilisationen', hakkinda: 'Über', ziyaret: 'Besuchsinfo',
     giris: 'Eintritt', saatler: 'Öffnungszeiten', park: 'Parkplatz',
-    mevcut: 'Vorhanden', yok: 'Nicht vorhanden', haritaGoster: '🗺  Auf Karte zeigen', yolTarifi: '🧭  Route',
+    mevcut: 'Vorhanden', yok: 'Nicht vorhanden', haritaGoster: '🗺  Auf Karte zeigen', yolTarifi: '🧭  Route', plKacinGun: 'Wie viele Tage?', plNereden: 'Wo starten Sie?', plIlgi: 'Ihre Interessen', plBolge: 'Regionen', plButce: 'Budget', plEkBilgi: 'Weitere Infos', planGonderBtn: '✨ Reiseplan erstellen', planHazirlanıyor: '⏳ Plan wird erstellt...',
     rehberBtn: '🧭  Mit Profi-Guide entdecken', yakin: 'Demnächst',
     yorumlar: 'Bewertungen', puanVer: 'Bewerten:',
     adiniz: 'Ihr Name (z.B. Hans)', sehriniz: 'Ihre Stadt (optional)',
@@ -916,7 +1015,7 @@ const TERCUMELER = {
     kuruluş: 'Основан', sonAktif: 'Последняя активность', sure: 'Продолжительность',
     medeniyetler: 'Цивилизации', hakkinda: 'О месте', ziyaret: 'Информация для посетителей',
     giris: 'Входной билет', saatler: 'Часы работы', park: 'Парковка',
-    mevcut: 'Есть', yok: 'Нет', haritaGoster: '🗺  Показать на карте', yolTarifi: '🧭  Маршрут',
+    mevcut: 'Есть', yok: 'Нет', haritaGoster: '🗺  Показать на карте', yolTarifi: '🧭  Маршрут', plKacinGun: 'Сколько дней?', plNereden: 'Откуда начинаете?', plIlgi: 'Ваши интересы', plBolge: 'Регион', plButce: 'Бюджет', plEkBilgi: 'Доп. информация', planGonderBtn: '✨ Создать мой тур', planHazirlanıyor: '⏳ Создаём план...',
     rehberBtn: '🧭  Тур с профессиональным гидом', yakin: 'Скоро',
     yorumlar: 'Отзывы и оценки', puanVer: 'Оценить:',
     adiniz: 'Ваше имя (напр. Иван)', sehriniz: 'Ваш город (необязательно)',
@@ -2199,6 +2298,120 @@ function kullFotoAc(url) {
 
 function kullFotoModalKapat() {
   document.getElementById('kullFotoModal').classList.remove('acik');
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── TUR PLANLAYICI ────────────────────────────────────────────────────────────
+function turPlanlaAc() {
+  document.getElementById('planEkran').classList.add('acik');
+  document.getElementById('planSonuc').style.display = 'none';
+  // Dile göre etiketleri güncelle
+  const t = TERCUMELER[aktifDil] || TERCUMELER['tr'];
+  if (t.plKacinGun) {
+    document.getElementById('plKacinGun').textContent = t.plKacinGun;
+    document.getElementById('plNereden').textContent = t.plNereden;
+    document.getElementById('plIlgi').textContent = t.plIlgi;
+    document.getElementById('plBolge').textContent = t.plBolge;
+    document.getElementById('plButce').textContent = t.plButce;
+    document.getElementById('plEkBilgi').textContent = t.plEkBilgi;
+    document.getElementById('planGonderBtn').textContent = t.planGonderBtn;
+  }
+}
+
+function turPlanlaKapat() {
+  document.getElementById('planEkran').classList.remove('acik');
+}
+
+function planChipSec(el) {
+  el.classList.toggle('secili');
+}
+
+async function turPlaniOlustur() {
+  const gun = document.getElementById('planGun').value;
+  const konum = document.getElementById('planKonum').value.trim() || 'Türkiye';
+  const ekBilgi = document.getElementById('planEkBilgi').value.trim();
+  const butce = document.getElementById('planButce').value;
+  const ilgiChips = [...document.querySelectorAll('#planIlgiChips .plan-chip.secili')].map(c => c.textContent.trim());
+  const bolgeChips = [...document.querySelectorAll('#planBolgeChips .plan-chip.secili')].map(c => c.textContent.trim());
+
+  const btn = document.getElementById('planGonderBtn');
+  btn.disabled = true;
+  const t = TERCUMELER[aktifDil] || TERCUMELER['tr'];
+  btn.textContent = t.planHazirlanıyor || '⏳ Planınız hazırlanıyor...';
+
+  document.getElementById('planSonuc').style.display = 'none';
+
+  // Dile göre prompt dili
+  const dilAdi = { tr: 'Türkçe', en: 'English', de: 'Deutsch', ru: 'на русском языке' }[aktifDil] || 'Türkçe';
+
+  const prompt = `Sen Türkiye'nin tarihi ören yerleri konusunda uzman bir tur rehberisin. Aşağıdaki bilgilere göre kişiselleştirilmiş bir tur planı oluştur. Yanıtını ${dilAdi} dilinde ver.
+
+Kullanıcı bilgileri:
+- Süre: ${gun} gün
+- Başlangıç noktası: ${konum}
+- İlgi alanları: ${ilgiChips.join(', ') || 'Genel tarih'}
+- Tercih edilen bölgeler: ${bolgeChips.join(', ') || 'Tüm Türkiye'}
+- Bütçe: ${butce}
+${ekBilgi ? `- Özel notlar: ${ekBilgi}` : ''}
+
+Lütfen şu formatta bir tur planı oluştur:
+- Her gün için başlık ve ziyaret edilecek ören yerleri
+- Her yer için kısa açıklama ve tahmini süre
+- Pratik öneriler (ulaşım, konaklama, yemek)
+- Toplam bütçe tahmini
+- Bu tur için en uygun rehber profili önerisi
+
+Plan samimi, heyecan verici ve pratik olsun. Türkiye'nin bu eşsiz tarihini ziyaretçiye sevdirsin.`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await response.json();
+    const planMetni = data.content?.[0]?.text || 'Plan oluşturulamadı.';
+
+    document.getElementById('planSonucMetin').textContent = planMetni;
+    document.getElementById('planSonuc').style.display = 'block';
+    document.getElementById('planSonuc').scrollIntoView({ behavior: 'smooth' });
+  } catch(e) {
+    alert('Plan oluşturulamadı, tekrar deneyin.');
+  }
+  btn.disabled = false;
+  btn.textContent = t.planGonderBtn || '✨ Tur Planımı Oluştur';
+}
+
+function planPdfIndir() {
+  const metin = document.getElementById('planSonucMetin').textContent;
+  const gun = document.getElementById('planGun').value;
+  const konum = document.getElementById('planKonum').value || 'Türkiye';
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <style>
+    body { font-family: Georgia, serif; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #1A1A18; line-height: 1.8; }
+    h1 { font-size: 28px; color: #B85C2A; letter-spacing: 3px; text-align: center; margin-bottom: 4px; }
+    .alt { text-align: center; color: #9B9B97; font-size: 13px; margin-bottom: 32px; }
+    pre { white-space: pre-wrap; font-family: Georgia, serif; font-size: 14px; }
+    .footer { text-align: center; margin-top: 40px; color: #9B9B97; font-size: 12px; border-top: 1px solid #E8E6E0; padding-top: 20px; }
+  </style></head><body>
+  <h1>ANADOLU REHBERİ</h1>
+  <div class="alt">Kişisel Tur Planı · ${gun} Gün · ${konum}</div>
+  <pre>${metin}</pre>
+  <div class="footer">© ${new Date().getFullYear()} Anadolu Rehberi · suleymaninon-blip.github.io/anadolu-rehber</div>
+  </body></html>`;
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `anadolu-tur-plani-${gun}gun.html`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
