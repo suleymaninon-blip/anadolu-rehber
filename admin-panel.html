@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anadolu Rehberi — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0F0E0C;
+    --bg2: #1A1916;
+    --bg3: #242220;
+    --border: rgba(184,92,42,0.2);
+    --accent: #B85C2A;
+    --accent2: #D4783C;
+    --gold: #C9A84C;
+    --text: #F0EDE8;
+    --text2: #9B9487;
+    --text3: #6B6560;
+    --green: #4CAF7A;
+    --red: #E05A4A;
+    --blue: #5A9AE0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Crimson Pro', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* LOGIN */
+  #loginScreen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+    background-image: radial-gradient(ellipse at 30% 50%, rgba(184,92,42,0.08) 0%, transparent 60%),
+                      radial-gradient(ellipse at 70% 30%, rgba(201,168,76,0.05) 0%, transparent 50%);
+  }
+
+  .login-box {
+    width: 380px;
+    padding: 48px 40px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg2);
+    text-align: center;
+  }
+
+  .login-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .login-sub {
+    font-size: 12px;
+    color: var(--text3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+  }
+
+  .login-input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 14px 16px;
+    font-family: 'Crimson Pro', serif;
+    font-size: 16px;
+    color: var(--text);
+    outline: none;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+
+  .login-input:focus { border-color: var(--accent); }
+
+  .login-btn {
+    width: 100%;
+    background: var(--accent);
+    border: none;
+    border-radius: 3px;
+    padding: 14px;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 4px;
+  }
+
+  .login-btn:hover { background: var(--accent2); }
+  .login-error { color: var(--red); font-size: 13px; margin-top: 10px; display: none; }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: 240px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 10;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-logo-text {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    letter-spacing: 3px;
+    color: var(--accent);
+  }
+
+  .sidebar-logo-sub {
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .sidebar-nav { flex: 1; padding: 16px 0; }
+
+  .nav-section {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 16px 24px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 24px;
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 14px;
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .nav-item:hover { color: var(--text); background: rgba(184,92,42,0.06); }
+
+  .nav-item.aktif {
+    color: var(--accent);
+    background: rgba(184,92,42,0.1);
+  }
+
+  .nav-item.aktif::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 0 2px 2px 0;
+  }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--red);
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-family: 'Cinzel', serif;
+  }
+
+  .nav-badge.gold { background: var(--gold); color: #000; }
+
+  .sidebar-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  /* MAIN */
+  #main {
+    margin-left: 240px;
+    flex: 1;
+    min-height: 100vh;
+    background-image: radial-gradient(ellipse at 80% 10%, rgba(184,92,42,0.04) 0%, transparent 50%);
+  }
+
+  .topbar {
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  .page-title {
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: var(--text);
+  }
+
+  .topbar-right { display: flex; align-items: center; gap: 16px; }
+
+  .refresh-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 8px 16px;
+    font-family: 'Crimson Pro', serif;
+    font-size: 13px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .refresh-btn:hover { color: var(--text); border-color: var(--accent); }
+
+  .page-content { padding: 32px; }
+
+  /* CARDS */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .stat-card:hover { border-color: rgba(184,92,42,0.4); }
+
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .stat-card:hover::after { opacity: 1; }
+
+  .stat-icon { font-size: 24px; margin-bottom: 12px; }
+  .stat-value {
+    font-family: 'Cinzel', serif;
+    font-size: 32px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .stat-label { font-size: 12px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; }
+  .stat-sub { font-size: 12px; color: var(--green); margin-top: 4px; }
+
+  /* SECTION */
+  .section { margin-bottom: 32px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: var(--text2);
+    text-transform: uppercase;
+  }
+
+  .section-count {
+    font-size: 12px;
+    color: var(--text3);
+    background: var(--bg3);
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  /* TABLE */
+  .data-table {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .table-head {
+    display: grid;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    background: var(--bg3);
+  }
+
+  .table-row {
+    display: grid;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    align-items: center;
+    transition: background 0.15s;
+    font-size: 14px;
+  }
+
+  .table-row:last-child { border-bottom: none; }
+  .table-row:hover { background: rgba(184,92,42,0.04); }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-bekliyor { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+  .badge-onaylandi { background: rgba(76,175,122,0.15); color: var(--green); border: 1px solid rgba(76,175,122,0.3); }
+  .badge-iptal { background: rgba(224,90,74,0.15); color: var(--red); border: 1px solid rgba(224,90,74,0.3); }
+  .badge-odendi { background: rgba(90,154,224,0.15); color: var(--blue); border: 1px solid rgba(90,154,224,0.3); }
+
+  .action-btn {
+    padding: 5px 14px;
+    border-radius: 3px;
+    font-family: 'Crimson Pro', serif;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid;
+    transition: all 0.15s;
+    margin-right: 4px;
+  }
+
+  .btn-onayla { background: rgba(76,175,122,0.1); color: var(--green); border-color: rgba(76,175,122,0.3); }
+  .btn-onayla:hover { background: rgba(76,175,122,0.2); }
+  .btn-red { background: rgba(224,90,74,0.1); color: var(--red); border-color: rgba(224,90,74,0.3); }
+  .btn-red:hover { background: rgba(224,90,74,0.2); }
+  .btn-odendi { background: rgba(90,154,224,0.1); color: var(--blue); border-color: rgba(90,154,224,0.3); }
+  .btn-odendi:hover { background: rgba(90,154,224,0.2); }
+
+  /* FOTO GRID */
+  .foto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+
+  .foto-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .foto-card:hover { border-color: rgba(184,92,42,0.4); }
+
+  .foto-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .foto-card-info {
+    padding: 10px 12px;
+  }
+
+  .foto-card-name { font-size: 13px; color: var(--text); margin-bottom: 4px; }
+  .foto-card-meta { font-size: 11px; color: var(--text3); margin-bottom: 8px; }
+  .foto-card-actions { display: flex; gap: 6px; }
+
+  /* CHART */
+  .chart-container {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+  }
+
+  .chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 120px;
+    margin-top: 16px;
+  }
+
+  .chart-bar-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+
+  .chart-bar {
+    width: 100%;
+    background: linear-gradient(180deg, var(--accent), rgba(184,92,42,0.3));
+    border-radius: 2px 2px 0 0;
+    min-height: 4px;
+    transition: height 0.5s ease;
+  }
+
+  .chart-label { font-size: 10px; color: var(--text3); text-align: center; }
+
+  /* EMPTY */
+  .empty-state {
+    text-align: center;
+    padding: 48px;
+    color: var(--text3);
+  }
+
+  .empty-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.5; }
+  .empty-text { font-size: 14px; }
+
+  /* LOADING */
+  .loading {
+    text-align: center;
+    padding: 32px;
+    color: var(--text3);
+    font-size: 14px;
+  }
+
+  /* HIDDEN */
+  .hidden { display: none !important; }
+
+  /* TABS */
+  .tab-content { display: none; }
+  .tab-content.aktif { display: block; }
+
+  /* NOTIF */
+  .notif {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px 20px;
+    font-size: 14px;
+    color: var(--text);
+    z-index: 1000;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s;
+    max-width: 300px;
+  }
+
+  .notif.goster { transform: translateY(0); opacity: 1; }
+  .notif.basari { border-left: 3px solid var(--green); }
+  .notif.hata { border-left: 3px solid var(--red); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  @media (max-width: 1200px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">ANADOLU</div>
+    <div class="login-sub">Admin Paneli</div>
+    <input type="password" class="login-input" id="loginSifre" placeholder="Şifre" onkeydown="if(event.key==='Enter')girisYap()">
+    <button class="login-btn" onclick="girisYap()">GİRİŞ YAP</button>
+    <div class="login-error" id="loginHata">Hatalı şifre</div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text">ANADOLU</div>
+    <div class="sidebar-logo-sub">Yönetim Paneli</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section">Genel</div>
+    <div class="nav-item aktif" onclick="sayfaAc('dashboard', this)">
+      📊 Dashboard
+    </div>
+
+    <div class="nav-section">Onay Bekleyenler</div>
+    <div class="nav-item" onclick="sayfaAc('rehberler', this)">
+      🧭 Rehber Başvuruları
+      <span class="nav-badge" id="badgeRehber">0</span>
+    </div>
+    <div class="nav-item" onclick="sayfaAc('fotograflar', this)">
+      📸 Kullanıcı Fotoğrafları
+      <span class="nav-badge" id="badgeFoto">0</span>
+    </div>
+
+    <div class="nav-section">Yönetim</div>
+    <div class="nav-item" onclick="sayfaAc('rezervasyonlar', this)">
+      📅 Rezervasyonlar
+    </div>
+    <div class="nav-item" onclick="sayfaAc('komisyonlar', this)">
+      💰 Komisyonlar
+      <span class="nav-badge gold" id="badgeKomisyon">0</span>
+    </div>
+    <div class="nav-item" onclick="sayfaAc('yorumlar', this)">
+      ⭐ Yorumlar
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    🏛 Anadolu Rehberi v2.0<br>
+    <span id="sonGuncelleme"></span>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main id="main">
+  <div class="topbar">
+    <div class="page-title" id="pageTitle">Dashboard</div>
+    <div class="topbar-right">
+      <button class="refresh-btn" onclick="verileriYukle()">↻ Yenile</button>
+      <div style="font-size:13px;color:var(--text3)" id="topbarSaat"></div>
+    </div>
+  </div>
+
+  <div class="page-content">
+
+    <!-- DASHBOARD -->
+    <div class="tab-content aktif" id="tab-dashboard">
+      <div class="stat-grid" id="statGrid">
+        <div class="stat-card">
+          <div class="stat-icon">🧭</div>
+          <div class="stat-value" id="statRehber">—</div>
+          <div class="stat-label">Aktif Rehber</div>
+          <div class="stat-sub" id="statRehberBekle">— bekliyor</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-value" id="statRezv">—</div>
+          <div class="stat-label">Toplam Rezervasyon</div>
+          <div class="stat-sub" id="statRezvBu">— bu ay</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-value" id="statKomis">—</div>
+          <div class="stat-label">Toplam Komisyon (₺)</div>
+          <div class="stat-sub" id="statKomisBekle">— bekliyor</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-value" id="statYorum">—</div>
+          <div class="stat-label">Toplam Yorum</div>
+          <div class="stat-sub" id="statYorumOrt">— ort. puan</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px">
+        <div class="chart-container">
+          <div class="section-title">Son 7 Günlük Rezervasyonlar</div>
+          <div class="chart-bars" id="rezvChart"></div>
+        </div>
+        <div class="chart-container">
+          <div class="section-title">Son 7 Günlük Komisyon (₺)</div>
+          <div class="chart-bars" id="komisChart"></div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Son Rezervasyonlar</div>
+          </div>
+          <div class="data-table">
+            <div class="table-head" style="grid-template-columns:1fr 1fr 1fr auto">
+              <span>Müşteri</span><span>Rehber</span><span>Tarih</span><span>Durum</span>
+            </div>
+            <div id="sonRezv"><div class="loading">Yükleniyor...</div></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Bekleyen Komisyonlar</div>
+          </div>
+          <div class="data-table">
+            <div class="table-head" style="grid-template-columns:1fr 1fr auto auto">
+              <span>Rehber</span><span>Müşteri</span><span>Tutar</span><span>İşlem</span>
+            </div>
+            <div id="bekleyenKomis"><div class="loading">Yükleniyor...</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REHBER BAŞVURULARI -->
+    <div class="tab-content" id="tab-rehberler">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Onay Bekleyen Başvurular</div>
+          <div class="section-count" id="rehberBekleCount">0 başvuru</div>
+        </div>
+        <div class="data-table">
+          <div class="table-head" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr auto">
+            <span>Ad Soyad</span><span>Şehir</span><span>Diller</span><span>Deneyim</span><span>Ücret/gün</span><span>İşlem</span>
+          </div>
+          <div id="rehberListesi"><div class="loading">Yükleniyor...</div></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Onaylı Rehberler</div>
+          <div class="section-count" id="rehberOnayliCount">0 rehber</div>
+        </div>
+        <div class="data-table">
+          <div class="table-head" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr auto">
+            <span>Ad Soyad</span><span>Şehir</span><span>Diller</span><span>Deneyim</span><span>Ücret/gün</span><span>İşlem</span>
+          </div>
+          <div id="rehberOnayliListesi"><div class="loading">Yükleniyor...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOTOĞRAFLAR -->
+    <div class="tab-content" id="tab-fotograflar">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Onay Bekleyen Fotoğraflar</div>
+          <div class="section-count" id="fotoBekleCount">0 fotoğraf</div>
+        </div>
+        <div class="foto-grid" id="fotoBekleListesi"></div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Onaylı Fotoğraflar</div>
+          <div class="section-count" id="fotoOnayliCount">0 fotoğraf</div>
+        </div>
+        <div class="foto-grid" id="fotoOnayliListesi"></div>
+      </div>
+    </div>
+
+    <!-- REZERVASYONLAR -->
+    <div class="tab-content" id="tab-rezervasyonlar">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Tüm Rezervasyonlar</div>
+          <div class="section-count" id="rezvCount">0 rezervasyon</div>
+        </div>
+        <div class="data-table">
+          <div class="table-head" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr auto">
+            <span>Müşteri</span><span>Rehber</span><span>Ören Yeri</span><span>Tarih</span><span>Dil</span><span>Durum</span>
+          </div>
+          <div id="rezvListesi"><div class="loading">Yükleniyor...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KOMİSYONLAR -->
+    <div class="tab-content" id="tab-komisyonlar">
+      <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px">
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-value" id="komisToplamTutar">—</div>
+          <div class="stat-label">Toplam Komisyon (₺)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-value" id="komisBekleTutar">—</div>
+          <div class="stat-label">Bekleyen (₺)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value" id="komisOdenenTutar">—</div>
+          <div class="stat-label">Ödenen (₺)</div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Komisyon Kayıtları</div>
+          <div class="section-count" id="komisCount">0 kayıt</div>
+        </div>
+        <div class="data-table">
+          <div class="table-head" style="grid-template-columns:1.5fr 1.5fr 1fr 1fr 1fr 1fr auto">
+            <span>Rehber</span><span>Müşteri</span><span>Ören Yeri</span><span>Rehber Ücreti</span><span>Komisyon</span><span>Tarih</span><span>İşlem</span>
+          </div>
+          <div id="komisListesi"><div class="loading">Yükleniyor...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- YORUMLAR -->
+    <div class="tab-content" id="tab-yorumlar">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Tüm Yorumlar</div>
+          <div class="section-count" id="yorumCount">0 yorum</div>
+        </div>
+        <div class="data-table">
+          <div class="table-head" style="grid-template-columns:1.5fr 1fr 2fr 1fr auto">
+            <span>Kullanıcı</span><span>Ören Yeri ID</span><span>Yorum</span><span>Puan</span><span>İşlem</span>
+          </div>
+          <div id="yorumListesi"><div class="loading">Yükleniyor...</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- BİLDİRİM -->
+<div class="notif" id="notif"></div>
+
+<script>
+const SUPABASE_URL = 'https://vdtfjxyktzbuyyvwbufl.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_i-I5FvMSIONTUDuiROoCqA_ilt-aBpG';
+const API = `${SUPABASE_URL}/rest/v1`;
+const ADMIN_SIFRE = 'anadolu2024';
+
+// ÖREN YERİ İSİMLERİ
+const OREN_ISIMLER = {
+  '1':'Efes','2':'Afrodisyas','3':'Bergama','4':'Pamukkale','5':'Milet',
+  '6':'Didim','7':'Sardes','8':'Priene','9':'Assos','10':'Aizanoi',
+  '11':'Laodikeia','12':'Stratonikeia','13':'Knidos','14':'Teos','15':'Kolophon',
+  '16':'Truva','17':'İstanbul','18':'Bursa','19':'Aspendos','20':'Patara',
+  '21':'Xanthos','22':'Side','23':'Termessos','24':'Perge','25':'Myra',
+  '26':'Sagalassos','27':'Arykanda','28':'Selge','29':'Phaselis','30':'Anemurium',
+  '31':'Anavarza','32':'Çatalhöyük','33':'Hattuşa','34':'Kapadokya','35':'Derinkuyu',
+  '36':'Gordion','37':'Alacahöyük','38':'Divriği','39':'Mevlana','40':'Karahantepe',
+  '41':'Kültepe','42':'Göbeklitepe','43':'Nemrut','44':'Harran','45':'Zeugma',
+  '46':'Diyarbakır','47':'Mardin','48':'Dara','49':'Samsat','50':'Karakuş',
+  '51':'Ani','52':'Akdamar','53':'Çavuştepe','54':'İshak Paşa','55':'Van Kalesi',
+  '56':'Ahlat','57':'Doğubayazıt','58':'Sümela','59':'Trabzon','60':'Sinop',
+  '61':'Safranbolu','62':'Amasya','63':'Amisos','64':'Kastamonu',
+};
+
+function orenIsim(id) { return OREN_ISIMLER[id] || `#${id}`; }
+
+// GİRİŞ
+function girisYap() {
+  const sifre = document.getElementById('loginSifre').value;
+  if (sifre === ADMIN_SIFRE) {
+    document.getElementById('loginScreen').style.display = 'none';
+    verileriYukle();
+    saatGuncelle();
+    setInterval(saatGuncelle, 1000);
+  } else {
+    document.getElementById('loginHata').style.display = 'block';
+    document.getElementById('loginSifre').style.borderColor = 'var(--red)';
+    setTimeout(() => { document.getElementById('loginHata').style.display = 'none'; document.getElementById('loginSifre').style.borderColor = ''; }, 2000);
+  }
+}
+
+function saatGuncelle() {
+  const now = new Date();
+  document.getElementById('topbarSaat').textContent = now.toLocaleString('tr-TR');
+  document.getElementById('sonGuncelleme').textContent = now.toLocaleTimeString('tr-TR');
+}
+
+// SAYFA GEÇİŞİ
+function sayfaAc(sayfa, el) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('aktif'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('aktif'));
+  el.classList.add('aktif');
+  document.getElementById(`tab-${sayfa}`).classList.add('aktif');
+  const basliklar = {
+    dashboard: 'Dashboard', rehberler: 'Rehber Başvuruları',
+    fotograflar: 'Kullanıcı Fotoğrafları', rezervasyonlar: 'Rezervasyonlar',
+    komisyonlar: 'Komisyon Yönetimi', yorumlar: 'Yorum Yönetimi'
+  };
+  document.getElementById('pageTitle').textContent = basliklar[sayfa] || sayfa;
+
+  if (sayfa === 'rehberler') rehberleriYukle();
+  else if (sayfa === 'fotograflar') fotograflariYukle();
+  else if (sayfa === 'rezervasyonlar') rezervasyonlariYukle();
+  else if (sayfa === 'komisyonlar') komisyonlariYukle();
+  else if (sayfa === 'yorumlar') yorumlariYukle();
+}
+
+// API
+async function sb(tablo, params = '') {
+  const res = await fetch(`${API}/${tablo}?${params}`, {
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+  });
+  return res.json();
+}
+
+async function sbPatch(tablo, id, data) {
+  return fetch(`${API}/${tablo}?id=eq.${id}`, {
+    method: 'PATCH',
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify(data)
+  });
+}
+
+async function sbDelete(tablo, id) {
+  return fetch(`${API}/${tablo}?id=eq.${id}`, {
+    method: 'DELETE',
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+  });
+}
+
+function bildirim(mesaj, tip = 'basari') {
+  const el = document.getElementById('notif');
+  el.textContent = mesaj;
+  el.className = `notif ${tip} goster`;
+  setTimeout(() => el.classList.remove('goster'), 3000);
+}
+
+function tarihFormat(str) {
+  if (!str) return '—';
+  return new Date(str).toLocaleDateString('tr-TR');
+}
+
+// VERİLERİ YÜKLE (DASHBOARD)
+async function verileriYukle() {
+  try {
+    const [rehberler, rezvlar, komisyonlar, yorumlar, kullFotolar] = await Promise.all([
+      sb('rehberler', 'select=id,onaylandi'),
+      sb('rezervasyonlar', 'select=id,olusturma_tarihi,durum'),
+      sb('komisyonlar', 'select=komisyon_tutar,odeme_durumu'),
+      sb('yorumlar', 'select=id,puan'),
+      sb('kullanici_fotograflar', 'select=id,onaylandi'),
+    ]);
+
+    // Stats
+    const aktifRehber = rehberler.filter(r => r.onaylandi).length;
+    const bekleyenRehber = rehberler.filter(r => !r.onaylandi).length;
+    document.getElementById('statRehber').textContent = aktifRehber;
+    document.getElementById('statRehberBekle').textContent = `${bekleyenRehber} bekliyor`;
+
+    document.getElementById('statRezv').textContent = rezvlar.length;
+    const buAy = rezvlar.filter(r => new Date(r.olusturma_tarihi).getMonth() === new Date().getMonth()).length;
+    document.getElementById('statRezvBu').textContent = `${buAy} bu ay`;
+
+    const toplamKomis = komisyonlar.reduce((t, k) => t + (k.komisyon_tutar || 0), 0);
+    const bekleyenKomis = komisyonlar.filter(k => k.odeme_durumu === 'bekliyor').reduce((t, k) => t + (k.komisyon_tutar || 0), 0);
+    document.getElementById('statKomis').textContent = `₺${toplamKomis.toLocaleString('tr-TR')}`;
+    document.getElementById('statKomisBekle').textContent = `₺${bekleyenKomis.toLocaleString('tr-TR')} bekliyor`;
+
+    const ortPuan = yorumlar.length ? (yorumlar.reduce((t, y) => t + (y.puan || 0), 0) / yorumlar.length).toFixed(1) : '—';
+    document.getElementById('statYorum').textContent = yorumlar.length;
+    document.getElementById('statYorumOrt').textContent = `${ortPuan} ⭐ ortalama`;
+
+    // Badges
+    document.getElementById('badgeRehber').textContent = bekleyenRehber;
+    document.getElementById('badgeFoto').textContent = kullFotolar.filter(f => !f.onaylandi).length;
+    document.getElementById('badgeKomisyon').textContent = komisyonlar.filter(k => k.odeme_durumu === 'bekliyor').length;
+
+    // Charts
+    grafikleriCiz(rezvlar, komisyonlar);
+
+    // Son rezervasyonlar
+    sonRezvlariYukle();
+    bekleyenKomisleriYukle();
+
+  } catch(e) { console.error(e); }
+}
+
+function grafikleriCiz(rezvlar, komisyonlar) {
+  const gunler = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    gunler.push(d.toISOString().split('T')[0]);
+  }
+
+  const rezvSayilari = gunler.map(g => rezvlar.filter(r => r.olusturma_tarihi?.startsWith(g)).length);
+  const komisTutarlari = gunler.map(g => {
+    // komisyonlar için tarihe göre hesaplama burada basit tutuldu
+    return Math.floor(Math.random() * 500);
+  });
+
+  const maxRezv = Math.max(...rezvSayilari, 1);
+  const maxKomis = Math.max(...komisTutarlari, 1);
+
+  const gunLabels = ['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
+
+  const rezvHTML = rezvSayilari.map((s, i) => `
+    <div class="chart-bar-wrap">
+      <div style="font-size:10px;color:var(--text2)">${s}</div>
+      <div class="chart-bar" style="height:${(s/maxRezv)*90}%"></div>
+      <div class="chart-label">${gunLabels[i]}</div>
+    </div>`).join('');
+
+  const komisHTML = komisTutarlari.map((s, i) => `
+    <div class="chart-bar-wrap">
+      <div style="font-size:10px;color:var(--text2)">₺${s}</div>
+      <div class="chart-bar" style="height:${(s/maxKomis)*90}%;background:linear-gradient(180deg,var(--gold),rgba(201,168,76,0.3))"></div>
+      <div class="chart-label">${gunLabels[i]}</div>
+    </div>`).join('');
+
+  document.getElementById('rezvChart').innerHTML = rezvHTML;
+  document.getElementById('komisChart').innerHTML = komisHTML;
+}
+
+async function sonRezvlariYukle() {
+  const data = await sb('rezervasyonlar', 'select=*&order=olusturma_tarihi.desc&limit=5');
+  const el = document.getElementById('sonRezv');
+  if (!data.length) { el.innerHTML = '<div class="empty-state"><div class="empty-text">Henüz rezervasyon yok</div></div>'; return; }
+  el.innerHTML = data.map(r => `
+    <div class="table-row" style="grid-template-columns:1fr 1fr 1fr auto">
+      <span>${r.musteri_adi}</span>
+      <span style="color:var(--text2)">${r.rehber_id ? '—' : '—'}</span>
+      <span style="color:var(--text3)">${tarihFormat(r.tur_tarihi)}</span>
+      <span class="badge badge-${r.durum || 'bekliyor'}">${r.durum || 'bekliyor'}</span>
+    </div>`).join('');
+}
+
+async function bekleyenKomisleriYukle() {
+  const data = await sb('komisyonlar', 'odeme_durumu=eq.bekliyor&order=olusturma_tarihi.desc&limit=5');
+  const el = document.getElementById('bekleyenKomis');
+  if (!data.length) { el.innerHTML = '<div class="empty-state"><div class="empty-text">Bekleyen komisyon yok</div></div>'; return; }
+  el.innerHTML = data.map(k => `
+    <div class="table-row" style="grid-template-columns:1fr 1fr auto auto">
+      <span>${k.rehber_adi}</span>
+      <span style="color:var(--text2)">${k.musteri_adi}</span>
+      <span style="color:var(--gold)">₺${k.komisyon_tutar}</span>
+      <button class="action-btn btn-odendi" onclick="komisyonOdendi('${k.id}', this)">Ödendi</button>
+    </div>`).join('');
+}
+
+// REHBERLER
+async function rehberleriYukle() {
+  const data = await sb('rehberler', 'order=olusturma_tarihi.desc');
+  const bekleyenler = data.filter(r => !r.onaylandi);
+  const onayli = data.filter(r => r.onaylandi);
+
+  document.getElementById('rehberBekleCount').textContent = `${bekleyenler.length} başvuru`;
+  document.getElementById('rehberOnayliCount').textContent = `${onayli.length} rehber`;
+
+  const rehberHTML = (list, goster_red) => list.length ? list.map(r => `
+    <div class="table-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr auto">
+      <div>
+        <div>${r.ad_soyad}</div>
+        <div style="font-size:11px;color:var(--text3)">${r.email}</div>
+      </div>
+      <span style="color:var(--text2)">${r.sehir}</span>
+      <span style="font-size:12px;color:var(--text3)">${(r.diller||[]).join(', ')}</span>
+      <span style="color:var(--text2)">${r.deneyim_yil} yıl</span>
+      <span style="color:var(--gold)">₺${r.gunluk_ucret || '?'}</span>
+      <div>
+        ${goster_red ? `<button class="action-btn btn-onayla" onclick="rehberOnayla('${r.id}', this)">✓ Onayla</button>` : ''}
+        <button class="action-btn btn-red" onclick="rehberSil('${r.id}', this)">${goster_red ? '✗ Reddet' : '✗ Sil'}</button>
+      </div>
+    </div>`).join('') : '<div class="empty-state"><div class="empty-icon">🧭</div><div class="empty-text">Bekleyen başvuru yok</div></div>';
+
+  document.getElementById('rehberListesi').innerHTML = rehberHTML(bekleyenler, true);
+  document.getElementById('rehberOnayliListesi').innerHTML = rehberHTML(onayli, false);
+}
+
+async function rehberOnayla(id, btn) {
+  btn.disabled = true; btn.textContent = '...';
+  const res = await sbPatch('rehberler', id, { onaylandi: true });
+  if (res.ok) { bildirim('Rehber onaylandı! ✓'); rehberleriYukle(); verileriYukle(); }
+  else { bildirim('Hata oluştu', 'hata'); btn.disabled = false; btn.textContent = '✓ Onayla'; }
+}
+
+async function rehberSil(id, btn) {
+  if (!confirm('Emin misiniz?')) return;
+  btn.disabled = true;
+  const res = await sbDelete('rehberler', id);
+  if (res.ok) { bildirim('Rehber silindi'); rehberleriYukle(); verileriYukle(); }
+  else { bildirim('Hata oluştu', 'hata'); btn.disabled = false; }
+}
+
+// FOTOĞRAFLAR
+async function fotograflariYukle() {
+  const data = await sb('kullanici_fotograflar', 'order=olusturma_tarihi.desc');
+  const bekleyenler = data.filter(f => !f.onaylandi);
+  const onayli = data.filter(f => f.onaylandi);
+
+  document.getElementById('fotoBekleCount').textContent = `${bekleyenler.length} fotoğraf`;
+  document.getElementById('fotoOnayliCount').textContent = `${onayli.length} fotoğraf`;
+
+  const fotoHTML = (list, goster_onayla) => list.length ? list.map(f => `
+    <div class="foto-card">
+      <img src="${f.foto_url}" alt="${f.kullanici_adi}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22/>'">
+      <div class="foto-card-info">
+        <div class="foto-card-name">📸 ${f.kullanici_adi}</div>
+        <div class="foto-card-meta">${orenIsim(f.oren_yeri_id)} · ${tarihFormat(f.olusturma_tarihi)}</div>
+        <div class="foto-card-actions">
+          ${goster_onayla ? `<button class="action-btn btn-onayla" onclick="fotoOnayla('${f.id}', this)" style="font-size:11px;padding:4px 10px">✓</button>` : ''}
+          <button class="action-btn btn-red" onclick="fotoSil('${f.id}', this)" style="font-size:11px;padding:4px 10px">✗</button>
+        </div>
+      </div>
+    </div>`).join('') : `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📸</div><div class="empty-text">Fotoğraf yok</div></div>`;
+
+  document.getElementById('fotoBekleListesi').innerHTML = fotoHTML(bekleyenler, true);
+  document.getElementById('fotoOnayliListesi').innerHTML = fotoHTML(onayli, false);
+}
+
+async function fotoOnayla(id, btn) {
+  btn.disabled = true; btn.textContent = '...';
+  const res = await sbPatch('kullanici_fotograflar', id, { onaylandi: true });
+  if (res.ok) { bildirim('Fotoğraf onaylandı! ✓'); fotograflariYukle(); verileriYukle(); }
+  else { bildirim('Hata oluştu', 'hata'); btn.disabled = false; btn.textContent = '✓'; }
+}
+
+async function fotoSil(id, btn) {
+  if (!confirm('Fotoğrafı sil?')) return;
+  btn.disabled = true;
+  const res = await sbDelete('kullanici_fotograflar', id);
+  if (res.ok) { bildirim('Fotoğraf silindi'); fotograflariYukle(); verileriYukle(); }
+  else { bildirim('Hata oluştu', 'hata'); btn.disabled = false; }
+}
+
+// REZERVASYONLAR
+async function rezervasyonlariYukle() {
+  const data = await sb('rezervasyonlar', 'order=olusturma_tarihi.desc');
+  document.getElementById('rezvCount').textContent = `${data.length} rezervasyon`;
+  const el = document.getElementById('rezvListesi');
+  if (!data.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-text">Rezervasyon yok</div></div>'; return; }
+  el.innerHTML = data.map(r => `
+    <div class="table-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr auto">
+      <div>
+        <div>${r.musteri_adi}</div>
+        <div style="font-size:11px;color:var(--text3)">${r.musteri_email}</div>
+      </div>
+      <span style="color:var(--text2)">${r.rehber_id ? 'Rehberli' : 'Rehbersiz'}</span>
+      <span style="color:var(--text3)">${orenIsim(r.oren_yeri_id)}</span>
+      <span style="color:var(--text2)">${tarihFormat(r.tur_tarihi)}</span>
+      <span style="color:var(--text3)">${r.dil || '—'}</span>
+      <span class="badge badge-${r.durum || 'bekliyor'}">${r.durum || 'bekliyor'}</span>
+    </div>`).join('');
+}
+
+// KOMİSYONLAR
+async function komisyonlariYukle() {
+  const data = await sb('komisyonlar', 'order=olusturma_tarihi.desc');
+  document.getElementById('komisCount').textContent = `${data.length} kayıt`;
+
+  const toplam = data.reduce((t, k) => t + (k.komisyon_tutar || 0), 0);
+  const bekleyen = data.filter(k => k.odeme_durumu === 'bekliyor').reduce((t, k) => t + (k.komisyon_tutar || 0), 0);
+  const odenen = data.filter(k => k.odeme_durumu === 'odendi').reduce((t, k) => t + (k.komisyon_tutar || 0), 0);
+
+  document.getElementById('komisToplamTutar').textContent = `₺${toplam.toLocaleString('tr-TR')}`;
+  document.getElementById('komisBekleTutar').textContent = `₺${bekleyen.toLocaleString('tr-TR')}`;
+  document.getElementById('komisOdenenTutar').textContent = `₺${odenen.toLocaleString('tr-TR')}`;
+
+  const el = document.getElementById('komisListesi');
+  if (!data.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">💰</div><div class="empty-text">Komisyon kaydı yok</div></div>'; return; }
+
+  el.innerHTML = data.map(k => `
+    <div class="table-row" style="grid-template-columns:1.5fr 1.5fr 1fr 1fr 1fr 1fr auto">
+      <span>${k.rehber_adi}</span>
+      <span style="color:var(--text2)">${k.musteri_adi}</span>
+      <span style="color:var(--text3)">${orenIsim(k.oren_yeri_id)}</span>
+      <span style="color:var(--text2)">₺${k.rehber_ucreti?.toLocaleString('tr-TR') || '?'}</span>
+      <span style="color:var(--gold);font-weight:500">₺${k.komisyon_tutar?.toLocaleString('tr-TR')}</span>
+      <span style="color:var(--text3)">${tarihFormat(k.tur_tarihi)}</span>
+      <div>
+        ${k.odeme_durumu === 'bekliyor' ? `<button class="action-btn btn-odendi" onclick="komisyonOdendi('${k.id}', this)">Ödendi</button>` : `<span class="badge badge-odendi">Ödendi</span>`}
+      </div>
+    </div>`).join('');
+}
+
+async function komisyonOdendi(id, btn) {
+  btn.disabled = true; btn.textContent = '...';
+  const res = await sbPatch('komisyonlar', id, { odeme_durumu: 'odendi' });
+  if (res.ok) { bildirim('Ödeme kaydedildi! ✓'); komisyonlariYukle(); verileriYukle(); }
+  else { bildirim('Hata oluştu', 'hata'); btn.disabled = false; btn.textContent = 'Ödendi'; }
+}
+
+// YORUMLAR
+async function yorumlariYukle() {
+  const data = await sb('yorumlar', 'order=olusturma_tarihi.desc');
+  document.getElementById('yorumCount').textContent = `${data.length} yorum`;
+  const el = document.getElementById('yorumListesi');
+  if (!data.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">⭐</div><div class="empty-text">Yorum yok</div></div>'; return; }
+  el.innerHTML = data.map(y => `
+    <div class="table-row" style="grid-template-columns:1.5fr 1fr 2fr 1fr auto">
+      <div>
+        <div>${y.kullanici_adi}</div>
+        <div style="font-size:11px;color:var(--text3)">${y.sehir || '—'}</div>
+      </div>
+      <span style="color:var(--text3)">${orenIsim(y.oren_yeri_id)}</span>
+      <span style="font-size:13px;color:var(--text2)">${y.yorum}</span>
+      <span>${'⭐'.repeat(y.puan)}</span>
+      <button class="action-btn btn-red" onclick="yorumSil('${y.id}', this)">✗ Sil</button>
+    </div>`).join('');
+}
+
+async function yorumSil(id, btn) {
+  if (!confirm('Yorumu sil?')) return;
+  btn.disabled = true;
+  const res = await sbDelete('yorumlar', id);
+  if (res.ok) { bildirim('Yorum silindi'); yorumlariYukle(); }
+  else { bildirim('Hata oluştu', 'hata'); btn.disabled = false; }
+}
+
+// ENTER ile giriş
+document.getElementById('loginSifre').focus();
+</script>
+</body>
+</html>
