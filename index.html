@@ -2239,7 +2239,7 @@ async function rezervasyonGonder() {
     // Rezervasyon oluştur
     const res = await fetch(`${SAPI}/rezervasyonlar`, {
       method: 'POST',
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
       body: JSON.stringify({
         rehber_id: aktifRehberId || null,
         musteri_adi: ad,
@@ -2254,43 +2254,34 @@ async function rezervasyonGonder() {
     });
 
     if (res.ok) {
-      const rezervData = await res.json();
-      const rezervId = rezervData[0]?.id;
-
       // Komisyon hesapla — rehber seçiliyse
-      if (aktifRehberId && rezervId) {
+      if (aktifRehberId) {
         try {
-          // Rehber bilgilerini al
           const rehberRes = await fetch(`${SAPI}/rehberler?id=eq.${aktifRehberId}&select=ad_soyad,gunluk_ucret`, {
             headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
           });
           const rehberler = await rehberRes.json();
           const rehber = rehberler[0];
-
           if (rehber && rehber.gunluk_ucret) {
-            const komisyonOrani = 15;
-            const komisyonTutar = Math.round(rehber.gunluk_ucret * komisyonOrani / 100);
-
+            const komisyonTutar = Math.round(rehber.gunluk_ucret * 15 / 100);
             await fetch(`${SAPI}/komisyonlar`, {
               method: 'POST',
               headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
               body: JSON.stringify({
-                rezervasyon_id: rezervId,
                 rehber_id: aktifRehberId,
                 rehber_adi: rehber.ad_soyad,
                 musteri_adi: ad,
                 oren_yeri_id: aktifOrenYeriIdRehber,
                 tur_tarihi: tarih,
                 rehber_ucreti: rehber.gunluk_ucret,
-                komisyon_orani: komisyonOrani,
+                komisyon_orani: 15,
                 komisyon_tutar: komisyonTutar,
                 odeme_durumu: 'bekliyor'
               })
             });
           }
-        } catch(e) { console.log('Komisyon kaydedilemedi:', e); }
+        } catch(e) { console.log('Komisyon kaydı:', e); }
       }
-
       document.getElementById('rezervForm').style.display = 'none';
       document.getElementById('rezervBasarili').style.display = 'block';
     } else { throw new Error(); }
