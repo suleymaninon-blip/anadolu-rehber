@@ -1029,21 +1029,36 @@ async function rehberleriYukle() {
   const rehberHTML = (list, goster_red) => list.length ? list.map(r => `
     <div class="table-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr auto">
       <div>
-        <div>${r.ad_soyad}</div>
+        <div>${r.ad_soyad} ${r.one_cikan ? '<span style="color:var(--gold)">⭐</span>' : ''}</div>
         <div style="font-size:11px;color:var(--text3)">${r.email}</div>
       </div>
       <span style="color:var(--text2)">${r.sehir}</span>
       <span style="font-size:12px;color:var(--text3)">${(r.diller||[]).join(', ')}</span>
       <span style="color:var(--text2)">${r.deneyim_yil} yıl</span>
-      <span style="color:var(--gold)">₺${r.gunluk_ucret || '?'}</span>
+      <div>
+        <div style="color:var(--gold);font-size:13px">${r.ortalama_puan > 0 ? '★ '+parseFloat(r.ortalama_puan).toFixed(1) : '—'}</div>
+        <div style="font-size:11px;color:var(--text3)">${r.yorum_sayisi || 0} yorum · ${r.tamamlanan_tur || 0} tur</div>
+        <div style="color:var(--gold);font-size:11px">₺${r.gunluk_ucret || '?'}/gün</div>
+      </div>
       <div>
         ${goster_red ? `<button class="action-btn btn-onayla" onclick="rehberOnayla('${r.id}', this)">✓ Onayla</button>` : ''}
+        <button class="action-btn" style="background:rgba(201,168,76,0.1);color:var(--gold);border-color:rgba(201,168,76,0.3)" onclick="oneCikarToggle('${r.id}', ${r.one_cikan}, this)">${r.one_cikan ? '★ Kaldır' : '☆ Öne Çıkar'}</button>
         <button class="action-btn btn-red" onclick="rehberSil('${r.id}', this)">${goster_red ? '✗ Reddet' : '✗ Sil'}</button>
       </div>
     </div>`).join('') : '<div class="empty-state"><div class="empty-icon">🧭</div><div class="empty-text">Bekleyen başvuru yok</div></div>';
 
   document.getElementById('rehberListesi').innerHTML = rehberHTML(bekleyenler, true);
   document.getElementById('rehberOnayliListesi').innerHTML = rehberHTML(onayli, false);
+}
+
+async function oneCikarToggle(id, mevcutDurum, btn) {
+  btn.disabled = true;
+  const yeniDurum = !mevcutDurum;
+  const res = await sbPatch('rehberler', id, { one_cikan: yeniDurum });
+  if (res.ok) {
+    bildirim(yeniDurum ? 'Rehber öne çıkarıldı! ⭐' : 'Öne çıkarma kaldırıldı');
+    rehberleriYukle();
+  } else { bildirim('Hata oluştu', 'hata'); btn.disabled = false; }
 }
 
 async function rehberOnayla(id, btn) {
