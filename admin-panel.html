@@ -537,7 +537,11 @@
       <span class="nav-badge gold" id="badgeKomisyon">0</span>
     </div>
     <div class="nav-item" onclick="sayfaAc('yorumlar', this)">
-      ⭐ Yorumlar
+      ⭐ Ören Yeri Yorumları
+    </div>
+    <div class="nav-item" onclick="sayfaAc('rehberyorumlari', this)">
+      🧭 Rehber Yorumları
+      <span class="nav-badge" id="badgeRehberYorum">0</span>
     </div>
   </div>
   <div class="sidebar-footer">
@@ -719,6 +723,34 @@
       </div>
     </div>
 
+    <!-- REHBER YORUMLARI -->
+    <div class="tab-content" id="tab-rehberyorumlari">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Onay Bekleyen Rehber Yorumları</div>
+          <div class="section-count" id="rehberYorumBekleCount">0 yorum</div>
+        </div>
+        <div class="data-table">
+          <div class="table-head" style="grid-template-columns:1.5fr 1fr 2fr 1fr auto">
+            <span>Müşteri</span><span>Rehber</span><span>Yorum</span><span>Puan</span><span>İşlem</span>
+          </div>
+          <div id="rehberYorumBekleListesi"><div class="loading">Yükleniyor...</div></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Onaylı Rehber Yorumları</div>
+          <div class="section-count" id="rehberYorumOnayliCount">0 yorum</div>
+        </div>
+        <div class="data-table">
+          <div class="table-head" style="grid-template-columns:1.5fr 1fr 2fr 1fr auto">
+            <span>Müşteri</span><span>Rehber</span><span>Yorum</span><span>Puan</span><span>İşlem</span>
+          </div>
+          <div id="rehberYorumOnayliListesi"><div class="loading">Yükleniyor...</div></div>
+        </div>
+      </div>
+    </div>
+
     <!-- YORUMLAR -->
     <div class="tab-content" id="tab-yorumlar">
       <div class="section">
@@ -871,6 +903,7 @@ function sayfaAc(sayfa, el) {
   else if (sayfa === 'fotograflar') fotograflariYukle();
   else if (sayfa === 'rezervasyonlar') rezervasyonlariYukle();
   else if (sayfa === 'komisyonlar') komisyonlariYukle();
+  else if (sayfa === 'rehberyorumlari') rehberYorumlariniYukle();
   else if (sayfa === 'yorumlar') yorumlariYukle();
 }
 
@@ -1137,8 +1170,61 @@ async function rezervasyonlariYukle() {
       <div>
         ${r.durum !== 'onaylandi' ? `<button class="action-btn btn-onayla" onclick="rezvDurumGuncelle('${r.id}', 'onaylandi', this)">✓</button>` : ''}
         ${r.durum !== 'iptal' ? `<button class="action-btn btn-red" onclick="rezvDurumGuncelle('${r.id}', 'iptal', this)">✗</button>` : ''}
+        ${r.durum === 'onaylandi' && !r.degerlendirme_gonderildi ? `<button class="action-btn btn-odendi" onclick="turTamamlandi('${r.id}', '${r.musteri_email}', '${r.musteri_adi}', '${r.rehber_id || ''}', this)" style="margin-top:4px">✓ Tur Tamamlandı</button>` : ''}
+        ${r.degerlendirme_gonderildi ? `<span style="font-size:11px;color:var(--green)">✓ Değerlendirme gönderildi</span>` : ''}
       </div>
     </div>`).join('');
+}
+
+async function turTamamlandi(rezvId, musteriEmail, musteriAdi, rehberId, btn) {
+  if (!musteriEmail || musteriEmail === 'undefined') {
+    bildirim('Bu rezervasyonda e-posta adresi yok!', 'hata');
+    return;
+  }
+  btn.disabled = true; btn.textContent = '...';
+
+  // Benzersiz token üret
+  const token = rezvId.replace(/-/g,'').substring(0,16) + Date.now().toString(36);
+
+  try {
+    // Token'ı kaydet
+    const res = await sbPatch('rezervasyonlar', rezvId, {
+      degerlendirme_token: token,
+      degerlendirme_gonderildi: true,
+      durum: 'tamamlandi'
+    });
+
+    if (!res.ok) throw new Error();
+
+    // Değerlendirme linki
+    const link = `https://suleymaninon-blip.github.io/anadolu-rehber/?degerlendirme=${token}`;
+
+    // Mail gönder
+    const mailHtml = `
+      <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;padding:40px 20px;background:#FAFAF8;color:#1A1A18">
+        <div style="text-align:center;margin-bottom:32px">
+          <h1 style="font-family:Georgia,serif;font-size:28px;color:#B85C2A;letter-spacing:4px;margin:0">ANADOLU</h1>
+          <p style="font-size:12px;color:#9B9B97;letter-spacing:2px;text-transform:uppercase;margin:4px 0 0">Tarih Rehberi</p>
+        </div>
+        <div style="background:#fff;border:1px solid #E8E6E0;border-radius:8px;padding:32px">
+          <h2 style="font-size:22px;color:#1A1A18;margin:0 0 12px">Turunuzu Nasıl Buldunuz?</h2>
+          <p style="color:#6B6B67;margin:0 0 24px">Sayın ${musteriAdi}, turunuzun tamamlandığını öğrendik! Rehberinizi ve deneyiminizi değerlendirmeniz hem diğer gezginlere hem de rehberimizin gelişimine büyük katkı sağlayacak.</p>
+          <div style="text-align:center;margin:32px 0">
+            <a href="${link}" style="background:#B85C2A;color:#fff;padding:16px 40px;border-radius:8px;text-decoration:none;font-size:16px;display:inline-block">⭐ Rehberimi Değerlendir</a>
+          </div>
+          <p style="color:#9B9B97;font-size:12px;text-align:center">Bu link 30 gün geçerlidir. Değerlendirme tamamen isteğe bağlıdır.</p>
+        </div>
+        <p style="text-align:center;color:#9B9B97;font-size:12px;margin-top:24px">© 2026 Anadolu Rehberi · Türkiye'nin Tarihi Mirası</p>
+      </div>`;
+
+    await mailGonder(musteriEmail, '⭐ Turunuzu Değerlendirin — Anadolu Rehberi', mailHtml);
+    bildirim('Tur tamamlandı, değerlendirme maili gönderildi! ✓');
+    rezervasyonlariYukle();
+  } catch(e) {
+    bildirim('Hata oluştu', 'hata');
+    btn.disabled = false;
+    btn.textContent = '✓ Tur Tamamlandı';
+  }
 }
 
 async function rezvDurumGuncelle(id, durum, btn) {
@@ -1209,6 +1295,59 @@ async function komisyonOdendi(id, btn) {
   const res = await sbPatch('komisyonlar', id, { odeme_durumu: 'odendi' });
   if (res.ok) { bildirim('Ödeme kaydedildi! ✓'); komisyonlariYukle(); verileriYukle(); }
   else { bildirim('Hata oluştu', 'hata'); btn.disabled = false; btn.textContent = 'Ödendi'; }
+}
+
+async function rehberYorumlariniYukle() {
+  const data = await sb('rehber_yorumlar', 'order=olusturma_tarihi.desc');
+  const bekleyenler = data.filter(y => !y.onaylandi);
+  const onayli = data.filter(y => y.onaylandi);
+
+  document.getElementById('rehberYorumBekleCount').textContent = `${bekleyenler.length} yorum`;
+  document.getElementById('rehberYorumOnayliCount').textContent = `${onayli.length} yorum`;
+  document.getElementById('badgeRehberYorum').textContent = bekleyenler.length;
+
+  const yorumHTML = (list, goster_onayla) => list.length ? list.map(y => `
+    <div class="table-row" style="grid-template-columns:1.5fr 1fr 2fr 1fr auto">
+      <span>${y.musteri_adi}</span>
+      <span style="color:var(--text2)">${y.rehber_id?.substring(0,8) || '—'}...</span>
+      <span style="font-size:13px;color:var(--text2)">${y.yorum}</span>
+      <span>${'⭐'.repeat(y.puan)}</span>
+      <div>
+        ${goster_onayla ? `<button class="action-btn btn-onayla" onclick="rehberYorumOnayla('${y.id}', this)">✓</button>` : ''}
+        <button class="action-btn btn-red" onclick="rehberYorumSil('${y.id}', this)">✗</button>
+      </div>
+    </div>`).join('') : `<div class="empty-state"><div class="empty-text">Yorum yok</div></div>`;
+
+  document.getElementById('rehberYorumBekleListesi').innerHTML = yorumHTML(bekleyenler, true);
+  document.getElementById('rehberYorumOnayliListesi').innerHTML = yorumHTML(onayli, false);
+}
+
+async function rehberYorumOnayla(id, btn) {
+  btn.disabled = true; btn.textContent = '...';
+  const res = await sbPatch('rehber_yorumlar', id, { onaylandi: true });
+  if (res.ok) {
+    // Rehberin ortalama puanını güncelle
+    const yorumData = await sb('rehber_yorumlar', `id=eq.${id}`);
+    if (yorumData[0]) {
+      const rehberId = yorumData[0].rehber_id;
+      const tumYorumlar = await sb('rehber_yorumlar', `rehber_id=eq.${rehberId}&onaylandi=eq.true`);
+      const ortPuan = tumYorumlar.reduce((t, y) => t + y.puan, 0) / tumYorumlar.length;
+      await sbPatch('rehberler', rehberId, {
+        ortalama_puan: ortPuan.toFixed(2),
+        yorum_sayisi: tumYorumlar.length
+      });
+    }
+    bildirim('Yorum onaylandı! ✓');
+    rehberYorumlariniYukle();
+  } else { bildirim('Hata oluştu', 'hata'); btn.disabled = false; }
+}
+
+async function rehberYorumSil(id, btn) {
+  if (!confirm('Yorumu sil?')) return;
+  btn.disabled = true;
+  const res = await sbDelete('rehber_yorumlar', id);
+  if (res.ok) { bildirim('Yorum silindi'); rehberYorumlariniYukle(); }
+  else { bildirim('Hata oluştu', 'hata'); btn.disabled = false; }
 }
 
 // YORUMLAR
