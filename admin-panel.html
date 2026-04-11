@@ -833,7 +833,8 @@ function orenIsim(id) { return OREN_ISIMLER[id] || `#${id}`; }
 
 const ADMIN_SIFRE = 'anadolu2024';
 
-
+// GİRİŞ
+function girisYap() {
   const sifre = document.getElementById('loginSifre').value;
   if (sifre === ADMIN_SIFRE) {
     document.getElementById('loginScreen').style.display = 'none';
