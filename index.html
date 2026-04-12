@@ -2364,17 +2364,17 @@ Lütfen şu formatta bir tur planı oluştur:
 Plan samimi, heyecan verici ve pratik olsun. Türkiye'nin bu eşsiz tarihini ziyaretçiye sevdirsin.`;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://vdtfjxyktzbuyyvwbufl.supabase.co/functions/v1/tur-planlayici', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'apikey': SUPABASE_KEY
+      },
+      body: JSON.stringify({ prompt })
     });
     const data = await response.json();
-    const planMetni = data.content?.[0]?.text || 'Plan oluşturulamadı.';
+    const planMetni = data.plan || 'Plan oluşturulamadı.';
 
     document.getElementById('planSonucMetin').textContent = planMetni;
     document.getElementById('planSonuc').style.display = 'block';
