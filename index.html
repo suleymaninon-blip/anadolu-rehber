@@ -2874,38 +2874,22 @@ function yakinPillSec(el) {
   }
   liste.innerHTML = '<div style="color:#888;text-align:center;padding:20px">📡 Konum alınıyor…</div>';
   panel.classList.add('acik');
-  // Önce hızlı dene, olmazsa watchPosition ile tekrar dene
-  let konum_alindi = false;
-  const watcher = navigator.geolocation.watchPosition(
+  navigator.geolocation.getCurrentPosition(
     (pos) => {
-      if (konum_alindi) return;
-      konum_alindi = true;
-      navigator.geolocation.clearWatch(watcher);
       el.textContent = '📍';
       el.disabled = false;
       yakinHesapla(pos.coords.latitude, pos.coords.longitude);
     },
     (err) => {
-      navigator.geolocation.clearWatch(watcher);
       el.textContent = '📍';
       el.disabled = false;
       panel.classList.remove('acik');
-      let msg = 'Konum alınamadı.';
-      if (err.code === 1) msg = 'Konum izni reddedildi. Tarayıcı ayarlarından izin verin.';
+      let msg = 'Konum alınamadı. Tekrar deneyin.';
+      if (err.code === 1) msg = 'Konum izni reddedildi. iPhone Ayarlar → Gizlilik → Konum Servisleri → Safari Web Siteleri → İzin Ver';
       alert(msg);
     },
-    { timeout: 10000, enableHighAccuracy: false, maximumAge: 60000 }
+    { timeout: 8000, enableHighAccuracy: false, maximumAge: 300000 }
   );
-  // 12 saniye içinde gelmezse iptal et
-  setTimeout(() => {
-    if (!konum_alindi) {
-      navigator.geolocation.clearWatch(watcher);
-      el.textContent = '📍';
-      el.disabled = false;
-      panel.classList.remove('acik');
-      alert('Konum alınamadı. Tekrar deneyin.');
-    }
-  }, 12000);
 }
 
 function yakinPanelKapat() {
