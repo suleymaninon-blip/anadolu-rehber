@@ -2887,9 +2887,9 @@ function yakinPillSec(el) {
   };
   // iOS Safari için en uyumlu yöntem
   navigator.geolocation.getCurrentPosition(onSuccess, onError, {
-    enableHighAccuracy: false,
-    timeout: 30000,
-    maximumAge: 600000
+    enableHighAccuracy: true,
+    timeout: 12000,
+    maximumAge: 0
   });
 }
 
