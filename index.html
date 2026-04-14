@@ -2855,7 +2855,7 @@ function yakinOrenYerleri() {
       if (err.code === 3) msg = 'Konum zaman aşımına uğradı. Tekrar deneyin.';
       liste.innerHTML = `<div style="color:#e74c3c;text-align:center;padding:20px">${msg}</div>`;
     },
-    { timeout: 12000, enableHighAccuracy: true }
+    { timeout: 20000, enableHighAccuracy: false }
   );
 }
 
@@ -2888,7 +2888,7 @@ function yakinHesapla(kulLat, kulLon) {
   const en20 = sonuclar.slice(0, 20);
 
   liste.innerHTML = en20.map(({ yer, km }) => {
-    const ad = yerAdi(yer);
+    const ad = yerIsim(yer);
     const mesafeTxt = km < 1 ? `${Math.round(km*1000)} m` :
                       km < 10 ? `${km.toFixed(1)} km` :
                       `${Math.round(km)} km`;
