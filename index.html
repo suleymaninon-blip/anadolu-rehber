@@ -2874,32 +2874,23 @@ function yakinPillSec(el) {
   }
   liste.innerHTML = '<div style="color:#888;text-align:center;padding:20px">📡 Konum alınıyor…</div>';
   panel.classList.add('acik');
-  // Önce önbellekten dene (anında), olmazsa GPS bekle
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      el.textContent = '📍';
-      el.disabled = false;
-      yakinHesapla(pos.coords.latitude, pos.coords.longitude);
-    },
-    () => {
-      // Önbellek yoksa GPS ile dene
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          el.textContent = '📍';
-          el.disabled = false;
-          yakinHesapla(pos.coords.latitude, pos.coords.longitude);
-        },
-        (err) => {
-          el.textContent = '📍';
-          el.disabled = false;
-          panel.classList.remove('acik');
-          alert('Konum alınamadı. Tekrar deneyin.');
-        },
-        { timeout: 15000, enableHighAccuracy: false, maximumAge: 0 }
-      );
-    },
-    { timeout: 1000, enableHighAccuracy: false, maximumAge: Infinity }
-  );
+  const onSuccess = (pos) => {
+    el.textContent = '📍';
+    el.disabled = false;
+    yakinHesapla(pos.coords.latitude, pos.coords.longitude);
+  };
+  const onError = () => {
+    el.textContent = '📍';
+    el.disabled = false;
+    panel.classList.remove('acik');
+    alert('Konum alınamadı. Tekrar deneyin.');
+  };
+  // iOS Safari için en uyumlu yöntem
+  navigator.geolocation.getCurrentPosition(onSuccess, onError, {
+    enableHighAccuracy: false,
+    timeout: 30000,
+    maximumAge: 600000
+  });
 }
 
 function yakinPanelKapat() {
