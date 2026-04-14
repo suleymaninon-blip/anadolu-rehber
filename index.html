@@ -2861,6 +2861,37 @@ function yakinHesapla(kulLat, kulLon) {
   }).join('');
 }
 
+function yakinPillSec(el) {
+  const panel = document.getElementById('yakinPanel');
+  const liste = document.getElementById('yakinListesi');
+  el.textContent = '⏳';
+  el.disabled = true;
+  if (!navigator.geolocation) {
+    alert('Tarayıcınız konum özelliğini desteklemiyor.');
+    el.textContent = '📍';
+    el.disabled = false;
+    return;
+  }
+  liste.innerHTML = '<div style="color:#888;text-align:center;padding:20px">📡 Konum alınıyor…</div>';
+  panel.classList.add('acik');
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      el.textContent = '📍';
+      el.disabled = false;
+      yakinHesapla(pos.coords.latitude, pos.coords.longitude);
+    },
+    (err) => {
+      el.textContent = '📍';
+      el.disabled = false;
+      panel.classList.remove('acik');
+      let msg = 'Konum alınamadı.';
+      if (err.code === 1) msg = 'Konum izni reddedildi. Tarayıcı ayarlarından izin verin.';
+      alert(msg);
+    },
+    { timeout: 20000, enableHighAccuracy: false }
+  );
+}
+
 function yakinPanelKapat() {
   document.getElementById('yakinPanel').classList.remove('acik');
 }
