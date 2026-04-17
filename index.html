@@ -351,7 +351,7 @@
       <div class="header-saglar">
         <button id="dilBtn" onclick="dilDegistir()" style="width:36px;height:36px;border-radius:18px;border:0.5px solid #E8E6E0;background:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">🇬🇧</button>
         <button class="arama-ac-btn" onclick="aramaAc()">🔍</button>
-        <button class="arama-ac-btn" onclick="yakinPillSec(this)" id="yakinHeaderBtn" title="Yakınımdaki ören yerleri">📍</button>
+        <button class="arama-ac-btn" onclick="yakinHeaderTikla()" id="yakinHeaderBtn" title="Yakınımdaki ören yerleri">📍</button>
         <button class="harita-btn" onclick="haritaAc()">🗺 Harita</button>
       </div>
     </div>
@@ -2859,6 +2859,11 @@ function yakinHesapla(kulLat, kulLon) {
         <div class="mesafe-badge">📍 ${mesafeTxt}</div>
       </div>`;
   }).join('');
+}
+
+function yakinHeaderTikla() {
+  const el = document.getElementById('yakinHeaderBtn');
+  yakinPillSec(el);
 }
 
 function yakinPillSec(el) {
