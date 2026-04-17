@@ -424,6 +424,15 @@
         <div class="zi"><div class="zi-label" id="lSure">Süre</div><div class="zi-deger" id="dSure"></div></div>
       </div>
       <div class="bolum"><div class="bolum-baslik" id="lMed">Medeniyetler</div><div class="med-etiketler" id="dMed"></div></div>
+      <div class="bolum" id="efsanelerBolum" style="display:none">
+        <div class="bolum-baslik">⚡ Efsaneler & Destanlar</div>
+        <div id="efsaneIcerik" style="background:#fff;border-radius:14px;border:0.5px solid #E8E6E0;padding:16px;cursor:pointer" onclick="efsaneToggle()">
+          <div style="font-family:'Cinzel',serif;font-size:14px;color:#B85C2A;margin-bottom:10px" id="efsaneBaslik"></div>
+          <div style="font-size:14px;color:#4A4A48;line-height:1.8;white-space:pre-wrap;display:none" id="efsaneMetin"></div>
+          <div style="font-size:13px;color:#9B9B97;text-align:center;margin-top:4px" id="efsaneToggleBtn">▼ Efsaneyi Oku</div>
+        </div>
+      </div>
+
       <div class="bolum" id="unlulerBolum" style="display:none">
         <div class="bolum-baslik" id="lUnluler">Bu Topraklarda Yaşayanlar</div>
         <div class="unlu-scroll" id="unlulerScroll"></div>
@@ -1617,11 +1626,18 @@ function sekmeGec(sekme) {
   aktifSekme = sekme;
   document.getElementById('navKesif').classList.toggle('aktif', sekme === 'kesif');
   document.getElementById('navFavori').classList.toggle('aktif', sekme === 'favori');
-  if (sekme === 'favori') {
+  // Tüm ekranları kapat
+  if (sekme === 'kesif') {
+    document.getElementById('detayEkrani').classList.remove('acik');
+    document.getElementById('haritaEkrani').classList.remove('acik');
+    document.getElementById('favoriEkrani').classList.remove('acik');
+    document.getElementById('planEkran').classList.remove('acik');
+  } else if (sekme === 'favori') {
+    document.getElementById('detayEkrani').classList.remove('acik');
+    document.getElementById('haritaEkrani').classList.remove('acik');
+    document.getElementById('planEkran').classList.remove('acik');
     favoriEkraniGoster();
     document.getElementById('favoriEkrani').classList.add('acik');
-  } else {
-    document.getElementById('favoriEkrani').classList.remove('acik');
   }
 }
 
@@ -1783,7 +1799,8 @@ function detayAc(id) {
   document.getElementById('dBitis').textContent=yilGoster(y.bitis);
   document.getElementById('dSure').textContent=Math.abs(y.bitis-y.baslangic)+' '+t('yil');
   document.getElementById('dAciklama').textContent=yerAciklama(y);
-  unlulerGoster(y.id);
+  efsaneGoster(y.id);
+unlulerGoster(y.id);
   document.getElementById('dMed').innerHTML=y.medeniyetler.map((m,i)=>`<div class="med-etiket ${i===0?'birincil':''}">${medEnCevir(m)}</div>`).join('');
   document.getElementById('dUcret').textContent=`₺${y.ucret}`;
   document.getElementById('dSaatler').textContent=y.saatler;
@@ -1961,6 +1978,639 @@ function haritaKapat() {
   document.getElementById('haritaEkrani').classList.remove('acik');
   document.getElementById('pinListesi').classList.remove('acik');
 }
+
+
+// ── EFSANELER & DESTANLAR ────────────────────────────────────────────────────
+const EFSANELER = {
+'1': { baslik: 'Androklos\'un Kehaneti', icerik: `Atina Kralı Kodros'un oğlu Androklos, yeni bir yurt aramak için denize açıldı. Delphi'deki Apollon Tapınağı'nın kahinleri ona şöyle dedi: "Bir balık ve bir domuzun sana yol göstereceği yerde şehri kur."
+
+Androklos ve arkadaşları Kaystros Nehri kıyısına çıktıklarında ateş yakıp balık pişirmeye başladılar. Tam o sırada çalıların arasından bir yaban domuzu fırlayıp balığı kaparak kaçtı. Androklos bunun kutsal işaret olduğunu anlayarak şehri bu noktada kurdu — böylece Efes doğdu.
+
+Bir başka rivayete göre ise şehrin temellerini Amazon savaşçı kadınlar atmıştır. Bu yiğit kadınların kenti, ana tanrıça Artemis'e adandı. Efes'teki Artemis Tapınağı zamanla dünyanın yedi harikasından biri haline geldi.` },
+'3': { baslik: 'Telephos ve Pergamon\'un Yükselişi', icerik: `Efsaneye göre Bergama'yı kuran, Herakles'in oğlu Telephos'tur. Annesi Auge bir tapınak rahibesiydi; yasak aşkın ürünü olan Telephos doğar doğmaz ormana terk edildi. Onu bir dişi geyik emzirdi ve büyüttü.
+
+Telephos yıllar sonra babasını bulmak için Yunanistan'a gitti. Bir kehanet ona Mysialıların kralı olacağını söylemişti — bu kehanet Bergama topraklarında gerçekleşti.
+
+Roma döneminde ise Bergama'nın asıl efsanesi tıpla yazıldı. Tanrı Asklepios'a adanan şifa merkezinde hastalar kutsal rüyalar görür, kutsal sularda yıkanır ve müzik dinleyerek iyileşirdi. Hekim Galenos bu topraklarda yetişti ve kaleme aldığı tıp eserleri 1400 yıl boyunca dünyaya yol gösterdi.` },
+'16': { baslik: 'Troya\'nın Düşüşü', icerik: `On yıl süren kuşatma boyunca ne Akhalar Troya'yı geçebildi ne de Trojalılar onları geri çekebildi. Ta ki Odysseus'un aklına olmadık bir plan gelinceye dek: İçi askerle dolu devasa bir tahta at.
+
+Trojalılar sabah uyandıklarında kıyıda kocaman bir tahta at gördüler. "Athena'ya adak" diye kandırıldılar ve atı surların içine çektiler. Gece yarısı atın karnından çıkan askerler kapıları açtı — Troya o gece yandı.
+
+Ancak arkeologlar şunu buldu: Troya gerçekten var olmuştu. Homeros'un anlattığı efsane, gerçek bir savaşın yankısıydı. Dokuz farklı Troya kenti üst üste kurulmuştu — her biri bir öncekinin küllerinden doğmuştu.` },
+'46': { baslik: 'Zamanın Başladığı Tepe', icerik: `Arkeologlar 1994'te bu tepeyi kazmaya başladığında tarihin yeniden yazılacağını bilmiyorlardı. M.Ö. 9600'e ait T biçimli devasa taşlar ortaya çıktı — insanlık tarihinin bilinen ilk tapınağı.
+
+O güne kadar "Önce tarım geldi, sonra şehirler, sonra din" deniyordu. Göbekli Tepe her şeyi tersine çevirdi: Din önce gelmiş, tapınak önce inşa edilmişti. Henüz çiftçiliği bilmeyen avcı-toplayıcı insanlar, onlarca ton ağırlığındaki taşları taşımış ve ustalıkla işlemişlerdi.
+
+Üstelik tapınak binlerce yıl sonra kasıtlı olarak toprağa gömülmüştü — sanki kutsal bir sır saklanır gibi. Kim gömmüştü, neden gömmüştü? Bu soru hâlâ yanıtsız.` },
+'47': { baslik: 'Tanrıların Tahtı', icerik: `I. Antiokhos hem Yunan hem Pers kanı taşıyan bir kraldı. Kendini tanrıların torunu sayıyor, ölümünden sonra da tapılmasını istiyordu. Bu yüzden 2150 metre yüksekliğindeki Nemrut Dağı'nın tepesine dev bir tümülüs yaptırdı.
+
+Tümülüsün etrafına Zeus, Apollon, Herakles ve kendisinin devasa taş heykellerini diktirdi. Her gün güneş doğarken ve batarken bu heykellerin silueti kana boyanıyordu.
+
+Bugün o heykellerin başları yerinden düşmüş, yüzleri binlerce yıllık rüzgâra karşı durmuş olarak zeminde yatıyor. Ama her gün binlerce insan o muhteşem gün doğumunu görmek için dağa çıkıyor — Antiokhos'un hayali bir bakıma gerçek oldu.` },
+'35': { baslik: 'Tarihin İlk Barış Antlaşması', icerik: `M.Ö. 1274'te Mısır Firavunu II. Ramses ile Hitit Kralı III. Hattusili, Kadeş'te karşı karşıya geldi. İki süper güç birbirini yok edemedi — savaş beraberliyle bitti.
+
+Bunun üzerine iki kral tarihin bilinen ilk barış antlaşmasını imzaladı. Antlaşma hem hiyeroglif hem çivi yazısıyla yazıldı. Hattuşa'dan çıkan Hitit versiyonu bugün BM'nin New York merkezinde sergileniyor.
+
+Şehir M.Ö. 1200'de gizemli bir şekilde terk edildi — yangın izleri var ama kim yaktığı hâlâ bilinmiyor.` },
+'34': { baslik: 'İnsanlığın İlk Şehri', icerik: `M.Ö. 7500'de Konya ovasında bir topluluk çamurdan evler inşa etmeye başladı. Ama bu evlerin kapısı yoktu — insanlar çatıdaki delikten merdivenle girip çıkıyordu. Ölülerini de evin içine, yatakların altına gömdüler.
+
+Çatalhöyük'te 8000 insan bir arada yaşıyordu. Ana tanrıça heykelcikleri, boğa kafataslı duvarlar, avlanma sahneleri... Arkeologlar kazı yaptıkça hayrete düştü.
+
+İlginç olan şu: Çatalhöyük'te zengin-fakir farkı yoktu. Tüm evler aynı büyüklükte, tüm kemikler aynı beslenmeden iz taşıyordu. İnsanlığın ilk şehri aynı zamanda belki de en eşit şehriydi.` },
+'4': { baslik: 'Gözyaşından Doğan Beyaz Cennet', icerik: `Efsaneye göre bir zamanlar Leukippos adında genç bir adam Apollon'un peşinden koşan Daphne'ye âşık oldu. Ama Apollon da aynı güzeli seviyordu. Tanrı kıskanç çıktı ve Leukippos'u öldürttü.
+
+Daphne ağladı, gözyaşları yere düştü ve beyaz kayalara dönüştü. İşte Pamukkale'nin bembeyaz travertenleri bu gözyaşlarından oluşmuştu.
+
+Roma döneminde Hierapolis kenti bu mucizevi suların üzerine kuruldu. Stoacı filozofu Epiktetos burada doğdu — köle olarak dünyaya gelmişti ama özgür düşüncenin en büyük temsilcisi oldu.` },
+'6': { baslik: 'Apollon\'un Sesi', icerik: `Tanrı Apollon, genç Brankhos'u o kadar çok sevdi ki ona kehanet gücü bahşetti. Brankhos'un soyundan gelenler yüzyıllarca Didim'deki kutsal tapınağı yönetti.
+
+Antik dünyanın en büyük ikinci kehanet merkezinde kahin kadınlar yer altındaki odaya inerek kutsal sudan içer ve transa geçerdi. O halden çıkan sözler Apollon'un kehaneti sayılırdı.
+
+Büyük İskender sefere çıkmadan önce Didim'e danıştı. Aldığı yanıt onu cesaretlendirdi — gerçekten de Asya'yı fethetti.` },
+'7': { baslik: 'Altına Dokunan Kral', icerik: `Kral Midas tanrı Dionysos'a iyilik yapmıştı. Tanrı teşekkür olarak ona bir dilek hakkı tanıdı. Midas düşünmeden "Dokunduğum her şey altına dönsün" dedi.
+
+İlk başta harika görünüyordu. Ta ki yemek yemek isteyene kadar. Ekmek altına döndü, su altına döndü. Sevgili kızını sarmaladığında o da altına döndü. Midas ağlayarak Dionysos'a yalvardı.
+
+Kral Midas'ın gerçek adının Mita olduğunu arkeologlar kanıtladı. Onun için yapılan tümülüs açıldığında içinde sarı boyalı ahşap kaplar bulundu — altın değil ama altın renkli. Belki efsane buradan doğmuştu.` },
+'38': { baslik: 'Gordion Düğümü', icerik: `Gordion'da bir tapınağın direğine bağlanmış eski bir araba duruyordu. Düğüm o kadar girift sarılmıştı ki kimse çözemiyordu. Kehanet şöyleydi: "Bu düğümü kim çözerse bütün Asya'ya hükmedecek."
+
+M.Ö. 333'te genç Büyük İskender şehre girdi. Kalabalık düğümün etrafında toplandı. İskender uzun uzun baktı, sonra kılıcını çekip tek hamlede kesti. "Düğümü çözdüm" dedi.
+
+Bu cesur hareket bir efsane yarattı. "Gordion Düğümü" o günden bu yana çözülmesi zor görünen problemleri cesurca çözmenin simgesi oldu.` },
+'41': { baslik: 'Aşkın ve Hoşgörünün Piri', icerik: `1207'de Belh'te doğan Celaleddin, henüz çocukken babasıyla birlikte Moğol istilasından kaçtı. Konya'ya yerleştiklerinde Celaleddin bir din âlimiydi — ta ki Şems-i Tebrizi'yle karşılaşana dek.
+
+Gezgin derviş Şems ona gerçek aşkı öğretti. Şems'in ölümünden sonra Rumi acısını şiirle anlattı — Mesnevi doğdu.
+
+"Gel, gel, ne olursan ol yine gel" dedi. Kâfir de olsan, günahkâr da olsan. Bu çağrı asırlar boyunca milyonlara ulaştı. Bugün yeşil kubbeli türbesine dünyanın dört bir yanından insanlar geliyor.` },
+'36': { baslik: 'Peribacalarının Sırrı', icerik: `Halk arasında şöyle anlatılır: Bir zamanlar iki köy sürekli kavga ederdi. Tanrı onlara kızıp hepsini taşa çevirdi — işte peribacaları bunlardır.
+
+İlk Hristiyanlar ise bu coğrafyayı farklı gördü. Roma zulmünden kaçan inananlar peribacalarını oyup kilise ve manastır yaptılar. Yeraltı şehirleri kazdılar — Derinkuyu'da 18 katlı, 20.000 kişilik bir şehir gizliydi toprakların altında.
+
+Kapadokya onlar için sadece barınak değil, inançlarını yaşattıkları kutsal bir vatan oldu.` },
+'25': { baslik: 'Kimsenin Fethedemediği Şehir', icerik: `M.Ö. 333'te Büyük İskender Anadolu'yu fethediyordu. Her şehir ya teslim oluyor ya da kısa sürede düşüyordu. Ta ki Termessos'a gelene dek.
+
+Dağın tepesinde, 1665 metre yükseklikte kurulmuş bu Pisidya kenti surlarına güveniyordu. İskender ordusuyla dar geçide girdi — Termessoslular yukarıdan kaya ve ok yağdırdı. Kayıplar çok fazlaydı. İskender kuşatmayı kaldırıp gitti.
+
+"Kartalların yuvası" diye anılan bu şehri hiçbir düşman alamadı. Bugün ormana gömülmüş kalıntılar arasında dolaşırken o gururlu dağ kentinin izlerini hissedebilirsiniz.` },
+'23': { baslik: 'İki Kez Yanan Şehir', icerik: `Persler Xanthos'un kapısına dayandığında Likalılar teslim olmayı reddetti. Yenilmek yerine kendi şehirlerini yaktılar — kadınlarını, çocuklarını, hazinelerini ateşe verdiler. Sonra Perslere karşı son savaşa çıktılar ve hepsi öldü.
+
+Yıllar sonra Xanthos yeniden kuruldu. M.Ö. 42'de Roma iç savaşı sırasında Brutus'un ordusu şehri kuşattı. Xanthos'lular yine aynı şeyi yaptı — şehri yakıp son savaşa çıktılar.
+
+İki kez toplu direniş, iki kez külden diriliş. Bu trajik cesaret efsanesi antik kaynaklarda "Xanthos ruhu" olarak geçer.` },
+'50': { baslik: 'Siyah Surların Efsanesi', icerik: `Diyarbakır'ın siyah bazalt surları için şöyle denir: "Bu taşlar Nemrut'un cehenneminden getirildi." Gerçekte ise bu volkanik taşlar milyonlarca yıl önce Karacadağ'dan aktı.
+
+Evliya Çelebi 17. yüzyılda buraya geldiğinde "Cin ve devlerin inşa etmiş olmasından başka açıklaması yoktur" diye yazmış. Çünkü bazı taşlar o dönemin teknolojisiyle taşınamayacak kadar büyüktür.
+
+Surlar boyunca dolaşırken dikkat edin — bazı taşlarda aslan, yılan ve kartal kabartmaları var. Bunlar kötü göze karşı konulmuş koruyuculardır.` },
+'55': { baslik: 'Bozkırın Ortasındaki Kayıp Şehir', icerik: `Orta Çağ'da Ani, dünyanın en büyük şehirlerinden biriydi — 100.000 kişilik nüfusuyla Paris'le boy ölçüşüyordu. "Bin Bir Kilise Şehri" diye anılırdı.
+
+Sonra her şey değişti. Depremler, Moğol istilası ve ticaret yollarının kayması... Ani yavaş yavaş terk edildi. Binalar çürüdü, surlar yıkıldı, katedraller boşaldı.
+
+Bugün Ani bir hayalet şehir. Bozkırın ortasında dev surlar ve yarı yıkık kiliseler duruyor. Ses yok, insan yok — sadece tarihin ağır sessizliği.` },
+'62': { baslik: 'Kayalara Asılan İman', icerik: `Efsaneye göre M.S. 4. yüzyılda iki Atinalı keşiş, yanlarında Meryem Ana'nın mucizevi ikonasını taşıyarak Karadeniz'e açıldı. Bir fırtınada gemileri parçalandı — ikonanın ışığı onlara yol gösterdi ve bu kayalığa sürüklendiler.
+
+Kayanın üzerinde bir mağara vardı. Keşişler burayı manastıra dönüştürdü. Sonraki yüzyıllarda duvarlar kazındı, freskler yapıldı, hazineler birikti.
+
+Bugün Sümela'ya tırmanan ziyaretçiler şunu hisseder: Bu kadar dik bir kayaya bu kadar büyük bir yapıyı inşa etmek nasıl mümkün olmuş?` },
+'64': { baslik: 'Fıçıdaki Filozof', icerik: `Sinoplu Diyojen'in serveti yoktu, evi yoktu — ama umursamıyordu. Bir fıçıda yaşıyor, insanlarla alay ediyordu. Gündüz elinde fenerle dolaşıyor, "Dürüst bir insan arıyorum" diyordu.
+
+Büyük İskender bir gün onu ziyarete gitti. "Diyojen, senden ne istersen yerine getireyim" dedi. Diyojen başını kaldırdı: "Güneşimin önünden çekil yeter."
+
+İskender dönüp giderken "Ben İskender olmasaydım, Diyojen olmak isterdim" dedi. Diyojen'in mezarı Sinop'ta, doğduğu kenttedir.` },
+'48': { baslik: 'İbrahim\'in Yurdu', icerik: `Üç büyük dinin kutsal kitabı da aynı şeyi söyler: İbrahim Harran'da yaşadı. Tevrat'a göre babası onu buraya götürdü, Kuran'a göre putperest düzene karşı çıktı ve buradan Kenan'a göç etti.
+
+Harran'ın konik damlı evleri bugün hâlâ ayakta. Bu sivri kubbeler yazın serinletici, kışın ısı tutucu — binlerce yıllık bilgeliğin mimarisi.
+
+Harran aynı zamanda dünyanın ilk üniversitesine ev sahipliği yaptı. 9. yüzyılda Harran Okulu'nda Yunan felsefesi Arapça'ya çevrildi — bu çeviriler olmasa Aristoteles Avrupa'ya ulaşamayacaktı.` },
+'2': { baslik: 'Afrodit\'in Kenti', icerik: `Efsaneye göre güzellik tanrıçası Afrodit, tüm Anadolu'yu dolaştıktan sonra bu verimli ovayı gördü ve "İşte benim kentim bu olsun" dedi.
+
+Antik dünyada Afrodisyas'ın en büyük hazinesi bir heykeldi: Praksiteles'in yonttuğu çıplak Afrodit. Bu heykel o kadar güzeldi ki uzak diyarlardan gemiler kalkıp onu görmeye gelirdi.
+
+Afrodisyas'ın heykeltıraşları zamanla dünyanın en iyileri arasına girdi. Bir kentin tamamı sanata adanmıştı — taş yontmak burada ibadet kadar kutsaldı.` },
+'5': { baslik: 'Felsefenin Doğduğu Kıyı', icerik: `M.Ö. 6. yüzyılda Milet'in limanında garip bir adam yaşıyordu. Thales adındaki bu zat günleri gökyüzüne bakarak geçiriyor, yıldızları hesaplıyordu. Bir gece yürürken yıldızlara dalmış çukura düşmüş.
+
+Thales haksız çıkmadı: M.Ö. 585'teki güneş tutulmasını tam olarak önceden hesapladı. Savaşan iki ordu tutulmayla korkup silah bırakarak barış yaptı.
+
+Milet okulu Batı felsefesinin ilk sorusunu sordu: "Her şeyin temel maddesi nedir?" Bu soru burada, bu kıyıda doğdu.` },
+'8': { baslik: 'Anadolu\'nun Pompeisi', icerik: `Priene'nin kuruluş efsanesinde Amazon kraliçesi vardır. Bu yiğit savaşçı kadın, dağlara bakan bu korunaklı konumu seçip şehrin ilk taşını koydu.
+
+Gerçekte Priene, M.Ö. 4. yüzyılda modern şehirciliğin ilk örneği oldu. Mimar Hippodamos'un ızgara planı, dik açılı sokaklar, merkezi agora — bugün hâlâ aynı plan kullanılıyor.
+
+"Anadolu'nun Pompeisi" denir Priene'ye — terk edildikten sonra zamanın içinde dondu.` },
+'9': { baslik: 'Aristoteles\'in Bahçesi', icerik: `Aristoteles Platon'un ölümünden sonra Assos'a geldi. Denize bakan Athena Tapınağı'nın gölgesinde okul kurdu. Öğrencileriyle sahil boyunca yürüyerek ders yaptı — bu yüzden okuluna "Yürüyenler" anlamında Peripatetik dendi.
+
+Buradaki yıllarda biyolojiye âşık oldu. Ege'nin deniz canlılarını inceledi, sınıflandırdı. "Hayvanlar Tarihi" modern biyolojinin ilk büyük eseridir.
+
+Denize bakan bu kaya kentin havası ona hem felsefe hem bilim ilhamı verdi.` },
+'10': { baslik: 'Zeus\'un Son Kalesi', icerik: `Efsaneye göre Zeus burada doğmuştu. Annesi Rhea onu babası Kronos'tan korumak için bu dağlara saklamıştı. Zeus büyüyüp babasını tahttan indirince minnetle döndü ve kutsal tapınak yaptırdı.
+
+Frig Krallığı yıkılmıştı, Lidyalılar gelip geçmişti, Persler hükmünü sürmüştü. Ama Aizanoi'deki Zeus Tapınağı ayaktaydı. Romalılar bile ona dokunmadı.
+
+Bugün 2. yüzyıldan kalma sütunlar hâlâ ayakta — sanki Zeus'un gölgesi o taşları koruyordu.` },
+'11': { baslik: 'Yedi Kilisenin Biri', icerik: `Aziz Yuhanna bu kente özel bir mektup yazdı. Vahiy kitabında Laodikeia'ya sert uyarı var: "Ne sıcak ne soğuksun, ılıksın — seni ağzımdan tüküreceğim."
+
+Laodikeia o dönemde Anadolu'nun en zengin bankacılık merkeziydi. M.S. 60'taki büyük depremden sonra Roma'dan yardım istemedi: "Kendi paramızla kendi şehrimizi yaparız" dedi.
+
+Gurur mu, özgüven mi? Her ikisi de bu antik kentin ruhuna işlemişti.` },
+'13': { baslik: 'Güzelliğin Bedeli', icerik: `Knidos'un en büyük hazinesi antik dünyanın ilk çıplak kadın heykeli Afrodit'ti. Praksiteles'in eseri, banyoya girmek üzere olan tanrıçayı gösteriyordu.
+
+Rivayete göre bu heykeli gece tapınağa giren biri öptü — dudak izi sabah görüldü. Bu dedikodu bütün antik dünyaya yayıldı ve Knidos daha da ünlendi.
+
+Bir denizci heykele o kadar çok baktı ki sonunda denize atlayarak kendini öldürdü. Güzelliğin bedeli bu muydu?` },
+'14': { baslik: 'Şarabın Tanrısına Adanmış Kent', icerik: `Dionysos şarap tanrısıydı, şairlerin hamisiydi. Teos ona o kadar bağlıydı ki şehrin sikkesinde hep üzüm salkımı vardı.
+
+Şair Anakreon burada doğdu. "Yaşarken yaşa" diyordu. Onun adını taşıyan şiir formu "anakreontik" bugün hâlâ kullanılır.
+
+Teos aynı zamanda en güçlü oyuncu ve müzisyen loncasının merkeziydi. Eğlencenin kutsal sayıldığı nadir kentlerden biriydi.` },
+'15': { baslik: 'Zeytinliklere Gömülen Şehir', icerik: `Kolophon bir zamanlar 12 İyon kenti arasındaydı. Düşünür Xenophanes burada doğdu; "Tanrılar insanlar gibi değildir, onları biz hayal ediyoruz" dedi.
+
+Sonra liman kenti Notion yükseldi, Kolophon geriledi. Zeytinlikler eski sokakların üzerine büyüdü.
+
+Halk arasında şöyle denir: Her ilkbahar zeytinlikler çiçek açtığında toprak altından müzik sesi gelir — Kolophon'un unutulmuş şairleri hâlâ söylüyor.` },
+'17': { baslik: 'Rüyada Kurulan Şehir', icerik: `İmparator Konstantinos bir rüya gördü: Yaşlı kadın kılığına girmiş bir şehir, sonra genç bir bakire oldu. Bu işareti "yeni başkent" olarak yorumladı.
+
+Bizans 1000 yıl boyunca dünyanın en büyük şehriydi. Surları hiç düşmedi — ta ki 1453'e kadar. Fatih topla yıkmak zorunda kaldı.
+
+Efsaneye göre Osmanlılar şehre girdiğinde Ayasofya'da dua eden rahipler duvara çekildi. Kıyamet günü duvar açılacak ve rahipler dua etmeye devam edecekler.` },
+'18': { baslik: 'Osman\'ın Rüyası', icerik: `Osman Gazi bir gece uyurken rüya gördü: Göğsünden bir ağaç çıktı, büyüdü, gölgesi tüm dünyayı kapladı. Altından ırmaklar aktı.
+
+Rüyayı yorumlayan âlim dedi ki: "Soyundan büyük bir devlet çıkacak."
+
+Osman Gazi Bursa'yı alamadan öldü. Ama vasiyeti açıktı: "Bursa alındığında buraya gömün." Oğlu Orhan şehri fethetti ve babasını vasiyet ettiği yere gömdü.` },
+'19': { baslik: 'Yedi Harikadan Biri', icerik: `Antik dünyada yedi harika vardı ve Kyzikos'taki Zeus Tapınağı bunlardan biriydi. Sütunları tek parça beyaz mermerden yonulmuştu. "Bir başka diyardan getirildi sanırsınız" diye yazılmış antik kaynaklarda.
+
+Kyzikos yarımadası fırtınalarda adaya dönüşürdü. Sakinler buna alışmıştı — hem kara hem deniz insanıydılar.
+
+Bugün tapınaktan yalnızca birkaç kaide kaldı. Dünyanın yedi harikasından biri bu kadar sessizce yok oldu.` },
+'20': { baslik: 'Perslerin Gözü', icerik: `Daskyleion Perslerin Anadolu'ya baktığı pencereydi. Büyük Kral'ın gözü, kulağı, eli buradaydı.
+
+Kazılarda bulunan Aramice yazılı mühürler bürokrasinin ne kadar gelişmiş olduğunu gösteriyor. Binlerce tablet, binlerce işlem kaydı.
+
+En ilginç bulgu bir kapı tokmaklığı: İki hayvan figürü birbirini yiyor. Arkeologlar bunu "güçlünün zayıfı yuttuğu düzenin simgesi" olarak yorumluyor.` },
+'21': { baslik: 'Hiçbir Zaman Susmayan Sahne', icerik: `Aspendos Tiyatrosu'nun akustiği bir efsanedir: Sahne ortasında fısıldasanız en üst sıradaki seyirci duyar. Mimar Zenon bu mucizevi akustiği nasıl yarattı? Kimse bilmiyor.
+
+Rivayete göre Zenon bir yarışta ikinci geldi, yenilgiyi kabullenemedi ve kendini sahneye attı. Kral onun tiyatrosunu görünce pişman oldu — bu yapı ötekinden çok daha güzeldi.
+
+2000 yıldır ayakta olan bu tiyatroda bugün hâlâ opera oynanıyor.` },
+'22': { baslik: 'Noel Baba\'nın Yurdu', icerik: `Patara'nın en ünlü sakini Piskopos Nikolaos'tu. Zengin bir aileden gelmesine rağmen parasını fakirlere dağıtırdı.
+
+Rivayete göre evlenemeyecek kadar fakir üç kız kardeş vardı. Nikolaos geceleri pencerelerinden altın torbalar attı. Bu gizli iyilik Noel Baba efsanesinin çekirdeği oldu.
+
+Patara aynı zamanda Lykia'nın en önemli kehanet merkeziydi. İki mucize bir kentte: Kehanet ve iyilik.` },
+'24': { baslik: 'Güneş Batarken Tanrılar Görünür', icerik: `Apollon tapınağı tam gün batımında denize bakan yere yapılmıştı. Güneş battığında tapınağın sütunları arasından ışık süzülür, sanki tanrı içeriden bakıyordu.
+
+Bu manzara için uzak diyarlardan insanlar gelirdi. Şair, gezgin, tüccar — hepsi bu sahneyi görmek istedi.
+
+Bugün bu sahneyi her gün turistler yaşıyor. Bazı güzellikler 2000 yıldır değişmemiş.` },
+'26': { baslik: 'İskender\'in Anahtarı', icerik: `Perge, Büyük İskender'in Anadolu seferinde kapılarını gönüllü olarak açan ilk kentlerden biriydi. Kapı bekçileri şehrin anahtarlarını uzattılar.
+
+İskender içeri girdi, şehri yağmalamadı, halkına dokunmadı. Bu jestin karşılığını ödedi Perge: Dev bir zafer anıtı yaptırdılar.
+
+Bayram günleri tiyatroda 15.000 kişi toplanırdı — coşku, dua, müzik ve et kokusu karışırdı.` },
+'27': { baslik: 'Yılbaşı Baba\'nın Mucizesi', icerik: `Nikolaos'un en ünlü mucizesi denizde yaşandı. Fırtınada batan gemiden "Nikolaos'u çağırın!" dediler. O an Nikolaos koşarak kıyıya indi — deniz sakinleşti, herkes kurtuldu.
+
+Büyük kıtlıkta ise limana gelen buğday gemisinden şunu söyledi: "Verdiğim miktarı İskenderiye'ye varınca eksiksiz bulacaksın." Kaptan verdi — ve gerçekten eksiksiz buldu.
+
+Nikolaos öldükten sonra aziz ilan edildi. Ruhu Myra'da kaldı.` },
+'28': { baslik: 'Suyun Hiç Kesilmediği Çeşme', icerik: `Sagalassos'ta Antoninler Çeşmesi'nden hâlâ su akıyor. 2000 yıl önce inşa edilen bu çeşme depremlere, yağmalara rağmen suyu kesmedi.
+
+Efsanelere göre bu su kutsal bir kaynaktan geliyor. Apollon'un dokunduğu yerden fışkırıyor.
+
+Gerçek şu ki Roma mühendisliği o kadar mükemmeldi ki su kanalları hâlâ işliyor. Sagalassos'u Türkiye'nin en iyi korunmuş antik kentlerinden biri yapan da bu.` },
+'29': { baslik: 'Kartalların Yuvası', icerik: `Arykanda dağın yamacına yapışmış gibiydi. Kurucuları buraya kaçmak için değil, görmek için çıkmışlardı — vadiye hâkim bu noktadan hem denizi hem dağı izliyorlardı.
+
+Arykanda'nın en büyük sırrı borçlarıydı: Bu kent sürekli borçlanıyordu. Büyük festivaller, büyük yapılar, büyük harcamalar.
+
+Bugün ormana gömülmüş kalıntılarını ziyaret edenler şunu fark ediyor: Tiyatro hâlâ mükemmel. Belki Arykanda borcunu taşlara ödedi.` },
+'30': { baslik: 'Kanyon\'un Üzerindeki Şehir', icerik: `Selge'ye gitmek için önce Köprülü Kanyon'u geçmek gerekir. Bu derin vadinin üzerinden geçen antik taş köprü hâlâ ayaktadır — iki bin yıldır sular altında kalmamış.
+
+Selgeliler o kadar savaşçıydı ki İskender bile onlardan çekinmişti. Kendi kanunlarını koymuş, kendi sikkelerini basmışlardı. Romalılar onları "özgür Selgeliler" diye çağırdı.
+
+Zeus Tapınağı'nın sütunları bugün koyun sürülerinin arasında duruyor. Tarih ile günlük hayat bu kadar iç içe geçmiş başka yer az bulunur.` },
+'31': { baslik: 'İskender\'in Kış Konaklığı', icerik: `M.Ö. 334, kış ayları. Büyük İskender Phaselis'e geldi. Şehrin kapıları açıldı, büyük hediyeler verildi. İskender kışı burada geçirmeye karar verdi.
+
+Phaselis'in üç limanı vardı: Biri kuzeye, biri güneye, biri doğuya bakıyordu. Rüzgâra göre liman değiştirilirdi. Bu akıllıca tasarım kenti antik dünyanın en önemli ticaret noktalarından biri yaptı.
+
+İskender bu sessiz kışta Asya seferini planladı. İlkbaharda yola çıktı ve tarihi değiştirdi.` },
+'32': { baslik: 'Kıyıda Donmuş Zaman', icerik: `Anemurium'a son gelen kişi M.S. 7. yüzyılda Arap akınlarından kaçan bir Bizanslıydı. Kapısını kilitledi, gitmek zorunda kaldı — ve bir daha dönemedi.
+
+Bugün o kişinin kilitlediği kapı hâlâ orada. Sokaklar, kilise, mezarlık hâlâ orada. Hiç yeniden inşa edilmedi.
+
+Efsane şöyle anlatılır: Burada her gece mum ışığı görünür. Son sakinin yaktığı mumu söndürmeyi unutmuş.` },
+'33': { baslik: 'Surların Sırrı', icerik: `Anavarza'nın surları o kadar uzundur ki "Bir insan sabah girip akşam çıkamaz" diye yazılmış antik kaynaklarda. 1500 metre süren bu surlar içinde yüz binlerce kişilik bir şehri saklıyordu.
+
+Efsaneye göre bu şehri devler kurmuştu. Normalde insan elleriyle kaldırılamayacak kadar büyük taşlar var surların temelinde.
+
+Haçlılar "Buradan geçemedik, etrafından dolaştık" diye yazmış. Taşlarının rengi kan kırmızısıdır.` },
+'37': { baslik: 'Yeraltının Şehri', icerik: `Derinkuyu'da ilk tüneli kim kazdı, kimse bilmiyor. Bir efsaneye göre dev bir ahtapot yerden çıkmış, insanlara tüneller kazmasını öğretmiş, sonra kaybolmuş.
+
+Bu şehir o kadar iyi planlanmış ki binlerce yıl sonra bile akıllıca görünüyor: Her katın kendi havalandırması var, kuyular bağımsız, bölümler kaya kapılarla ayrılabiliyor.
+
+Arap akınlarında 20.000 insan bu şehre sığındı. Aylarca yeraltında yaşadılar. Çıktıklarında gökyüzü onlara mucize gibi göründü.` },
+'39': { baslik: 'Sfenkslerin Kapısı', icerik: `Alacahöyük'ün sfenks kapısını yapanlar şunu düşünüyordu: Kötü ruhlar kapıya yaklaşınca sfenks gözleri onu donduracak.
+
+Kazılarda bulunan "güneş kursu" bronz diskler bugün Türkiye'nin amblemi haline geldi.
+
+En tuhaf bulgu: Kapının yanında at, inek ve insan kemikleri yan yana gömülmüş. Kurban mı, ritüel mi? Arkeologlar tartışmaya devam ediyor. Sfenksler ise susuyor.` },
+'40': { baslik: 'Taşın İçinden Gelen Dua', icerik: `Divriği Ulu Camii'nin kapısını yapan usta Hurrem Şah'tı. Efsaneye göre elleri taşa dönüştü — ama ellerinden çıkan işler müthiş güzeldi.
+
+Kapı süslemeleri o kadar karmaşıktır ki ikisi birbirinin aynı değildir. Her çiçek farklı, her desen tekrar etmez.
+
+UNESCO "Selçuklu taş işçiliğinin doruk noktası" diyor. Halk ise: "Bu kadar güzel taş insan eli ile yontulmaz — ancak tanrı yardımıyla."` },
+'42': { baslik: 'Göbekli Tepe\'nin Kardeşi', icerik: `Karahantepe 2019'da gündeme geldi. Belki Göbekli Tepe'den daha eskiydi.
+
+En çarpıcı bulgu insan yüzlü heykellerdi. Göbekli Tepe'deki sütunlar semboliktir — ama Karahantepe'deki yüzler gerçektir. Gözler, burun, ağız var.
+
+Bir arkeolog dedi ki: "Sanki bir şeyi anlatmak istiyorlar ama dillerini henüz çözemediniz." Karahantepe hâlâ konuşuyor.` },
+'43': { baslik: 'Kil Tabletlerin Sesi', icerik: `Kültepe'de bulunan kil tabletler 4000 yıl önce yazılmıştı. Bir tüccarın karısı kocasına şikâyet mektubu yazıyordu: "Senden para istedim, aylardır yanıt yok. Seni mahkemeye vereceğim."
+
+Bu dünyanın bilinen en eski şikâyet mektubuydu. Ve gülünç derecede günceldi.
+
+Kültepe bize şunu gösterdi: İnsan 4000 yılda özünde değişmedi.` },
+'44': { baslik: 'Dört Medeniyetin Kalesi', icerik: `Ankara Kalesi'nin taşları dört medeniyetin izini taşıyor: Roma, Bizans, Selçuklu, Osmanlı. Her kez yıkılan kale, bir sonraki medeniyetin taşlarıyla onarıldı.
+
+Efsaneye göre kalenin en yüksek kulesinde Bizans definesi saklıdır. Selçuklular aramış, Osmanlılar kazıkla aramış — hiçbiri bulamamış.
+
+Ama asıl define belki de taşların kendisidir. Bir kaleyi dört medeniyet paylaşmış.` },
+'45': { baslik: 'Güvercin Olarak Gelen Veli', icerik: `Hacı Bektaş Veli Anadolu'ya geldiğinde önce bir güvercin olarak geldi. Horasan'dan uçtu, bu tepeye kondu ve insan oldu.
+
+Bir başka rivayet: Gençliğinde kırk gün oruç tuttu. Bu kırk günde tüm sırlara erişti. Çıktığında yüzü parıl parıl parlıyordu.
+
+Bugün her yıl ağustos ayında milyonlarca insan buraya gelir. "Eline, diline, beline sahip ol" öğüdü hâlâ kulaklarda yankılanır.` },
+'49': { baslik: 'Mozaiklerin Altındaki Şehir', icerik: `MS 253'te Persler Zeugma'yı yakıp yıktı. Sakinler kaçarken mozaiklerin üzerini toprak ve enkazla örttüler.
+
+1800 yıl sonra arkeologlar toprağı kaldırdığında mozaikler neredeyse bozulmamış çıktı. Çingene Kız'ın bakışları 1800 yıl sonra da insanı büyülüyordu.
+
+Bugün müzede gördükleriniz sadece kurtarılabilenler. Zeugma'nın geri kalanı Fırat'ın altında uyuyor.` },
+'51': { baslik: 'Altın Sarısı Şehir', icerik: `Mardin taşının rengi gün içinde değişir: Sabah pembe, öğlen altın sarısı, akşam kan kırmızısı.
+
+Deyrulzafaran Manastırı'nda binlerce yıldır dua okunuyor. Hristiyanlar, Müslümanlar, Ezidiler — Mardin hepsine ev sahipliği yaptı. Efsaneye göre manastırın altında katman katman tapınaklar var.
+
+Mardin'de bir deyiş var: "Buraya gelen gitmek istemez, giden geri dönmek ister."` },
+'52': { baslik: 'Bizans\'ın Gözcüsü', icerik: `Dara kenti Pers topraklarıyla tam sınırdaydı. Her yıl savaş, her yıl antlaşma.
+
+Şehrin dev sarnıçları büyük gizemdir. Yeraltında kilometrelerce uzanan su tünelleri.
+
+Efsanelere göre bu tüneller Pers tarafına kadar uzanıyor. Bir Bizanslı asker geceleri tünelden geçer, Pers kampındaki bilgileri getirirmiş.` },
+'54': { baslik: 'Kartalın Gözü', icerik: `Kral bir gün avdayken gökyüzünde bir kartal gördü. Kartal onu o kadar büyüledi ki durdu. "Efendim, düşman geliyor" dediler — kral kartalı izlemeye devam etti.
+
+Kral hastalandı. Ölmeden önce şunu söyledi: "O kartal beni hayattan ayırdı. Mezarıma kartal koyun — beni karşılasın."
+
+Karakuş, Kommagene kraliyet ailesinin kadınlarına adanmış bir anıttır. Kartal ölümü simgeliyor — ama aynı zamanda özgürlüğü de.` },
+'56': { baslik: 'Suyun Ortasındaki Dua', icerik: `Akdamar Kilisesi için taşlar Van Gölü'nden geçirildi. İnşaat sırasında altınlar göle döküldü. O gece mimar rüya gördü: "Altınlar kayıp değil — kilisenin temelidir." Sabah işe devam ettiler.
+
+Kilisenin dış cephesindeki İncil sahneleri hâlâ net görülüyor: Hz. Adem ve Havva, Hz. Yunus ve balina, Hz. Davut ve Golyat.
+
+Su ve rüzgâr 1100 yıldır bu sahneleri silemedi.` },
+'57': { baslik: 'Aslanın Yuvası', icerik: `Çavuştepe Kalesi'nde Urartu Kralı II. Sarduri kendi elleriyle yazmış: "Bu kaleyi ben yaptım. Düşmanı getiren cezalandırılsın. Suyu kesen lanetlensin."
+
+Bu yazıtın yanında aslan heykeli varmış. Efsaneye göre gerçekten kükrediğini gören çobanlar varmış.
+
+Kale bir gün düşmanın eline geçti. Aslan heykeli parçalandı. Ama Kral'ın yazıtı kaldı — 2700 yıllık bir kral sesi taşın içinde.` },
+'58': { baslik: 'Bulutların Üzerindeki Saray', icerik: `İshak Paşa Sarayı'nın inşası 99 yıl sürdü. Başladığında çocuk olan ustalar tamamlandığında ihtiyardı. Her kuşak bir bölüm yaptı.
+
+Sarayın altın kaplı kapıları Rus askerleri tarafından alındı — bugün Hermitage Müzesi'nde. Halk "kapılar gidince ruh da gitti" diyor.
+
+Her kış tipi sarayı örter. Baharın ilk günlerinde kar erir, saray yeniden belirir. Bu yüzden halk onu "Kayıp Saray" der.` },
+'59': { baslik: 'Göl Kıyısının Kalesi', icerik: `Van Kalesi'nin yazıtları 19. yüzyılda çözüldü: "Ben I. Sarduri, bu kaya üzerine şehri kurdum. Suyu ben getirdim. Kanalı ben açtım."
+
+Efsaneye göre kalenin derinliklerinde Urartu hazinesi var. Her yıl birkaç hazine avcısı gece inerek kazıyor. Hiçbiri bulamamış.
+
+Van Gölü'nün rengi mevsimlere göre değişir: Bahar türkuaz, yaz mavi, sonbahar yeşil, kış kurşun.` },
+'60': { baslik: 'Ölülerin Şehri', icerik: `Ahlat Selçuklu Mezarlığı'ndaki bazı taşlarda isim değil sadece el izi var. El izi koyanlar kim?
+
+Efsaneye göre her kümbet içinde bir ölümsüz bekçi uyuyor. O yüzden mezarlar o kadar güzel yapılmış — uyuma yeri güzel olsun diye.
+
+Bir çoban anlatmış: Gece geç vakit mezarlıktan geçerken taşların üzerinde mum ışıkları görmüş. Sabah mum izi yok. Rüya mıydı, gerçek miydi?` },
+'61': { baslik: 'Nuh\'un Dağı', icerik: `Neden bu dağa "Ağrı" dendi? Efsane şöyle: Hz. Nuh Tufan'dan sonra gemisini bu dağa yanaştırdı. Karaya çıkmak isterken ayağı kayaya takıldı, acı çekti.
+
+Geminin parçalarını arayanlara göre dağın zirvesine yakın tahta parçaları var. Her on yılda bir biri çıkmaya çalışıyor.
+
+Belki Nuh'un gemisi orada, belki değil. Ama Ağrı Dağı her sabah güneşle kızarır. Ve bu dağın altındaki insanlar hâlâ aynı efsaneyi anlatır.` },
+'63': { baslik: 'Hüzünlü Freskler', icerik: `Trabzon Ayasofyası'nın fresklerini yapan ustanın adı bilinmiyor. Ama her yüzde ince bir hüzün var.
+
+Bir efsane: Ustanın oğlu inşaat sırasında öldü. Baba acısını fresklere işledi — her figürün yüzüne oğlunun gözlerini koydu.
+
+Trabzon İmparatorluğu düşünce freskler badana ile örtüldü. Yüzyıllar sonra badana sıyrılınca yüzler yeniden ortaya çıktı — sanki hiç gitmemişti.` },
+'65': { baslik: 'Zamanın Durduğu Şehir', icerik: `Safranbolu'da eskiden kimse eski bir evi yıkıp yeni bina yapamazdı. "Atalarımızın ruhu bu duvarlarda" denirdi.
+
+Osmanlı tüccarları zenginleşince İstanbul'a taşınmak istediler. Ama her gidişte bir şey bıraktılar — bir oda, bir pencere, bir cumba. Geri geleceklermiş gibi.
+
+Bugün o odalar hâlâ duruyor. Her yıl milyonlarca insan zamanın durduğu bu şehre geliyor.` },
+'66': { baslik: 'Dünyanın Haritasını Çizen Adam', icerik: `Strabon Amasya'da doğdu. Geographika adlı eseri 17 ciltti.
+
+Efsaneye göre Strabon bir gün bir çiftçiyle konuşmuş. Çiftçi "Şehrin dışına hiç çıkmadım" demiş. Strabon şaşırmış. Çiftçi gülerek yanıtlamış: "Senin kitaplarından dünyayı öğrendim."
+
+Strabon öldükten bin yıl sonra bile insanlara dünyanın nerede ne olduğunu anlatıyordu.` },
+'67': { baslik: 'Demir Yürekli Kral', icerik: `Pontus Kralı VI. Mithridates zehire karşı bağışıklık kazanmak için her gün az miktarda zehir içermiş. Düşmanları onu zehirlemeye çalışınca hiç etkilenmemiş.
+
+Sonunda yenik düştüğünde kendi canına kıymak istedi. Ama zehir tutmadı. Bir askere kılıcıyla öldürtmek zorunda kaldı.
+
+Bu efsane "mithridatism" adıyla tıp literatürüne girdi. Bu yöntemi bilim bugün de kullanıyor — aşıların mantığı aynı.` },
+'68': { baslik: 'Karadeniz\'in Kilit Noktası', icerik: `Kastamonu Kalesi için şöyle denir: "Bu kaleyi almak isteyen ya çıldırdı ya döndü." Bizans döneminde hiç alınamadı.
+
+Efsaneye göre kalenin kuyusu denize bağlıydı. Tatlı su değildi ama içilebilirdi. Bu yüzden kuşatmalar sonuç vermezdi.
+
+Kaleye çıkan yol bugün hâlâ dar ve sarptır. Bekçi uyumadıkça kimse yaklaşamazdı.` },
+'69': { baslik: 'Tanrıların Annesi', icerik: `Leto, Zeus'un çocuklarını karnında taşıyordu. Hera kıskanıyordu ve ona yer vermeyen ülkelere emir gönderdi.
+
+Leto Likya'ya geldi. Kuyu başındaki çobanlardan su istedi — çobanlar verdiler. Bunun üzerine Leto bu toprakları sonsuza dek kutsal kıldı. Apollon ve Artemis burada doğdu.
+
+Binlerce yıl önce o kuyudan su içen çobanların jestiyle başlayan kutsiyet bugün hâlâ hissediliyor.` },
+'70': { baslik: 'Yanmayan Ateş', icerik: `Olympos'un yakınında yer altından alevler çıkar. Binlerce yıldır yanıyor — hiç söndürülemiyor.
+
+Efsaneye göre bu ateş, Bellerophon'un öldürdüğü Chimaera canavarının nefesinin kalıntısıdır. Canavar düştüğü yerde son nefesini verdi — ve o nefes söndürülemiyor.
+
+Eski denizciler burada Zeus'a kurban keserdi. Ateş yanıyor — ne olursa olsun.` },
+'107': { baslik: 'Şifa Tanrısının Evi', icerik: `Asklepios o kadar iyi iyileştiriyordu ki ölüleri bile diriltiyor du. Zeus buna kızdı ve onu yıldırımla öldürdü.
+
+Pergamon'daki Asklepion'da hastalar tapınağa gelir, kutsal havuzda yıkanır ve rüya odasına girerdi. Rüyalarında tanrı onlara ne yapmaları gerektiğini söylerdi.
+
+Hekim Galenos burada yetişti. Gladyatörlerin cerrahıydı önce. Pergamon'da öğrendikleri 1400 yıl boyunca tıp dünyasına yol gösterdi.` },
+'110': { baslik: 'İmanın Şehri', icerik: `İznik Konsili'nde 318 piskopos dünyanın dört bir yanından gelmişti. Soru tek: İsa kimdir?
+
+Günlerce tartışıldı. Sonunda "İsa hem insan hem tanrı" kararı çıktı. Bu karar Hristiyan inancının temelini attı.
+
+Bugün o konsilin yapıldığı kiliseden çok az şey kaldı. Ama o binada alınan karar iki milyar insanı hâlâ etkiliyor.` },
+
+'12': { baslik: 'Köy ile Tarihin Buluşması', icerik: `Stratonikeia'nın en tuhaf özelliği şu: Antik tiyatro ve tapınak üzerine bir Osmanlı köyü kurulmuş. Villalar antik sütunların arasında, tiyatro sahnesinde çocuklar oynuyor.
+
+Kenti kuran Seleukos, adını üvey annesinden almıştı. Oğlu ona âşık olmuş, hastalıktan ölüme gidiyordu. Baba, oğlunun yaşaması için karısını ona verdi.
+
+Bu yasak aşk antik kaynakların en çok anlattığı hikâyelerden biridir. Taşlar çürüdü, köy kuruldu — ama isim kaldı.` },
+'53': { baslik: 'Fırat\'ın Geçidi', icerik: `Samosata, Fırat Nehri'nin en önemli geçit noktasıydı. Kim bu şehri tutarsa doğudan batıya geçen kervanları tutardı.
+
+Kommagene Krallığı bu stratejik konumu sonuna kadar kullandı. Hem Romalılardan hem Partlardan vergi aldı — iki süper güç arasında ustalıkla denge kurdu.
+
+Bugün Samosata baraj gölünün altında. Atatürk Barajı dolduğunda şehir suya gömüldü. Efsaneye göre sular çekilince kadim geçidin sesleri hâlâ duyulur.` },
+'71': { baslik: 'Denize Bakan Yarımada', icerik: `Elaiussa Sebaste bir yarımada üzerine kurulmuştu — üç tarafı denizle çevriliydi. Bu konumu hem güvenli hem de ticarete açık yapıyordu.
+
+Romalı dönemde buranın en ünlü sakini Kilikya korsanlarıyla mücadele eden Pompeius'un generalleri oldu. Deniz haydutları bu kıyılarda at koşturuyordu.
+
+Bugün yarımada üzerindeki tiyatro ve köprü kalıntıları hâlâ ayakta. Deniz aşındırdıkça taşlar biraz daha kıyıya yaklaşıyor.` },
+'72': { baslik: 'Maiandros\'un Şehri', icerik: `Nysa kıvrıla kıvrıla akan Maiandros Nehri'nin vadisinde kurulmuştu. "Kıvrımlar" anlamına gelen "meander" kelimesi bu nehirden gelir — bugün dünyanın her dilinde kullanılır.
+
+Şehrin en büyük sırrı tünelleriydi. Şehrin ortasından bir dere geçiyordu — Nysalılar onu tünel içine aldılar, üstüne pazar yeri kurdular. Bu çözüm antik mühendisliğin parlak örneklerinden biri sayılır.
+
+Coğrafyacı Strabon burayı "büyük ve güzel" diye tanımlamış. 15.000 kişilik tiyatrosu o günlerin en büyüklerinden biriydi.` },
+'73': { baslik: 'Trallesli Deha', icerik: `Tralles'in en ünlü sakini bir matematikçiydi: İsidoros. Ayasofya'yı tasarlayan mimarlardan biri. O kubbeyi hesaplayan beyin Tralles'te yetişmişti.
+
+Efsaneye göre İsidoros kubbeyi yaparken şöyle dedi: "Bu kubbe hiçbir şeyle desteklenmeyecek — sadece geometriyle ayakta duracak." Herkes imkânsız dedi. Ama kubbe 1500 yıldır duruyor.
+
+"Üç Gözler" adıyla bilinen Roma kemerleri bugün hâlâ ayakta. Şehrin geri kalanı toprağın altında uyuyor — ama o kemerler Tralles'in gururunu taşımaya devam ediyor.` },
+'74': { baslik: 'Artemis\'in Beyaz Kenti', icerik: `Magnesia'nın Artemis Tapınağı o kadar büyüktü ki antik kaynaklar onu "bölgenin en muhteşem yapısı" diye tanımlamış. Mimar Hermogenes bu tapınakla yeni bir stil icat etti.
+
+Efsaneye göre şehrin kurucusu Magnetes, bir kahin rüyasında beyaz bir at gördü. Atın koştuğu yerde durdu ve orada şehri kurdu.
+
+Tapınaktan geriye sadece birkaç temel taşı kaldı — ama Hermogenes'in stili tüm Roma mimarisini etkiledi.` },
+'75': { baslik: 'Apollon\'un Kasabası', icerik: `Alabanda'nın adı bir efsaneden gelir: "Ala" Karya dilinde at, "banda" zafer anlamına gelir. Şehrin kurucusu bir savaşta atıyla o kadar cesurca savaştı ki tanrılar şehre bu adı verdi.
+
+Alabanda aynı zamanda akrepleriyle ünlüydü. Antik yazarlar "Alabandalı bir ev gibi akrep dolu" deyimini kullanıyordu.
+
+Bugün zeytinlikler ve buğday tarlaları arasında birkaç sütun kalıntısı duruyor.` },
+'76': { baslik: 'Prenses Ada\'nın Kalesi', icerik: `M.Ö. 334'te Büyük İskender Alinda'ya geldiğinde garip bir konukla karşılaştı: Tahtan indirilmiş yaşlı bir prenses, Ada. Kardeşleri onu buraya sürmüştü.
+
+Ada İskender'e dedi ki: "Bana Karya'yı geri ver, sana bu kaleyi vereyim — ve seni evlat edineyim." İskender kabul etti. Yaşlı prenses ona her gün yemek ve şekerlemeler gönderdi.
+
+İskender Ada'yı seven bir oğul gibi davrandı. Bu garip anne-oğul ilişkisi antik kaynakların en çok anlattığı hikâyelerden biridir.` },
+'77': { baslik: 'Hâlâ Ayakta Duran Tapınak', icerik: `Euromos'taki Zeus tapınağı için şöyle bir efsane anlatılır: Roma İmparatoru Hadrian burayı ziyaret ettiğinde tapınağı o kadar beğendi ki "Bu tapınak sonsuza kadar ayakta kalacak" diye dua etti.
+
+İki bin yıl geçti. 16 sütun hâlâ ayakta. Depremler oldu, savaşlar oldu — tapınak yıkılmadı.
+
+En tuhaf ayrıntı: Sütunların üzerinde bağışçıların adları yazılı. İki bin yıl sonra hâlâ okunuyor — belki en iyi reklam panosu bu.` },
+'78': { baslik: 'Hekatomnidlerin Kutsal Dağı', icerik: `Labranda, Karya Krallığı'nın en kutsal yeriydi. Dağın tepesinde Zeus Labraundos'a adanmış tapınak duruyordu.
+
+"Labrys" çift taraflı balta anlamına gelir. Efsaneye göre bu kutsal balta Labranda'da muhafaza ediliyordu. Kim bu baltayı görürse tanrıların gözünde meşru hükümdar sayılırdı.
+
+Hekatomnid hanedanı her yıl burada büyük festivaller düzenledi. Bugün dağın yamacında yarı yıkık sütunlar duruyor — kutsal balta ise kayıp.` },
+'79': { baslik: 'Endymion\'un Uykusu', icerik: `Efsaneye göre genç çoban Endymion o kadar güzeldi ki Ay tanrıçası Selene ona âşık oldu. Tanrıça ona sonsuz uyku armağan etti — böylece güzelliği hiç solmayacaktı.
+
+Endymion bu dağların eteklerinde uyuyor. Her gece Selene gökyüzünden inerek onu ziyaret ediyor. Bafa Gölü'nün sakin yüzeyinde Selene'nin yansıması görünüyor.
+
+Herakleia bu efsanenin gölgesinde kuruldu. Su üzerindeki yansımalar hâlâ büyülüyor.` },
+'80': { baslik: 'Balıkçıların Kenti', icerik: `Iassos'un sikkelerinde her zaman balık vardı. Bu küçük yarımada kenti denizden geçimini sağlıyordu — ve parasına balık bastırdı.
+
+Efsane şöyle: Bir gün agorада bir müzisyen konser veriyordu. Dinleyiciler büyülenmiş dinliyordu. Tam o sırada balık satıcıları "Balık!" diye bağırdı. Kalabalık anında dağıldı. Sadece bir sağır adam kaldı — müzisyen herkesi onu sandı, teşekkür etti.
+
+Bu hikâye Iassos'luların para düşkünlüğünün simgesi oldu.` },
+'81': { baslik: 'Çömleğin Evi', icerik: `Keramos'un adı Yunanca'da "pişmiş toprak, çömlek" anlamına gelir. Bu kentten gelen çömlekler o kadar tanınmıştı ki zamanla tüm pişmiş toprak ürünlerine "keramos" — yani "seramik" denmeye başlandı.
+
+Efsaneye göre şehrin kurucusu tanrı Hephaestos'un oğluydu. Ateş tanrısının soyundan gelen bu insanlar fırın yakmayı tanrısal bir sanat olarak görüyordu.
+
+Her zaman seramik dediğinizde, bu kelimenin Muğla'nın dağlarından geldiğini hatırlayın.` },
+'82': { baslik: 'Nehrin Ağzındaki Şehir', icerik: `Kaunos, bataklıklara yakınlığı yüzünden kötü bir ün kazanmıştı. Antik çağda "Kaunoslular neden bu kadar solgun?" diye sorulurdu. Cevap belliydi: Sıtma.
+
+Ama Kaunoslular bu zorluğa rağmen güzel şeyler yaptı. Kayaya oyulan tapınak cepheli mezarlar bugün Dalyan Kanalı'ndan tekneyle geçenleri büyülüyor.
+
+Efsaneye göre bu mezarlarda gömülenler her gece nehirde yüzüyor. Gemiciler bazen sularda gölgeler gördüklerini anlatır.` },
+'83': { baslik: 'Dağın Zirvesindeki Şehir', icerik: `Kadyanda dağın tepesine kurulmuştu — o kadar yüksek ki bulutlar bazen şehrin içinden geçerdi. Likalılar buraya "kartalların yuvası" diyordu.
+
+Bu konumun avantajı belliydi: Hiçbir düşman yorulmadan çıkamazdı. Stadyumun kalıntıları bugün hâlâ görülebilir.
+
+Dağın tepesinde spor yarışmaları yapan insanları düşünün — rüzgârın uğulduğu o yükseklikte koşmak, güreşmek. Belki de zorluğu aşmak onlar için ibadet gibiydi.` },
+'84': { baslik: 'Yüzlerce Kaya Mezarın Şehri', icerik: `Pinara'nın kayalıklarına bakıldığında ilk gözüken yüzlerce delik: Kaya mezarları. Likalılar ölülerini dağın bağrına gömdü.
+
+Efsaneye göre bu mezarlar içinde ölüler hâlâ yaşıyor. Karanlıkta oturuyor, konuşuyor. Her yıl Karanlık Ay gecesi onlar için kapı bırakılır.
+
+UNESCO bu kenti koruma altına aldı. Ama asıl koruyan belki de o kayalara oyulan inançtı — ölüm burada son değildi, sadece farklı bir yaşamdı.` },
+'85': { baslik: 'Bellerophon\'un Yurdu', icerik: `Efsaneler Tlos'u Bellerophon'a bağlar. Kanatlı at Pegasos'a binen bu kahraman, ateş püskürten Chimaera canavarını öldürdü. Sonra Olympos'a tırmanmaya kalktı — Zeus bir at sineği yollayıp Pegasos'u deli etti, Bellerophon düştü.
+
+Yıllarca sakat ve kör dolaştı. Nihayetinde Likya'ya döndü ve burada öldü. Kaya mezarı hâlâ burada.
+
+Tlos'un en güzel özelliği: Romalı hamam, Likalı mezarlar ve Osmanlı kalesi iç içe geçmiş. Tarih burada katmanlaşmayı bırakıp birleşti.` },
+'86': { baslik: 'Kibyra Birliği\'nin Başkenti', icerik: `Kibyra dört kentin birliğinin başkentiydi. Bu birlik o kadar güçlüydü ki Roma bile başlangıçta antlaşmayı tercih etti.
+
+Efsaneye göre Kibyra halkı Lidyalıların torunlarıydı. Kral Kroisos'un soyundan geliyorlardı. Bu yüzden altına ve zenginliğe tutkuları vardı.
+
+Şehrin gladyatör arenası küçük ama iyi korunmuştu. Roma'ya ihraç edilecek savaşçılar burada yetişti.` },
+'87': { baslik: 'Kayalığın Üzerindeki Roma', icerik: `Kremna, Torosların sarp kayalıkları üzerine kurulmuş bir Roma askeri kolonisiydi. Buraya yerleştirilen eski askerler Roma'yı dağların içine taşıdı: Forum, tapınak, agora.
+
+M.S. 278'de bir eşkıya Kremna'yı ele geçirdi ve Roma'ya karşı isyan bayrağı açtı. Roma ordusu yıllarca kuşattı — sonunda şehir içinden ihanetle düştü.
+
+Bugün kayalığın üzerinde Roma sütun başlıkları ve Torosların zirvesi aynı anda görünür.` },
+'88': { baslik: 'Dağların Sakin Kenti', icerik: `Adada, Pisidya'nın gizli incisiydi. Büyük şehirlerin gürültüsünden uzak, dağların arasında sessizce var oldu.
+
+Şehrin iki tapınağı vardı — biri doğuya, biri batıya bakıyordu. Sabah güneşi doğu tapınağını aydınlatırdı, akşam güneşi batıyı. Sanki günü iki kutsal alev çerçeveliyordu.
+
+Adada size sadece tarihi değil, sessizliği de sunar. Ve bazen tarihi anlamak için sessizliğe ihtiyaç vardır.` },
+'89': { baslik: 'Aziz Pavlus\'un İlk Vaazı', icerik: `M.S. 47'de Aziz Pavlus dağları aşarak Antiokheia Pisidya'ya ulaştı. Sinagoğa girdi, cemaate hitap etti: "Ey İsrailoğulları ve tanrıdan korkan siz ötekiler, dinleyin..."
+
+Bu vaaz Hristiyan tarihinin en önemli anlarından biriydi. İlk kez bir Yahudi olmayan kitleye Hristiyanlık açıklanıyordu. Bazıları inanmadı, bazıları şehirden kovdu. Ama tohum ekilmişti.
+
+Men Askaenos Tapınağı kalıntıları arasında dolaşırken o vaazın yankısını hissedebilirsiniz.` },
+'90': { baslik: 'Rahip-Kralların Şehri', icerik: `Olba'da kral yoktu — rahip vardı. Şehri yüzyıllarca din adamları yönetti. Tapınak hem devlet binası hem ibadet yeri hem hazineydi.
+
+Bu rahip-kral geleneği garip bir hanedan yarattı: Teukhros hanedanı. Kuşaktan kuşağa hem dini otorite hem siyasi güç aktarıldı.
+
+Zeus Olbios tapınağı bugün hâlâ etkileyici. Rahiplerin bu manzaraya bakarak tanrıyla konuştuklarını düşünmek insanı büyülüyor.` },
+'91': { baslik: 'Uzun Kulenin Şehri', icerik: `Uzuncaburç adını Hellenistik dönemden kalma yüksek kulenden alır. Bu kule binlerce yıldır gözetleme kulesi olarak kullanıldı.
+
+Zeus Olbios tapınağının beş sütunu hâlâ ayakta. Her sütun tek parça taştır — bu kadar büyük taşları bu dağlara taşımak başlı başına bir mucize.
+
+Efsaneye göre kulenin tepinde bir hazine saklanmış. Her nesil bir kez çıkıp aramış. Hiçbiri bulmamış. Ama kuleden görünen manzara, her defineyi unutturuyor.` },
+'92': { baslik: 'Dilin Bozulduğu Şehir', icerik: `"Solecism" kelimesi yani "dil hatası" — bu kelime Soli'den gelir. Antik çağda Soli halkının Yunancasının o kadar bozuk olduğu söylenirdi ki yanlış konuşmak "Solili gibi konuşmak" deyimine dönüştü.
+
+Sonra Pompeius şehri yeniden kurdu, adını Pompeiopolis koydu. Sütunlu cadde inşa ettirdi — bugün hâlâ 1. yüzyıldan kalma sütunların bir bölümü ayakta.
+
+Şehrin ironisi: Dil hatalarıyla ünlü bu kentten "solecism" kelimesi tüm dillere yayıldı.` },
+'93': { baslik: 'Kilikyalı Limanın Gizemi', icerik: `Aigeai, Kilikya ovasının denize açılan kapısıydı. Adana ovasından gelen tahıl, zeytinyağı ve pamuk buradan gemilere yüklenerek dünyaya yayılırdı.
+
+Efsaneye göre şehrin tiyatrosunda söylenen her söz yıllar sonra gerçeğe dönüşürmüş. Ozanlar burada kelimelerini dikkatle seçerdi.
+
+Bugün antik limanın kalıntıları Akdeniz'e bakıyor. Gemiler artık yok, ama ufuk hâlâ aynı.` },
+'94': { baslik: 'Ana Tanrıça\'nın Doğduğu Yer', icerik: `Pessinus, Kibele'nin yeryüzündeki evidir. Ana tanrıça — doğanın, bereketin tanrıçası — burada tapınıyordu. Tapınağının en kutsal nesnesi gökten düşen bir meteoritti.
+
+M.Ö. 204'te bir kehanet Romalılara şunu söyledi: "Hannibal'ı ancak Ana Tanrıça'nın yardımıyla yenebilirsiniz." Meteorit törenle Roma'ya taşındı. Ve Roma gerçekten Hannibal'ı yendi.
+
+Bugün Pessinus'ta birkaç sütun kalıntısı var. Ama o meteoritin gücü hâlâ hissediliyor.` },
+'95': { baslik: 'Saklı Antik Kent', icerik: `Metropolis'e gidenler çoğunlukla şaşırır: Bu kadar büyük bir kentin neden bu kadar az bilindiğini anlamak güçtür. İzmir'e sadece 40 kilometre, ama sanki başka bir zaman dilimine aittir.
+
+Şehrin en güzel buluntularından biri bir dükkan tabelasıydı: "Burada en iyi şarap satılır." İki bin yıllık reklam panosu.
+
+Efsaneye göre şehrin altında tünel sistemi var. Deprem olduğunda tüneller sesi yutar, şehri korur.` },
+'96': { baslik: 'Apollon\'un Kutsal Korusu', icerik: `Klaros'ta Apollon konuşurdu — gerçekten. Kahin yeraltındaki odaya iner, kutsal sudan içer ve tanrının sesi onun ağzından çıkardı.
+
+Efsaneye göre kutsal su Styx nehrinden, yani Ölüler Diyarı'ndan geliyordu. Bu suyu içen kahin bir ayağıyla ölüler dünyasına adım atıyordu.
+
+İmparatorlar, generaller, şehir devletleri — hepsi kehanet için geldi.` },
+'97': { baslik: 'Deniz Savaşının Tanığı', icerik: `M.Ö. 407'de Notion açıklarında Sparta Atina'yı bozguna uğrattı. Bu yenilginin sonucu devasa oldu: Atina'nın büyük komutanı Alkibiades görevden alındı. Peloponnessos Savaşları'nın dengesi değişti.
+
+Atina'nın sonunun başlangıcı bu küçük kasabada yaşandı.
+
+Notion bugün birkaç sütun kaidesi ve duvar kalıntısından ibaret. Ama o savaşın dalgaları belki hâlâ kıyıya vuruyor.` },
+'98': { baslik: 'Homerosçuların Kenti', icerik: `Erythrai, Homeros'un doğum yeri olduğunu iddia eden kentlerden biriydi. Yedi şehir bu şeref için yarışıyordu.
+
+Buradan bir Sibylla — kahin kadın — çıktı. Erythralı Sibylla kehanetlerini İtalya'ya götürdü. Roma'nın kaderine yön veren kehanetlerin bazıları bu İyon'lu kadından geldi.
+
+Athena tapınağı bugün birkaç blok halinde tarla kenarında duruyor. Ama o kahin kadının sesi Akdeniz'in karşı kıyısına ulaşmıştı.` },
+'99': { baslik: 'Denizcilerin Yurdu', icerik: `Foçalı denizciler antik dünyanın en cesur kaşifleriydi. M.Ö. 600'lerde Akdeniz'i aştılar, İspanya'ya ulaştılar, Marsilya'yı kurdular.
+
+Pers işgalinde Foçalılar teslim olmak yerine şehri terk ettiler. "Gelin, başka yerde yeni bir Foça kuralım" dediler. Büyük kısmı gitti.
+
+Geride kalanlar döndüler: "Burasız olmaz" dediler ve Perslere boyun eğdiler. Ama ruhları hep ufuklardaydı.` },
+'100': { baslik: 'Aklın Doğduğu Şehir', icerik: `Anaksagoras, Klazomenai'de doğdu ve şunu söyledi: "Güneş ateşten bir kaya kütlesidir — tanrı değil."
+
+Atina bu söz için onu mahkemeye çıkardı. Perikles arkadaşıydı — bu yüzden canını kurtardı. Ama sürgüne gitmek zorunda kaldı.
+
+Ölürken öğrencileri sordular: "Memleketin Klazomenai'yi özlemiyor musun?" Güldü: "Hayır. Gökyüzüne giden yol her yerden geçer."` },
+'101': { baslik: 'Bin Yıllık Şehir', icerik: `İzmir — antik Smyrna — Homeros'un doğum yeri olduğunu iddia eden şehirlerden biriydi. "Melez Nehri'nin kıyısında doğan adam" diye anlatılırdı Homeros. Melez hâlâ akıyor.
+
+M.Ö. 600'lerde bir deprem şehri yerle bir etti. Yüzyıllarca boş kaldı.
+
+Sonra İskender rüyasında iki tanrıça gördü — ona Kadifekale'ye Smyrna'yı yeniden kurmasını söylediler. Kurdu. Şehir yeniden doğdu. Ölüp dirilmeyi öğrenmişti.` },
+'102': { baslik: 'Aiol\'un Unutulan Kenti', icerik: `Aigai, M.S. 17'deki büyük depremde hasar gördü. İmparator Tiberius kurtarma için büyük para gönderdi.
+
+Pliny şöyle yazmış: "Aigai sakinleri felaketten sonra o kadar gururlanmak istediler ki depreme meydan okur gibi daha büyük binalar yaptılar."
+
+Bugün tarla içinde birkaç sütun kalıntısı duruyor. Gurur ve doğa arasındaki o eski savaş hâlâ sürüyor — ve doğa yavaş da olsa kazanıyor.` },
+'103': { baslik: 'Boyacıların Kenti', icerik: `Thyateira, mor boyayla ünlüydü. Bu boya son derece değerliydi — deniz salyangozundan elde ediliyordu. Bir tutam mor için yüzlerce hayvan gerekiyordu. Bu yüzden mor kraliyet rengi oldu.
+
+Yeni Ahit'teki Thyateiralı Lydia, Pavlus'un Avrupa'daki ilk takipçisiydi. Mesleği mor kumaş satıcılığıydı. Bir boyacı kadın, Hristiyanlığın Avrupa'ya taşınmasında köprü oldu.
+
+"Vahiy" kitabında Thyateira kilisesine uyarı var. İki bin yıllık bir mektup, hâlâ bu şehrin adını taşıyor.` },
+'104': { baslik: 'Açık Kapının Kenti', icerik: `Vahiy kitabında Philadelphia'ya şöyle yazılmış: "Önüne açık bir kapı koydum, kimse kapatamaz." Bu söz şehrin sembolü oldu.
+
+Philadelphia, kardeşine olan bağlılığıyla ünlü Bergama Kralı II. Attalos tarafından kuruldu. Kente "kardeş sevgisi" adını verdi.
+
+Bugün Alaşehir'in merkezinde Aziz Yuhanna Kilisesi'nin kemerleri duruyor. O "açık kapı" imgesi hâlâ yaşıyor.` },
+'105': { baslik: 'Hesiodos\'un Kökleri', icerik: `Kyme'nin en ünlü bağı bir şairin babasıylaydı: Hesiodos'un babası buradan göç etmişti. Hesiodos "Theogony" ve "İşler ve Günler"i yazdı — Yunan mitolojisinin en önemli kaynakları.
+
+Kyme'nin en tuhaf efsanesi şu: Halkı o kadar yavaş hareket ederdi ki bir gün liman inşa etmeye karar verdiklerinde komşu kentler çoktan zenginleşmişti. "Geç kalan Kyme'li" deyimi antik çağda tembeli ifade ederdi.
+
+Yavaş da olsa Kyme şairin babasını dünyaya verdi.` },
+'106': { baslik: 'Heykelciklerin Ustası', icerik: `Myrina'nın pişmiş toprak heykelcikleri antik dünyanın en sevilen hediyelikleriydi. Her evde, her tapınakta bir Myrina figürini bulunurdu.
+
+Bu heykelcikler sadece tanrıları değil, günlük hayatı da yansıtırdı: Tiyatroya giden kadın, top oynayan çocuk, konuşan iki arkadaş. İki bin yıl öncesinin fotoğrafları gibiydi bunlar.
+
+Seri üretim miydi, sanat mıydı? İkisi arasındaki sınır Myrina'da silinmişti.` },
+'108': { baslik: 'Pavlus\'un Gemisi', icerik: `Adramytteion limanı Yeni Ahit'te geçer. Aziz Pavlus Roma'ya gönderilirken bindiği gemi buradan kalkmıştı.
+
+Aristoteles de bu kenti bilirdi — öğrencisi Hermias buranın yöneticisiydi. Aristoteles Hermias'ın kız kardeşiyle evlendi.
+
+Bir liman kenti bazen iki büyük hikâyenin kesiştiği yerdir: Bir gemi kalkarken bir evlilik de başlamıştı.` },
+'109': { baslik: 'İskender\'in Generalinin Şehri', icerik: `Alexandreia Troas, İskender'in generallerinden Antigonos tarafından M.Ö. 310'da kuruldu. Birçok küçük şehri bir araya getirdi — tarihin ilk büyük kentleşme projelerinden biri.
+
+Roma döneminde İmparator Konstantinos burayı yeni başkent yapmayı düşündü. İstanbul'u seçmeseydi, bugün başka bir isim dünya tarihinin başkenti olacaktı.
+
+"Neredeyse başkent olan kent" olarak tarihe geçti Troas.` },
+'111': { baslik: 'Bithynia\'nın Unutulan Kenti', icerik: `Prusias ad Hypium'u kuran Bithynia Kralı Prusias, Hannibal'ı Romalılardan korumuştu. Sonunda teslim etmek zorunda kaldı.
+
+Hannibal zehir içerek intihar etti — son sözleri: "Romalıların kaygısını giderelim, bir yaşlı adamı bekletmeyelim."
+
+Bu kente gelenler Roma köprüsünü görüyor. Ama gözlerini kaparlarsa Hannibal'ın son gecesini hayal edebilirler.` },
+'112': { baslik: 'Karadeniz\'in İncisi', icerik: `Amastris — bugünkü Amasra — antik dünyanın en güzel doğal limanlarından birine sahipti. İki yarımada arasına sıkışmış bu korunaklı koy, fırtınanın ortasında bile sakin kalırdı.
+
+Şehri kuran Amastris bir kraliçeydi — Büyük Darius'un yeğeni. Pers kanı taşımasına rağmen Helenistik bir şehir kurdu. Hem doğunun hem batının kızıydı.
+
+Bugün Bizans surları hâlâ ayakta. Katman katman tarih, mavi Karadeniz'e bakıyor.` },
+'113': { baslik: 'Sütunlu Caddenin Sırrı', icerik: `Pompeiopolis yakın zamana kadar neredeyse bilinmiyordu. Sonra bir arkeolog tarlada garip bir şey fark etti: Toprak altından sütun başlıkları çıkıyordu.
+
+Kazılar başlayınca 2000 yıllık sütunlu cadde neredeyse bozulmamış haldeydi. Toprağın altında uyuyordu.
+
+Şehri Pompeius kurmuştu — Kilikya korsanlarını temizledikten sonra. Korsanlara yeni hayat verdi, onları topraklara yerleştirdi. Denizin haydutları toprakçı oldu.` },
+'114': { baslik: 'Büyük Gregorios\'un Şehri', icerik: `Neokaisareia'da Büyük Gregorios piskopos oldu. Efsaneye göre şehre geldiğinde sadece 17 Hristiyan vardı. Öldüğünde ise sadece 17 putperest kalmıştı.
+
+Gregorios'un en ünlü mucizesi: İki kardeş aynı göl için kavga ediyordu. Gregorios dua etti — gece göl kuruyuverdi. Kavga bitti.
+
+Mucize mi, efsane mi? İkisi arasındaki çizgi Niksar'da çizilmemiş.` },
+'115': { baslik: 'Tanrıça Atargatis\'in Kenti', icerik: `Hierapolis Bambyke'de Suriye tanrıçası Atargatis tapınıyordu — balık ve güvercin ona kutsaldı, kimse onları öldüremezdi.
+
+Romalı yazar Lucianus burayı ziyaret etmiş: "Tapınağın önündeki havuzda kutsal balıklar yüzüyor, onlara isim takılmış, çağırınca yanına geliyorlar."
+
+Atargatis'in adı "uzaktan gelen" anlamında. Uzaktan geldi, binlerce yıl burada kaldı.` },
+'116': { baslik: 'El Sıkışmanın Anıtı', icerik: `Arsameia'nın en ünlü eseri bir kaya kabartmasıdır: Dev bir el sıkışma sahnesi. Bir tarafta Kommagene Kralı, diğer tarafta tanrı Herakles. İkisi eşit güçte, eşit onurla tokalaşıyor.
+
+Bu kabartma Kommagene ideolojisinin özüydü: Kral tanrıyla eşit. Ne tanrının kulu, ne de tanrıdan bağımsız.
+
+Yazıt şöyle diyor: "Ben bu kutsal yeri kurdum. Oğlum Antiokhos buraya gelip dua etsin, ben de gökyüzünden onu izleyeyim."` },
+'117': { baslik: 'Kaya İçindeki Kilise', icerik: `Perre, Roma döneminin önemli bir kentiydi. Ama Hristiyanlık yayılınca mağaralar kiliseye dönüştü. Kayaya oyulan odalar ibadet yerine, sığınak, mezarlık oldu.
+
+Bu kaya kiliseleri sıradan değildi. Bazılarında freskler vardı — bugün silinmiş, ama izleri kalmış.
+
+Kommagene'nin bu sessiz köşesinde tarih farklı bir boyut kazanıyor. Büyüklükle küçüklük, gösteri ile sessizlik, aynı toprakta yan yana.` },
+'118': { baslik: 'Antik Liman\'ın Mozaikleri', icerik: `Kelenderis, Kilikya'nın en eski Yunan kolonilerinden biriydi. Rivayete göre Yunan kahraman Sandokos burayı kurdu — tanrısal kökenden geliyordu.
+
+Kazılarda bulunan mozaikler şaşırtıcıydı: Balık, yunus, deniz canavarları. Deniz insanların hayal dünyasını ne kadar doldurmuştu.
+
+Bugün Aydıncık plajının altında antik liman kalıntıları var. Yüzücüler bazen su altında taş duvarları görüyor. Antik kent hâlâ orada — sadece deniz onu sahiplendi.` },
+'119': { baslik: 'Dağ Üstündeki Şehir', icerik: `Anazarbos, Kilikya ovasını gören yüksek bir kaya üzerine kurulmuştu. Roma döneminde Kilikya'nın başkentiydi.
+
+"Anazarbos mu Tarsus mu?" kavgası yüzyıllarca sürdü. Her ikisi de "ilk şehir" unvanını istiyordu.
+
+Bugün kaleye çıkan dar yoldan tırmanınca Çukurova ovasının tamamı görünüyor. Antik dönemde bu manzaraya bakan gözler bugün de aynı manzarayı görüyor.` },
+'120': { baslik: 'Artemis\'in Dağ Evi', icerik: `Kastabala'nın diğer adı Hierapolis'ti — "kutsal şehir." Artemis Perasia tapınağı, tüm Kilikya'nın hac merkeziydi.
+
+En garip ritüel: Tapınağın rahibeleri kor ateş üzerinde yalınayak yürüyordu. Yanmıyorlardı. Tanrıçanın koruyuculuğuyla mı? Antik kaynaklar hayretle anlatıyor.
+
+Artemis Perasia'nın adı "uzaktan gelen" anlamında. Uzaktan geldi, binlerce yıl burada kaldı.` },
+'121': { baslik: 'Şehrin Altındaki Şehir', icerik: `İzmir'in göbeğinde, Kemeraltı çarşısının altında antik bir agora yatıyor. Kimse farkında değil — alışveriş yapıyorlar, üstünden geçiyorlar.
+
+Smyrna Agorası, M.S. 178 depreminden sonra İmparator Marcus Aurelius tarafından yeniden inşa edildi.
+
+Belki en büyük efsane şu: İzmir büyüdükçe kendi geçmişinin üzerinde yürüyor — ve henüz tamamını bilmiyor.` },
+
+};
+// ─────────────────────────────────────────────────────────────────────────────
+// ── EFSANE FONKSİYONLARI ─────────────────────────────────────────────────────
+function efsaneGoster(yerId) {
+  const bolum = document.getElementById('efsanelerBolum');
+  const efsane = EFSANELER[yerId];
+  if (!efsane) { bolum.style.display = 'none'; return; }
+  bolum.style.display = 'block';
+  document.getElementById('efsaneBaslik').textContent = '📖 ' + efsane.baslik;
+  document.getElementById('efsaneMetin').textContent = efsane.icerik;
+  document.getElementById('efsaneMetin').style.display = 'none';
+  document.getElementById('efsaneToggleBtn').textContent = '▼ Efsaneyi Oku';
+}
+
+function efsaneToggle() {
+  const metin = document.getElementById('efsaneMetin');
+  const btn = document.getElementById('efsaneToggleBtn');
+  const acik = metin.style.display !== 'none';
+  metin.style.display = acik ? 'none' : 'block';
+  btn.textContent = acik ? '▼ Efsaneyi Oku' : '▲ Kapat';
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 // ── ÜNLÜ KİŞİLER ─────────────────────────────────────────────────────────────
 const UNLULER = {
