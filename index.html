@@ -2869,33 +2869,26 @@ function yakinHeaderTikla() {
 function yakinPillSec(el) {
   const panel = document.getElementById('yakinPanel');
   const liste = document.getElementById('yakinListesi');
-  el.textContent = '⏳';
-  el.disabled = true;
+
   if (!navigator.geolocation) {
     alert('Tarayıcınız konum özelliğini desteklemiyor.');
-    el.textContent = '📍';
-    el.disabled = false;
     return;
   }
-  liste.innerHTML = '<div style="color:#888;text-align:center;padding:20px">📡 Konum alınıyor…</div>';
+
+  // Paneli hemen aç
   panel.classList.add('acik');
-  const onSuccess = (pos) => {
-    el.textContent = '📍';
-    el.disabled = false;
-    yakinHesapla(pos.coords.latitude, pos.coords.longitude);
-  };
-  const onError = () => {
-    el.textContent = '📍';
-    el.disabled = false;
-    panel.classList.remove('acik');
-    alert('Konum alınamadı. Tekrar deneyin.');
-  };
-  // iOS Safari için en uyumlu yöntem
-  navigator.geolocation.getCurrentPosition(onSuccess, onError, {
-    enableHighAccuracy: true,
-    timeout: 12000,
-    maximumAge: 0
-  });
+  liste.innerHTML = '<div style="color:#F5D5A0;text-align:center;padding:30px;font-size:14px">📡 Konum alınıyor…<br><small style="color:#888;font-size:12px">Birkaç saniye sürebilir</small></div>';
+
+  // Önce düşük hassasiyetle hızlı dene
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      yakinHesapla(pos.coords.latitude, pos.coords.longitude);
+    },
+    (err) => {
+      liste.innerHTML = '<div style="color:#e74c3c;text-align:center;padding:20px;font-size:13px">Konum alınamadı.<br>iPhone Ayarlar → Gizlilik → Konum Servisleri → Safari → İzin Ver</div>';
+    },
+    { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+  );
 }
 
 function yakinPanelKapat() {
