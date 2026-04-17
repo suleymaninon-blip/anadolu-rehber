@@ -75,7 +75,7 @@
   .bos { text-align: center; padding: 60px 20px; }
   .bos-emoji { font-size: 40px; margin-bottom: 12px; }
   .bos-text { font-size: 14px; color: #9B9B97; line-height: 1.6; }
-  .ekran { position: absolute; inset: 0; background: #FAFAF8; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); z-index: 10; }
+  .ekran { position: absolute; inset: 0; bottom: 56px; background: #FAFAF8; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); z-index: 10; }
   .ekran.acik { transform: translateX(0); }
   .detay-hero { height: 280px; display: flex; align-items: center; justify-content: center; position: relative; font-size: 52px; flex-shrink: 0; overflow: hidden; }
   .detay-hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.4s; }
@@ -265,13 +265,13 @@
   .favori-btn { width: 32px; height: 32px; border-radius: 50%; border: 0.5px solid #E8E6E0; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; flex-shrink: 0; transition: transform 0.2s; }
   .favori-btn:active { transform: scale(1.3); }
   .favori-btn.aktif { background: #FFF0E8; border-color: #E8C4AD; }
-  .alt-nav { display: flex; background: #fff; border-top: 0.5px solid #E8E6E0; flex-shrink: 0; }
+  .alt-nav { display: flex; background: #fff; border-top: 0.5px solid #E8E6E0; flex-shrink: 0; position: relative; z-index: 200; }
   .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0 12px; cursor: pointer; border: none; background: transparent; gap: 3px; }
   .nav-ikon { font-size: 20px; }
   .nav-label { font-size: 10px; color: #9B9B97; font-family: 'Crimson Pro', serif; }
   .nav-btn.aktif .nav-label { color: #B85C2A; font-weight: 500; }
   /* TUR PLANLAYICI */
-  .plan-ekran { position: fixed; inset: 0; background: #FAFAF8; z-index: 150; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
+  .plan-ekran { position: fixed; inset: 0; bottom: 56px; background: #FAFAF8; z-index: 150; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
   .plan-ekran.acik { transform: translateY(0); }
   .plan-header { padding: 16px 20px 12px; border-bottom: 0.5px solid #E8E6E0; display: flex; align-items: center; justify-content: space-between; background: #fff; }
   .plan-baslik { font-family: 'Cinzel', serif; font-size: 18px; color: #1A1A18; letter-spacing: 1px; }
