@@ -270,6 +270,21 @@
   .nav-ikon { font-size: 20px; }
   .nav-label { font-size: 10px; color: #9B9B97; font-family: 'Crimson Pro', serif; }
   .nav-btn.aktif .nav-label { color: #B85C2A; font-weight: 500; }
+
+  /* LEZZETLER BÖLÜMÜ */
+  .lezzet-kaydirici { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+  .lezzet-kaydirici::-webkit-scrollbar { display: none; }
+  .lezzet-kart { background: #fff; border-radius: 14px; border: 0.5px solid #E8E6E0; padding: 14px; min-width: 160px; max-width: 160px; flex-shrink: 0; cursor: pointer; transition: transform 0.15s; }
+  .lezzet-kart:active { transform: scale(0.97); }
+  .lezzet-emoji { font-size: 28px; margin-bottom: 8px; }
+  .lezzet-isim { font-family: 'Cinzel', serif; font-size: 12px; color: #1A1A18; margin-bottom: 4px; line-height: 1.3; }
+  .lezzet-aciklama { font-size: 11px; color: #9B9B97; line-height: 1.5; }
+  .lezzet-bolge-baslik { font-size: 12px; color: #B85C2A; font-weight: 500; margin-bottom: 4px; }
+  .lezzet-bolge-alt { font-size: 11px; color: #9B9B97; margin-bottom: 12px; font-style: italic; }
+  .lezzet-ai-btn { background: linear-gradient(135deg, #B85C2A, #8B3A1A); color: #fff; border: none; border-radius: 10px; padding: 10px 14px; font-family: 'Crimson Pro', serif; font-size: 13px; cursor: pointer; width: 100%; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .lezzet-ai-btn:disabled { opacity: 0.6; }
+  .lezzet-ai-cevap { background: #FFF8F5; border: 0.5px solid #F5C5A3; border-radius: 12px; padding: 14px; margin-top: 10px; font-size: 13px; color: #4A4A48; line-height: 1.7; display: none; white-space: pre-wrap; }
+
   /* TUR PLANLAYICI */
   .plan-ekran { position: fixed; inset: 0; bottom: 56px; background: #FAFAF8; z-index: 150; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
   .plan-ekran.acik { transform: translateY(0); }
@@ -424,6 +439,17 @@
         <div class="zi"><div class="zi-label" id="lSure">Süre</div><div class="zi-deger" id="dSure"></div></div>
       </div>
       <div class="bolum"><div class="bolum-baslik" id="lMed">Medeniyetler</div><div class="med-etiketler" id="dMed"></div></div>
+      <div class="bolum" id="lezzetlerBolum" style="display:none">
+        <div class="bolum-baslik">🍽️ Yerel Lezzetler</div>
+        <div class="lezzet-bolge-baslik" id="lezzetBolgeBaslik"></div>
+        <div class="lezzet-bolge-alt" id="lezzetBolgeAlt"></div>
+        <div class="lezzet-kaydirici" id="lezzetKaydirici"></div>
+        <button class="lezzet-ai-btn" id="lezzetAiBtn" onclick="lezzetAiSor()">
+          ✨ Bu Bölgenin Mutfağını Keşfet
+        </button>
+        <div class="lezzet-ai-cevap" id="lezzetAiCevap"></div>
+      </div>
+
       <div class="bolum" id="efsanelerBolum" style="display:none">
         <div class="bolum-baslik">⚡ Efsaneler & Destanlar</div>
         <div id="efsaneIcerik" style="background:#fff;border-radius:14px;border:0.5px solid #E8E6E0;padding:16px;cursor:pointer" onclick="efsaneToggle()">
@@ -1799,7 +1825,8 @@ function detayAc(id) {
   document.getElementById('dBitis').textContent=yilGoster(y.bitis);
   document.getElementById('dSure').textContent=Math.abs(y.bitis-y.baslangic)+' '+t('yil');
   document.getElementById('dAciklama').textContent=yerAciklama(y);
-  efsaneGoster(y.id);
+  lezzetlerGoster(y.id);
+efsaneGoster(y.id);
 unlulerGoster(y.id);
   document.getElementById('dMed').innerHTML=y.medeniyetler.map((m,i)=>`<div class="med-etiket ${i===0?'birincil':''}">${medEnCevir(m)}</div>`).join('');
   document.getElementById('dUcret').textContent=`₺${y.ucret}`;
@@ -1979,6 +2006,82 @@ function haritaKapat() {
   document.getElementById('pinListesi').classList.remove('acik');
 }
 
+
+
+// ── LEZZETLER VERİSİ ─────────────────────────────────────────────────────────
+const LEZZETLER = {
+  'ege': {
+    baslik: 'Ege Mutfağı', aciklama: 'Zeytinyağı, deniz ürünleri ve taze otların buluştuğu sağlıklı mutfak',
+    lezzetler: [
+      { isim: 'Zeytinyağlı Enginar', aciklama: 'Taze enginarın zeytinyağı, limon ve dereotu ile pişirildiği Ege\'nin vazgeçilmezi', emoji: '🫒' },
+      { isim: 'Midye Dolma', aciklama: 'İzmir sokaklarının simgesi, baharatlı pirinçle doldurulmuş taze midye', emoji: '🦪' },
+      { isim: 'Boyoz', aciklama: 'İzmir\'e özgü susam ezmeli hamur işi, sabah kahvaltısının yıldızı', emoji: '🥐' },
+      { isim: 'Kumru', aciklama: 'İzmir\'in ünlü sandviçi — sucuk, sosis, kaşar ve domatesle', emoji: '🥪' },
+      { isim: 'Gevrek', aciklama: 'İzmir simidinin özel adı — ince, çıtır, susam kaplamalı', emoji: '🥨' },
+    ]
+  },
+  'akdeniz': {
+    baslik: 'Akdeniz Mutfağı', aciklama: 'Narenciye, baharatlar ve deniz ürünlerinin buluştuğu zengin mutfak',
+    lezzetler: [
+      { isim: 'Antalya Piyazı', aciklama: 'Haşlanmış fasulye, yumurta, tahin ve zeytinyağıyla hazırlanan meşhur Antalya salatası', emoji: '🥗' },
+      { isim: 'Şiş Köfte', aciklama: 'Antalya usulü baharatlı kuzu kıymasından şişte pişirilmiş köfte', emoji: '🍢' },
+      { isim: 'Kabak Tatlısı', aciklama: 'Fırında pişirilmiş balkabağı üzerine ceviz ve kaymak', emoji: '🎃' },
+      { isim: 'Hibes', aciklama: 'Susam ezmesi, limon ve sarımsakla hazırlanan Akdeniz mezesi', emoji: '🫙' },
+      { isim: 'Tahinli Pide', aciklama: 'Mersin\'e özgü tahin ve pekmezle yapılan özel pide', emoji: '🫓' },
+    ]
+  },
+  'guneydogu': {
+    baslik: 'Güneydoğu Mutfağı', aciklama: 'Kebap, baklava ve fıstığın diyarı — Türkiye\'nin en zengin mutfağı',
+    lezzetler: [
+      { isim: 'Urfa Kebabı', aciklama: 'Acı biberiyle ünlü, közde pişirilmiş Şanlıurfa\'nın simge lezzeti', emoji: '🍖' },
+      { isim: 'Antep Baklavası', aciklama: 'Taze Antep fıstığıyla yapılan, tüm dünyanın tanıdığı baklava', emoji: '🍮' },
+      { isim: 'Lahmacun', aciklama: 'İnce hamur üzerine kıyma ve baharatlardan yapılan "Türk pizzası"', emoji: '🥙' },
+      { isim: 'Çiğköfte', aciklama: 'Bulgur, biber salçası ve baharatlarla yoğrulan Urfa\'nın meşhur lezzeti', emoji: '🌶️' },
+      { isim: 'Katmer', aciklama: 'Antep\'te kahvaltının yıldızı — fıstıklı, kaymakla servis edilen çıtır hamur', emoji: '🥞' },
+    ]
+  },
+  'ic': {
+    baslik: 'İç Anadolu Mutfağı', aciklama: 'Bozkırın bereketi — et yemekleri, hamur işleri ve tahıl ürünleri',
+    lezzetler: [
+      { isim: 'Konya Etliekmek', aciklama: 'Yarım metre uzunluğunda ince hamur üzerine kıymalı Konya\'nun simgesi', emoji: '🫓' },
+      { isim: 'Tirit', aciklama: 'Kuzu eti suyuna batırılmış ekmek parçaları üzerine yoğurt ve tereyağıyla', emoji: '🍲' },
+      { isim: 'Keşkek', aciklama: 'Düğün yemeği — buğday ve etle saatlerce pişirilen geleneksel lezzet', emoji: '🫕' },
+      { isim: 'Nevşehir Güveci', aciklama: 'Kapadokya\'nın toprak güveçte pişirilen kuzu eti ve sebze yemeği', emoji: '🏺' },
+      { isim: 'Simit Çorbası', aciklama: 'Ankara\'ya özgü, domates ve baharatlı simit parçalarıyla hazırlanan çorba', emoji: '🥣' },
+    ]
+  },
+  'dogu': {
+    baslik: 'Doğu Anadolu Mutfağı', aciklama: 'Soğuk iklimlerin güçlü mutfağı — yoğurt, et ve tahılın mükemmel uyumu',
+    lezzetler: [
+      { isim: 'Kars Gravyeri', aciklama: 'Alp otlarıyla beslenen ineklerin sütünden yapılan Türkiye\'nin en ünlü peyniri', emoji: '🧀' },
+      { isim: 'Van Kahvaltısı', aciklama: '20\'den fazla çeşit peynir ve otlu peynirle Türkiye\'nin en zengin kahvaltısı', emoji: '🍳' },
+      { isim: 'Otlu Peynir', aciklama: 'Van\'a özgü, taze dağ otlarıyla olgunlaştırılmış beyaz peynir', emoji: '🌿' },
+      { isim: 'Kadayıf Dolması', aciklama: 'Erzincan\'ın özel tatlısı — ceviz ve fıstıkla doldurulmuş kadayıf', emoji: '🍯' },
+      { isim: 'Piti', aciklama: 'Nohut ve kuzu etiyle yapılan toprak güveç yemeği', emoji: '🫕' },
+    ]
+  },
+  'karadeniz': {
+    baslik: 'Karadeniz Mutfağı', aciklama: 'Mısır, fındık ve hamsi — Karadeniz\'in üç büyük hazinesi',
+    lezzetler: [
+      { isim: 'Hamsi Tava', aciklama: 'Mısır ununa bulanıp tavada kızartılan Karadeniz\'in simge balığı', emoji: '🐟' },
+      { isim: 'Kuymak', aciklama: 'Mısır unu ve Trabzon peyniriyle yapılan, tereyağıyla servis edilen kahvaltılık', emoji: '🧀' },
+      { isim: 'Mısır Ekmeği', aciklama: 'Sarı mısır unuyla yapılan, Karadeniz sofralarının vazgeçilmezi', emoji: '🌽' },
+      { isim: 'Hamsili Pilav', aciklama: 'Taze hamsiyle hazırlanan, üzeri hamsi dizili fırın pilavı', emoji: '🍚' },
+      { isim: 'Fındık Ezmesi', aciklama: 'Giresun ve Ordu\'nun taze fındığından yapılan kremalı ezme', emoji: '🌰' },
+    ]
+  },
+  'marmara': {
+    baslik: 'Marmara Mutfağı', aciklama: 'Osmanlı mirasının en zengin sofrası — İstanbul\'un kozmopolit mutfağı',
+    lezzetler: [
+      { isim: 'İskender Kebabı', aciklama: 'Bursa\'nın dünyaca ünlü lezzeti — döner eti, yoğurt, domates sosu ve tereyağı', emoji: '🍖' },
+      { isim: 'Balık Ekmek', aciklama: 'İstanbul Boğazı\'nın simgesi — ızgara balık, marul ve soğanla', emoji: '🐠' },
+      { isim: 'Ezine Peyniri', aciklama: 'Çanakkale\'nin koyun sütünden olgunlaştırılan köklü beyaz peyniri', emoji: '🧀' },
+      { isim: 'Troya Balı', aciklama: 'Çanakkale\'nin çam ve kekik balı — antik arazilerin aroması', emoji: '🍯' },
+      { isim: 'Kestane Şekeri', aciklama: 'Bursa\'nın yüzyıllık geleneği — şekerli şurupla kaplanan kestane', emoji: '🌰' },
+    ]
+  },
+};
+// ─────────────────────────────────────────────────────────────────────────────
 
 // ── EFSANELER & DESTANLAR ────────────────────────────────────────────────────
 const EFSANELER = {
@@ -2591,6 +2694,76 @@ Belki en büyük efsane şu: İzmir büyüdükçe kendi geçmişinin üzerinde y
 
 };
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ── LEZZETLER FONKSİYONLARI ──────────────────────────────────────────────────
+let aktifLezzetBolge = null;
+
+function lezzetlerGoster(yerId) {
+  const yer = YERLER.find(y => y.id === yerId);
+  if (!yer) return;
+  const bolge = yer.bolge;
+  aktifLezzetBolge = bolge;
+  const data = LEZZETLER[bolge];
+  const bolum = document.getElementById('lezzetlerBolum');
+  if (!data) { bolum.style.display = 'none'; return; }
+  bolum.style.display = 'block';
+  document.getElementById('lezzetBolgeBaslik').textContent = data.baslik;
+  document.getElementById('lezzetBolgeAlt').textContent = data.aciklama;
+  document.getElementById('lezzetAiCevap').style.display = 'none';
+  document.getElementById('lezzetAiBtn').disabled = false;
+  document.getElementById('lezzetAiBtn').textContent = '✨ Bu Bölgenin Mutfağını Keşfet';
+  const kaydirici = document.getElementById('lezzetKaydirici');
+  kaydirici.innerHTML = data.lezzetler.map(l => `
+    <div class="lezzet-kart">
+      <div class="lezzet-emoji">${l.emoji}</div>
+      <div class="lezzet-isim">${l.isim}</div>
+      <div class="lezzet-aciklama">${l.aciklama}</div>
+    </div>`).join('');
+}
+
+async function lezzetAiSor() {
+  const data = LEZZETLER[aktifLezzetBolge];
+  if (!data) return;
+  const btn = document.getElementById('lezzetAiBtn');
+  const cevapEl = document.getElementById('lezzetAiCevap');
+  btn.disabled = true;
+  btn.textContent = '⏳ Hazırlanıyor...';
+  cevapEl.style.display = 'none';
+  const yer = YERLER.find(y => y.id === aktifOrenYeriId);
+  const yerIsmi = yer ? yerIsim(yer) : '';
+  const dilAdi = { tr: 'Türkçe', en: 'English', de: 'Deutsch', ru: 'на русском' }[aktifDil] || 'Türkçe';
+  const prompt = `Sen bir gastronomi uzmanısın. ${data.baslik} hakkında ${yerIsmi} yakınında yemek yemek isteyen bir turist için kısa ve ilgi çekici bir rehber yaz. Yanıtını ${dilAdi} dilinde ver.
+
+Şunları anlat:
+- Bu bölgenin mutfağını özel yapan nedir?
+- Mutlaka tatmalları gereken 3 yemek ve nerede bulabilirler
+- Yerel bir lokantada nasıl sipariş vermeliler, hangi kelimeleri kullanmalılar
+- Pratik bir ipucu
+
+Kısa, samimi ve heyecan verici yaz. Maksimum 200 kelime.`;
+
+  try {
+    const response = await fetch('https://vdtfjxyktzbuyyvwbufl.supabase.co/functions/v1/tur-planlayici', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'apikey': SUPABASE_KEY
+      },
+      body: JSON.stringify({ prompt })
+    });
+    const result = await response.json();
+    cevapEl.textContent = result.plan || 'Bilgi alınamadı.';
+    cevapEl.style.display = 'block';
+  } catch(e) {
+    cevapEl.textContent = 'Bağlantı hatası, tekrar deneyin.';
+    cevapEl.style.display = 'block';
+  }
+  btn.disabled = false;
+  btn.textContent = '✨ Bu Bölgenin Mutfağını Keşfet';
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 // ── EFSANE FONKSİYONLARI ─────────────────────────────────────────────────────
 function efsaneGoster(yerId) {
   const bolum = document.getElementById('efsanelerBolum');
