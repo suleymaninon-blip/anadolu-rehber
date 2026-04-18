@@ -271,6 +271,27 @@
   .nav-label { font-size: 10px; color: #9B9B97; font-family: 'Crimson Pro', serif; }
   .nav-btn.aktif .nav-label { color: #B85C2A; font-weight: 500; }
 
+
+  /* SİNEMATİK EFSANE SUNUMU */
+  .sinema-ekran { position: fixed; inset: 0; background: #0A0A08; z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; opacity: 0; pointer-events: none; transition: opacity 0.8s; }
+  .sinema-ekran.aktif { opacity: 1; pointer-events: all; }
+  .sinema-ust { position: absolute; top: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to bottom, #0A0A08, transparent); z-index: 2; }
+  .sinema-alt { position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, #0A0A08, transparent); z-index: 2; }
+  .sinema-baslik { font-family: 'Cinzel', serif; font-size: 13px; color: #B85C2A; letter-spacing: 4px; text-transform: uppercase; text-align: center; margin-bottom: 24px; opacity: 0; transform: translateY(10px); transition: opacity 0.8s, transform 0.8s; }
+  .sinema-baslik.gorsel { opacity: 1; transform: translateY(0); }
+  .sinema-cumle { font-family: 'Crimson Pro', Georgia, serif; font-size: 19px; color: #F5E6D0; line-height: 1.8; text-align: center; max-width: 320px; opacity: 0; transform: translateY(16px); transition: opacity 1s, transform 1s; font-style: italic; }
+  .sinema-cumle.gorsel { opacity: 1; transform: translateY(0); }
+  .sinema-ayrac { width: 60px; height: 1px; background: linear-gradient(to right, transparent, #B85C2A, transparent); margin: 20px auto; opacity: 0; transition: opacity 1s; }
+  .sinema-ayrac.gorsel { opacity: 1; }
+  .sinema-ilerleme { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 3; }
+  .sinema-nokta { width: 5px; height: 5px; border-radius: 50%; background: #B85C2A; opacity: 0.3; transition: opacity 0.3s; }
+  .sinema-nokta.aktif { opacity: 1; }
+  .sinema-kapat { position: absolute; top: 52px; right: 20px; background: rgba(255,255,255,0.08); border: none; color: #9B9B97; font-size: 20px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; }
+  .sinema-dokunma { position: absolute; inset: 0; z-index: 1; }
+  .sinema-altin { color: #E8A855; }
+  @keyframes parla { 0%,100% { text-shadow: 0 0 20px rgba(184,92,42,0.3); } 50% { text-shadow: 0 0 40px rgba(184,92,42,0.7), 0 0 80px rgba(184,92,42,0.3); } }
+  .sinema-baslik.gorsel { animation: parla 3s ease-in-out infinite; }
+
   /* LEZZETLER BÖLÜMÜ */
   .lezzet-kaydirici { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
   .lezzet-kaydirici::-webkit-scrollbar { display: none; }
@@ -452,10 +473,13 @@
 
       <div class="bolum" id="efsanelerBolum" style="display:none">
         <div class="bolum-baslik">⚡ Efsaneler & Destanlar</div>
-        <div id="efsaneIcerik" style="background:#fff;border-radius:14px;border:0.5px solid #E8E6E0;padding:16px;cursor:pointer" onclick="efsaneToggle()">
+        <div id="efsaneIcerik" style="background:#fff;border-radius:14px;border:0.5px solid #E8E6E0;padding:16px;">
           <div style="font-family:'Cinzel',serif;font-size:14px;color:#B85C2A;margin-bottom:10px" id="efsaneBaslik"></div>
           <div style="font-size:14px;color:#4A4A48;line-height:1.8;white-space:pre-wrap;display:none" id="efsaneMetin"></div>
-          <div style="font-size:13px;color:#9B9B97;text-align:center;margin-top:4px" id="efsaneToggleBtn">▼ Efsaneyi Oku</div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button onclick="efsaneToggle()" style="flex:1;background:#F5F4F0;color:#6B6B67;border:none;border-radius:8px;padding:9px;font-family:'Crimson Pro',serif;font-size:13px;cursor:pointer" id="efsaneToggleBtn">▼ Metni Oku</button>
+            <button onclick="sinemaBaslat()" style="flex:1;background:linear-gradient(135deg,#1A1A18,#2D1A0E);color:#E8A855;border:none;border-radius:8px;padding:9px;font-family:'Crimson Pro',serif;font-size:13px;cursor:pointer">🎬 Sinema Modu</button>
+          </div>
         </div>
       </div>
 
@@ -598,6 +622,18 @@
         <button class="plan-indir-btn" onclick="planPdfIndir()">📥 PDF Olarak İndir & Paylaş</button>
       </div>
     </div>
+  </div>
+
+  <!-- SİNEMATİK EFSANE EKRANI -->
+  <div class="sinema-ekran" id="sinemaEkran">
+    <div class="sinema-ust"></div>
+    <div class="sinema-alt"></div>
+    <button class="sinema-kapat" onclick="sinemaKapat()">✕</button>
+    <div class="sinema-dokunma" onclick="sinemaSonraki()"></div>
+    <div class="sinema-baslik" id="sinemaBaslik"></div>
+    <div class="sinema-ayrac" id="sinemaAyrac"></div>
+    <div class="sinema-cumle" id="sinemaCumle"></div>
+    <div class="sinema-ilerleme" id="sinemaIlerleme"></div>
   </div>
 
   <!-- REHBER YORUM MODAL -->
@@ -2693,6 +2729,108 @@ Smyrna Agorası, M.S. 178 depreminden sonra İmparator Marcus Aurelius tarafınd
 Belki en büyük efsane şu: İzmir büyüdükçe kendi geçmişinin üzerinde yürüyor — ve henüz tamamını bilmiyor.` },
 
 };
+// ─────────────────────────────────────────────────────────────────────────────
+
+
+// ── SİNEMATİK EFSANE SUNUMU ──────────────────────────────────────────────────
+let sinemaCumleler = [];
+let sinemaIndex = 0;
+let sinemaTimer = null;
+let sinemaBaslikMetni = '';
+
+function sinemaBaslat() {
+  const efsane = EFSANELER[aktifOrenYeriId];
+  if (!efsane) return;
+
+  // Metni cümlelere böl
+  const paragraflar = efsane.icerik.split('\n\n').filter(p => p.trim());
+  sinemaCumleler = [];
+  paragraflar.forEach(p => {
+    // Her paragrafı 1-2 cümleye böl
+    const cumleler = p.match(/[^.!?]+[.!?]+/g) || [p];
+    // 2'şer cümle grupla
+    for (let i = 0; i < cumleler.length; i += 2) {
+      const grup = cumleler.slice(i, i + 2).join(' ').trim();
+      if (grup) sinemaCumleler.push(grup);
+    }
+  });
+
+  sinemaBaslikMetni = efsane.baslik;
+  sinemaIndex = 0;
+
+  // İlerleme noktaları oluştur
+  const ilerleme = document.getElementById('sinemaIlerleme');
+  ilerleme.innerHTML = sinemaCumleler.map((_, i) =>
+    `<div class="sinema-nokta" id="sinNokta${i}"></div>`
+  ).join('');
+
+  // Ekranı aç
+  document.getElementById('sinemaEkran').classList.add('aktif');
+  document.body.style.overflow = 'hidden';
+
+  // İlk sahneyi göster
+  setTimeout(() => sinemaSahneGoster(0), 300);
+}
+
+function sinemaSahneGoster(index) {
+  if (index >= sinemaCumleler.length) {
+    sinemaKapat();
+    return;
+  }
+
+  const baslikEl = document.getElementById('sinemaBaslik');
+  const ayracEl = document.getElementById('sinemaAyrac');
+  const cumleEl = document.getElementById('sinemaCumle');
+
+  // Önce gizle
+  baslikEl.classList.remove('gorsel');
+  ayracEl.classList.remove('gorsel');
+  cumleEl.classList.remove('gorsel');
+
+  setTimeout(() => {
+    // Başlık (sadece ilk sahnede)
+    if (index === 0) {
+      baslikEl.textContent = sinemaBaslikMetni;
+      setTimeout(() => baslikEl.classList.add('gorsel'), 100);
+      setTimeout(() => ayracEl.classList.add('gorsel'), 400);
+    } else {
+      baslikEl.classList.add('gorsel');
+      ayracEl.classList.add('gorsel');
+    }
+
+    // Cümle
+    cumleEl.textContent = sinemaCumleler[index];
+    setTimeout(() => cumleEl.classList.add('gorsel'), index === 0 ? 700 : 200);
+
+    // İlerleme noktası
+    document.querySelectorAll('.sinema-nokta').forEach((n, i) => {
+      n.classList.toggle('aktif', i === index);
+    });
+
+    sinemaIndex = index;
+
+    // Otomatik ilerleme (6 saniye)
+    clearTimeout(sinemaTimer);
+    sinemaTimer = setTimeout(() => sinemaSahneGoster(index + 1), 6000);
+  }, 400);
+}
+
+function sinemaSonraki() {
+  clearTimeout(sinemaTimer);
+  // Gizle sonra sonraki sahne
+  document.getElementById('sinemaCumle').classList.remove('gorsel');
+  setTimeout(() => sinemaSahneGoster(sinemaIndex + 1), 300);
+}
+
+function sinemaKapat() {
+  clearTimeout(sinemaTimer);
+  document.getElementById('sinemaEkran').classList.remove('aktif');
+  document.body.style.overflow = '';
+  // Elementleri temizle
+  document.getElementById('sinemaBaslik').classList.remove('gorsel');
+  document.getElementById('sinemaAyrac').classList.remove('gorsel');
+  document.getElementById('sinemaCumle').classList.remove('gorsel');
+}
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ── LEZZETLER FONKSİYONLARI ──────────────────────────────────────────────────
