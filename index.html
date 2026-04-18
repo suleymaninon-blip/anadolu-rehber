@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Anadolu Rehber</title>
+<title>Anadolu Rehberi</title>
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dsnmabr1p/image/upload/v1776530616/u2791417416_anadolu_kltrndeki_ana_tanra_kibelenin_mermerden_b_44c980b9-ad85-4973-8768-f04a1de1f095_3_tsqin4.png">
+<link rel="apple-touch-icon" href="https://res.cloudinary.com/dsnmabr1p/image/upload/v1776530616/u2791417416_anadolu_kltrndeki_ana_tanra_kibelenin_mermerden_b_44c980b9-ad85-4973-8768-f04a1de1f095_3_tsqin4.png">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -381,8 +383,15 @@
   <div class="header">
     <div class="header-normal" id="headerNormal">
       <div>
-        <div class="logo">ANADO<span>LU</span></div>
-        <div class="logo-sub">Tarih Rehberi</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:42px;height:42px;border-radius:50%;overflow:hidden;border:1.5px solid #D4A855;flex-shrink:0;box-shadow:0 2px 8px rgba(184,92,42,0.3)">
+            <img src="https://res.cloudinary.com/dsnmabr1p/image/upload/v1776530616/u2791417416_anadolu_kltrndeki_ana_tanra_kibelenin_mermerden_b_44c980b9-ad85-4973-8768-f04a1de1f095_3_tsqin4.png" style="width:100%;height:100%;object-fit:cover" alt="Anadolu Rehberi Logo"/>
+          </div>
+          <div>
+            <div class="logo">ANADO<span>LU</span></div>
+            <div class="logo-sub">Tarihin İzinde</div>
+          </div>
+        </div>
       </div>
       <div class="header-saglar">
         <button id="dilBtn" onclick="dilDegistir()" style="width:36px;height:36px;border-radius:18px;border:0.5px solid #E8E6E0;background:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">🇬🇧</button>
