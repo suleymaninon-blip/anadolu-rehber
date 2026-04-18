@@ -2741,6 +2741,25 @@ let sinemaBaslikMetni = '';
 function sinemaBaslat() {
   const efsane = EFSANELER[aktifOrenYeriId];
   if (!efsane) return;
+  // Müzik başlat
+  let muzik = document.getElementById('sinemaMuzik');
+  if (!muzik) {
+    muzik = document.createElement('audio');
+    muzik.id = 'sinemaMuzik';
+    muzik.src = 'https://res.cloudinary.com/dsnmabr1p/video/upload/v1776507051/lexin_music-ancient-world-118017_2_g1mibh.mp3';
+    muzik.loop = true;
+    muzik.volume = 0;
+    document.body.appendChild(muzik);
+  }
+  muzik.currentTime = 0;
+  muzik.play().catch(() => {});
+  // Müziği yavaşça aç (fade in)
+  let vol = 0;
+  const fadeIn = setInterval(() => {
+    vol = Math.min(vol + 0.03, 0.4);
+    muzik.volume = vol;
+    if (vol >= 0.4) clearInterval(fadeIn);
+  }, 100);
 
   // Metni cümlelere böl
   const paragraflar = efsane.icerik.split('\n\n').filter(p => p.trim());
@@ -2826,10 +2845,19 @@ function sinemaKapat() {
   clearTimeout(sinemaTimer);
   document.getElementById('sinemaEkran').classList.remove('aktif');
   document.body.style.overflow = '';
-  // Elementleri temizle
   document.getElementById('sinemaBaslik').classList.remove('gorsel');
   document.getElementById('sinemaAyrac').classList.remove('gorsel');
   document.getElementById('sinemaCumle').classList.remove('gorsel');
+  // Müziği yavaşça kapat (fade out)
+  const muzik = document.getElementById('sinemaMuzik');
+  if (muzik && !muzik.paused) {
+    let vol = muzik.volume;
+    const fadeOut = setInterval(() => {
+      vol = Math.max(vol - 0.04, 0);
+      muzik.volume = vol;
+      if (vol <= 0) { muzik.pause(); clearInterval(fadeOut); }
+    }, 80);
+  }
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
