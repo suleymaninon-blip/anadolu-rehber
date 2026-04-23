@@ -375,6 +375,187 @@
     color: #40916C; font-size: 11px; padding: 3px 8px;
     border-radius: 20px; white-space: nowrap; flex-shrink: 0;
   }
+
+  /* ====================================================================
+     SESLİ REHBER (AUDIO GUIDE)
+     ==================================================================== */
+  .sesli-rehber-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; margin-top: 10px; padding: 16px;
+    background: linear-gradient(135deg, #8B5A2B, #D4A24A);
+    color: #FFF8E7; border: none; border-radius: 14px;
+    font-family: 'Crimson Pro', serif; font-size: 15px; font-weight: 600;
+    letter-spacing: 0.5px; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(184,92,42,0.25);
+    transition: transform 0.2s, box-shadow 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sesli-rehber-btn:active { transform: scale(0.98); }
+  .sesli-rehber-btn .sr-mic {
+    font-size: 18px;
+    animation: sr-pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes sr-pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.15); }
+  }
+
+  /* Modal arka plan */
+  .sr-modal {
+    position: fixed; inset: 0; z-index: 2000;
+    display: none; align-items: flex-end; justify-content: center;
+    background: rgba(0,0,0,0);
+    transition: background 0.3s ease;
+  }
+  .sr-modal.acik {
+    display: flex;
+    background: rgba(0,0,0,0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .sr-modal-icerik {
+    width: 100%; max-width: 500px;
+    background: linear-gradient(180deg, #2D1A0E 0%, #1A1A18 100%);
+    border-top: 2px solid #D4A24A;
+    border-radius: 24px 24px 0 0;
+    padding: 24px 22px;
+    padding-bottom: max(24px, env(safe-area-inset-bottom, 24px));
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 -20px 60px rgba(0,0,0,0.7);
+    color: #F4E4C1;
+  }
+  .sr-modal.acik .sr-modal-icerik { transform: translateY(0); }
+
+  .sr-handle {
+    width: 40px; height: 4px;
+    background: rgba(212,162,74,0.4);
+    border-radius: 2px; margin: 0 auto 18px;
+  }
+  .sr-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 4px;
+  }
+  .sr-baslik {
+    font-family: 'Cinzel', serif;
+    font-size: 18px; color: #E8A855;
+    letter-spacing: 2px;
+  }
+  .sr-kapat {
+    width: 30px; height: 30px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(212,162,74,0.3);
+    color: #E8A855;
+    border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .sr-altbaslik {
+    color: #B89968; font-size: 12px;
+    font-style: italic; margin-bottom: 18px;
+  }
+
+  /* Dalga */
+  .sr-dalga {
+    display: flex; justify-content: center; align-items: end;
+    gap: 3px; height: 36px; margin: 14px 0;
+    opacity: 0.4; transition: opacity 0.3s;
+  }
+  .sr-dalga.calan { opacity: 1; }
+  .sr-dalga .bar {
+    width: 3px; height: 20%; border-radius: 2px;
+    background: linear-gradient(to top, #8B5A2B, #E8A855);
+  }
+  .sr-dalga.calan .bar { animation: sr-wave 1.4s ease-in-out infinite; }
+  .sr-dalga .bar:nth-child(1) { animation-delay: 0s; }
+  .sr-dalga .bar:nth-child(2) { animation-delay: 0.1s; }
+  .sr-dalga .bar:nth-child(3) { animation-delay: 0.2s; }
+  .sr-dalga .bar:nth-child(4) { animation-delay: 0.3s; }
+  .sr-dalga .bar:nth-child(5) { animation-delay: 0.4s; }
+  .sr-dalga .bar:nth-child(6) { animation-delay: 0.3s; }
+  .sr-dalga .bar:nth-child(7) { animation-delay: 0.2s; }
+  .sr-dalga .bar:nth-child(8) { animation-delay: 0.1s; }
+  .sr-dalga .bar:nth-child(9) { animation-delay: 0s; }
+  @keyframes sr-wave {
+    0%, 100% { height: 20%; }
+    50%      { height: 90%; }
+  }
+
+  /* İlerleme */
+  .sr-ilerleme-wrap { margin: 16px 0 10px; }
+  .sr-ilerleme {
+    position: relative; height: 5px;
+    background: rgba(212,162,74,0.15);
+    border-radius: 3px; cursor: pointer; overflow: hidden;
+  }
+  .sr-ilerleme-dolu {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: linear-gradient(to right, #8B5A2B, #E8A855);
+    width: 0%; border-radius: 3px;
+  }
+  .sr-sureler {
+    display: flex; justify-content: space-between;
+    margin-top: 6px; font-size: 11px; color: #B89968;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Kontroller */
+  .sr-kontroller {
+    display: flex; justify-content: center; align-items: center;
+    gap: 22px; margin: 12px 0;
+  }
+  .sr-btn {
+    width: 44px; height: 44px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(212,162,74,0.4);
+    color: #E8A855;
+    border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; position: relative;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.15s;
+  }
+  .sr-btn:active { transform: scale(0.9); }
+  .sr-btn.main {
+    width: 62px; height: 62px;
+    background: linear-gradient(135deg, #8B5A2B, #D4A24A);
+    color: #1A1A18; border: none; font-size: 22px;
+    box-shadow: 0 5px 18px rgba(212,162,74,0.35);
+  }
+  .sr-btn .sr-skip-lbl {
+    position: absolute; font-size: 8px; font-weight: 700;
+    color: #E8A855; bottom: 0;
+  }
+
+  /* Hız */
+  .sr-hiz {
+    display: flex; justify-content: center; gap: 6px;
+    margin-top: 12px;
+  }
+  .sr-hiz-btn {
+    padding: 5px 10px; background: transparent;
+    border: 1px solid rgba(212,162,74,0.3);
+    color: #B89968; border-radius: 14px;
+    font-size: 10px; cursor: pointer;
+    font-family: 'Crimson Pro', serif; letter-spacing: 0.5px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sr-hiz-btn.aktif {
+    background: rgba(212,162,74,0.25);
+    border-color: #D4A24A; color: #E8A855;
+  }
+
+  .sr-yukleniyor {
+    text-align: center; color: #E8A855;
+    font-size: 12px; font-style: italic;
+    padding: 8px; display: none;
+  }
+  .sr-yukleniyor.goster { display: block; }
+  .sr-hata {
+    text-align: center; color: #D47A55;
+    font-size: 12px; padding: 8px; display: none;
+  }
+  .sr-hata.goster { display: block; }
 </style>
 </head>
 <body>
@@ -511,6 +692,10 @@
         <button class="harita-btn-buyuk" id="detayHaritaBtn" onclick="haritaAc()" style="flex:1">🗺  Haritada Göster</button>
         <button class="yol-tarifi-btn" id="detayYolTariflBtn" onclick="yolTarifiAc()">🧭  Yol Tarifi</button>
       </div>
+      <button class="sesli-rehber-btn" id="sesliRehberBtn" style="display:none" onclick="sesliRehberAc()">
+        <span class="sr-mic">🎙️</span>
+        <span id="sesliRehberBtnLabel">Sesli Rehberi Dinle</span>
+      </button>
       <button class="rehber-btn" onclick="rehberModalAc()">
         🧭  Profesyonel Rehberle Gez
         <span class="rehber-btn-yakin">Yakında</span>
@@ -871,7 +1056,7 @@
 <script>
 const YERLER = [
   // ── EGE ──
-  {id:'1',isim:'Efes',sehir:'İzmir',bolge:'ege',baslangic:-1000,bitis:700,donem:'4',unesco:true,renk:'#C4956A',emoji:'🏛',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/The_library_of_Celsus_%281%29.jpg/1280px-The_library_of_Celsus_%281%29.jpg',medeniyetler:['Yunan','Roma','Bizans'],aciklama:'Antik dünyanın en büyük kentlerinden biri. Celsus Kütüphanesi ve devasa tiyatrosuyla Roma mimarisinin zirvesini temsil eder.',ucret:450,saatler:'08:00–19:00',park:true},
+  {id:'1',isim:'Efes',sehir:'İzmir',bolge:'ege',baslangic:-1000,bitis:700,donem:'4',unesco:true,renk:'#C4956A',emoji:'🏛',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/The_library_of_Celsus_%281%29.jpg/1280px-The_library_of_Celsus_%281%29.jpg',medeniyetler:['Yunan','Roma','Bizans'],aciklama:'Antik dünyanın en büyük kentlerinden biri. Celsus Kütüphanesi ve devasa tiyatrosuyla Roma mimarisinin zirvesini temsil eder.',ucret:450,saatler:'08:00–19:00',park:true,audioGuideSlug:'efes'},
   {id:'2',isim:'Afrodisyas',sehir:'Aydın',bolge:'ege',baslangic:-200,bitis:600,donem:'4',unesco:true,renk:'#D4956A',emoji:'🏺',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Aphrodisias_Tetrapylon_2.jpg/1280px-Aphrodisias_Tetrapylon_2.jpg',medeniyetler:['Helenistik','Roma'],aciklama:'Afrodit\'e adanmış bu antik kent Roma heykel sanatının en önemli merkezlerinden biriydi.',ucret:300,saatler:'08:30–18:30',park:true},
   {id:'3',isim:'Bergama (Pergamon)',sehir:'İzmir',bolge:'ege',baslangic:-300,bitis:700,donem:'4',unesco:true,renk:'#7B9E8A',emoji:'🗿',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Pergamon_museum_Berlin_2007100.jpg/1280px-Pergamon_museum_Berlin_2007100.jpg',medeniyetler:['Helenistik','Roma'],aciklama:'Antik dünyanın en büyük kütüphanesine ev sahipliği yapan Helenistik dönem başkenti. Zeus sunağı ve Asklepion ile ünlüdür.',ucret:350,saatler:'08:00–19:00',park:true},
   {id:'4',isim:'Hierapolis - Pamukkale',sehir:'Denizli',bolge:'ege',baslangic:-190,bitis:1334,donem:'4',unesco:true,renk:'#A8C4D4',emoji:'💧',foto:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Pamukkale_2.jpg/1280px-Pamukkale_2.jpg',medeniyetler:['Helenistik','Roma','Bizans'],aciklama:'Beyaz travertenleri ve antik kentiyle eşsiz doğal-tarihi alan. Roma döneminin önemli termal spa merkezi.',ucret:450,saatler:'06:00–21:00',park:true},
@@ -1046,6 +1231,10 @@ const TERCUMELER = {
     rehberAlt: 'Bu özellik yakında geliyor! Sertifikalı rehberlerle unutulmaz bir tarih yolculuğuna çıkın.',
     bildir: '🔔  Çıkınca Beni Bildir', bildirildi: '✓ Sizi haberdar edeceğiz!', kapat: 'Kapat',
     yil: 'yıl',
+    sesliRehberBtn: '🎙️  Sesli Rehberi Dinle',
+    sesliRehberAlt: 'Daniel eşlik ediyor',
+    sesliYukleniyor: 'Ses yükleniyor...',
+    sesliHata: 'Ses yüklenemedi. İnternet bağlantınızı kontrol edin.',
   },
   en: {
     baslik: 'ANADOLU', baslikAlt: 'History Guide',
@@ -1080,6 +1269,10 @@ const TERCUMELER = {
     rehberAlt: 'Coming soon! Join certified local guides for an unforgettable journey through history.',
     bildir: '🔔  Notify Me', bildirildi: '✓ We\'ll notify you!', kapat: 'Close',
     yil: 'years',
+    sesliRehberBtn: '🎙️  Listen to Audio Guide',
+    sesliRehberAlt: 'Narrated by Daniel',
+    sesliYukleniyor: 'Loading audio...',
+    sesliHata: 'Audio could not load. Check your connection.',
   },
   de: {
     baslik: 'ANADOLU', baslikAlt: 'Geschichtsführer',
@@ -1114,6 +1307,10 @@ const TERCUMELER = {
     rehberAlt: 'Demnächst verfügbar! Erleben Sie unvergessliche Geschichtsreisen mit zertifizierten Guides.',
     bildir: '🔔  Benachrichtigen', bildirildi: '✓ Wir benachrichtigen Sie!', kapat: 'Schließen',
     yil: 'Jahre',
+    sesliRehberBtn: '🎙️  Audio-Guide anhören',
+    sesliRehberAlt: 'Gesprochen von Daniel',
+    sesliYukleniyor: 'Audio wird geladen...',
+    sesliHata: 'Audio konnte nicht geladen werden.',
   },
   ru: {
     baslik: 'ANADOLU', baslikAlt: 'Путеводитель по истории',
@@ -1148,6 +1345,10 @@ const TERCUMELER = {
     rehberAlt: 'Скоро! Незабываемые путешествия по истории с сертифицированными гидами.',
     bildir: '🔔  Уведомить меня', bildirildi: '✓ Мы уведомим вас!', kapat: 'Закрыть',
     yil: 'лет',
+    sesliRehberBtn: '🎙️  Слушать аудиогид',
+    sesliRehberAlt: 'Озвучивает Daniel',
+    sesliYukleniyor: 'Загрузка аудио...',
+    sesliHata: 'Не удалось загрузить аудио.',
   },
 };
 
@@ -1894,6 +2095,18 @@ unlulerGoster(y.id);
   if(rehberBtn) {
     rehberBtn.childNodes[0].textContent=t('rehberBtn')+' ';
     rehberBtn.onclick = () => rehberModalAc(y.id);
+  }
+  // Sesli Rehber butonu (sadece audioGuideSlug varsa görünür)
+  const srBtn = document.getElementById('sesliRehberBtn');
+  const srLabel = document.getElementById('sesliRehberBtnLabel');
+  if (srBtn) {
+    if (y.audioGuideSlug) {
+      srBtn.style.display = 'flex';
+      srLabel.textContent = t('sesliRehberBtn').replace('🎙️  ', '').trim();
+      srBtn.onclick = () => sesliRehberAc(y);
+    } else {
+      srBtn.style.display = 'none';
+    }
   }
   document.getElementById('detayHaritaBtn').onclick = () => { haritaKapat(); haritaAc(y.id); };
   document.getElementById('detayEkrani').classList.add('acik');
@@ -3907,6 +4120,146 @@ function sehirdenHesapla(sehir) {
 function yakinPanelKapat() {
   document.getElementById('yakinPanel').classList.remove('acik');
 }
+
+/* ====================================================================
+   SESLİ REHBER — Modal, Audio ve Kontrol Mantığı
+   ==================================================================== */
+// Cloudinary ses URL şeması: {slug}_{lang}.mp3
+// Her sesin URL'sini önceden tanımlıyoruz (version numaralarıyla)
+const SESLI_REHBER_URLS = {
+  efes: {
+    tr: 'https://res.cloudinary.com/dsnmabr1p/video/upload/v1776938828/efes_tr.mp3',
+    en: 'https://res.cloudinary.com/dsnmabr1p/video/upload/v1776938824/efes_en.mp3',
+    de: 'https://res.cloudinary.com/dsnmabr1p/video/upload/v1776938824/efes_de.mp3',
+    ru: 'https://res.cloudinary.com/dsnmabr1p/video/upload/v1776938824/efes_ru.mp3',
+  },
+  // Yeni yer eklerken sadece bu objeye slug ekle ve ilgili yerin data'sına
+  // audioGuideSlug: 'hattusa' gibi bir alan yaz.
+};
+
+let srAktifYer = null;
+
+function sesliRehberAc(yer) {
+  if (!yer || !yer.audioGuideSlug) return;
+  srAktifYer = yer;
+
+  // Başlık ve alt yazı
+  document.getElementById('srBaslik').textContent = (yerIsim ? yerIsim(yer) : yer.isim).toUpperCase();
+  document.getElementById('srAltbaslik').textContent = t('sesliRehberAlt');
+  document.getElementById('srYukleniyor').textContent = t('sesliYukleniyor');
+
+  // Modal aç
+  document.getElementById('srModal').classList.add('acik');
+
+  // Ses yükle
+  srSesYukle();
+}
+
+function sesliRehberKapat() {
+  document.getElementById('srModal').classList.remove('acik');
+  const audio = document.getElementById('srAudio');
+  audio.pause();
+  srCalmaDurumu(false);
+}
+
+function srSesYukle() {
+  if (!srAktifYer) return;
+  const url = SESLI_REHBER_URLS[srAktifYer.audioGuideSlug]?.[aktifDil];
+  const hataEl = document.getElementById('srHata');
+  const yukEl = document.getElementById('srYukleniyor');
+
+  if (!url) {
+    hataEl.textContent = t('sesliHata');
+    hataEl.classList.add('goster');
+    yukEl.classList.remove('goster');
+    return;
+  }
+
+  hataEl.classList.remove('goster');
+  yukEl.classList.add('goster');
+
+  const audio = document.getElementById('srAudio');
+  if (audio.src !== url) {
+    audio.src = url;
+    audio.load();
+  }
+}
+
+function srOynatKapat() {
+  const audio = document.getElementById('srAudio');
+  if (audio.paused) {
+    audio.play();
+    srCalmaDurumu(true);
+  } else {
+    audio.pause();
+    srCalmaDurumu(false);
+  }
+}
+
+function srCalmaDurumu(calan) {
+  document.getElementById('srOynatBtn').textContent = calan ? '❚❚' : '▶';
+  document.getElementById('srDalga').classList.toggle('calan', calan);
+}
+
+function srAtla(saniye) {
+  const audio = document.getElementById('srAudio');
+  audio.currentTime = Math.max(0, Math.min(audio.duration || 0, audio.currentTime + saniye));
+}
+
+function srSureFormat(s) {
+  if (!s || isNaN(s)) return '--:--';
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
+
+// Audio event'lerini bağla
+(function srAudioInit() {
+  const audio = document.getElementById('srAudio');
+  if (!audio) return;
+
+  audio.addEventListener('loadedmetadata', () => {
+    document.getElementById('srYukleniyor').classList.remove('goster');
+    document.getElementById('srToplam').textContent = srSureFormat(audio.duration);
+  });
+  audio.addEventListener('canplay', () => {
+    document.getElementById('srYukleniyor').classList.remove('goster');
+  });
+  audio.addEventListener('error', () => {
+    document.getElementById('srYukleniyor').classList.remove('goster');
+    const hataEl = document.getElementById('srHata');
+    hataEl.textContent = t('sesliHata');
+    hataEl.classList.add('goster');
+  });
+  audio.addEventListener('timeupdate', () => {
+    const pct = (audio.currentTime / audio.duration) * 100;
+    document.getElementById('srIlerlemeDolu').style.width = pct + '%';
+    document.getElementById('srSimdi').textContent = srSureFormat(audio.currentTime);
+  });
+  audio.addEventListener('ended', () => srCalmaDurumu(false));
+
+  // İlerleme çubuğuna tıklama
+  document.getElementById('srIlerleme').addEventListener('click', (e) => {
+    if (!audio.duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = audio.duration * pct;
+  });
+
+  // Modal dış tıklama ile kapat
+  document.getElementById('srModal').addEventListener('click', (e) => {
+    if (e.target.id === 'srModal') sesliRehberKapat();
+  });
+
+  // Hız butonları
+  document.querySelectorAll('.sr-hiz-btn').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.sr-hiz-btn').forEach(b => b.classList.remove('aktif'));
+      btn.classList.add('aktif');
+      audio.playbackRate = parseFloat(btn.dataset.hiz);
+    };
+  });
+})();
 </script>
 
 <!-- GPS Butonu -->
@@ -3920,6 +4273,57 @@ function yakinPanelKapat() {
   </div>
   <div id="yakinListesi"></div>
 </div>
+
+<!-- ====================================================================
+     SESLİ REHBER — Global Modal & Audio Element
+     ==================================================================== -->
+<div class="sr-modal" id="srModal">
+  <div class="sr-modal-icerik">
+    <div class="sr-handle"></div>
+    <div class="sr-header">
+      <div class="sr-baslik" id="srBaslik">EFES</div>
+      <button class="sr-kapat" onclick="sesliRehberKapat()">×</button>
+    </div>
+    <div class="sr-altbaslik" id="srAltbaslik">Daniel eşlik ediyor</div>
+
+    <div class="sr-dalga" id="srDalga">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    </div>
+
+    <div class="sr-yukleniyor" id="srYukleniyor">Ses yükleniyor...</div>
+    <div class="sr-hata" id="srHata"></div>
+
+    <div class="sr-ilerleme-wrap">
+      <div class="sr-ilerleme" id="srIlerleme">
+        <div class="sr-ilerleme-dolu" id="srIlerlemeDolu"></div>
+      </div>
+      <div class="sr-sureler">
+        <span id="srSimdi">0:00</span>
+        <span id="srToplam">--:--</span>
+      </div>
+    </div>
+
+    <div class="sr-kontroller">
+      <button class="sr-btn" onclick="srAtla(-15)" title="15s geri">
+        ⏪<span class="sr-skip-lbl">15</span>
+      </button>
+      <button class="sr-btn main" id="srOynatBtn" onclick="srOynatKapat()">▶</button>
+      <button class="sr-btn" onclick="srAtla(15)" title="15s ileri">
+        ⏩<span class="sr-skip-lbl">15</span>
+      </button>
+    </div>
+
+    <div class="sr-hiz">
+      <button class="sr-hiz-btn" data-hiz="0.75">0.75x</button>
+      <button class="sr-hiz-btn aktif" data-hiz="1">1x</button>
+      <button class="sr-hiz-btn" data-hiz="1.25">1.25x</button>
+      <button class="sr-hiz-btn" data-hiz="1.5">1.5x</button>
+    </div>
+  </div>
+</div>
+<audio id="srAudio" preload="metadata"></audio>
 
 </body>
 </html>
