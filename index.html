@@ -556,6 +556,270 @@
     font-size: 12px; padding: 8px; display: none;
   }
   .sr-hata.goster { display: block; }
+
+  /* ====================================================================
+     KENDI FILMIN (REELS GENERATOR)
+     ==================================================================== */
+  .film-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; margin-top: 10px; padding: 16px;
+    background: linear-gradient(135deg, #4A1E52, #B85C7A, #E8A855);
+    background-size: 200% 200%;
+    color: #FFF8E7; border: none; border-radius: 14px;
+    font-family: 'Crimson Pro', serif; font-size: 15px; font-weight: 600;
+    letter-spacing: 0.5px; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(184,92,122,0.3);
+    animation: film-shine 6s ease-in-out infinite;
+    -webkit-tap-highlight-color: transparent;
+  }
+  @keyframes film-shine {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+  }
+  .film-btn:active { transform: scale(0.98); }
+  .film-btn .film-icon { font-size: 20px; }
+
+  /* Film modal - hazırlık ekranı */
+  .film-hazirlik {
+    position: fixed; inset: 0; z-index: 3000;
+    display: none; align-items: flex-end; justify-content: center;
+    background: rgba(0,0,0,0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .film-hazirlik.acik { display: flex; }
+  .film-hazirlik-icerik {
+    width: 100%; max-width: 500px;
+    background: linear-gradient(180deg, #2D1A0E 0%, #1A0F18 100%);
+    border-top: 2px solid #E8A855;
+    border-radius: 24px 24px 0 0;
+    padding: 24px 22px;
+    padding-bottom: max(24px, env(safe-area-inset-bottom, 24px));
+    color: #F4E4C1;
+    max-height: 90vh; overflow-y: auto;
+  }
+  .film-hazirlik h2 {
+    font-family: 'Cinzel', serif; font-size: 18px;
+    color: #E8A855; letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .film-hazirlik .alt {
+    color: #B89968; font-size: 12px;
+    font-style: italic; margin-bottom: 20px;
+  }
+  .film-upload-area {
+    border: 2px dashed rgba(232,168,85,0.4);
+    border-radius: 14px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(0,0,0,0.25);
+  }
+  .film-upload-area:hover { border-color: #E8A855; background: rgba(232,168,85,0.08); }
+  .film-upload-area .icon { font-size: 36px; margin-bottom: 8px; }
+  .film-upload-area .ana-text { color: #E8A855; font-size: 14px; margin-bottom: 4px; }
+  .film-upload-area .alt-text { color: #B89968; font-size: 11px; }
+
+  .film-secilen-onizleme {
+    display: none; margin-top: 16px;
+    grid-template-columns: repeat(4, 1fr); gap: 8px;
+  }
+  .film-secilen-onizleme.goster { display: grid; }
+  .film-foto-karti {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    border: 1px solid rgba(232,168,85,0.3);
+  }
+  .film-foto-karti .sira {
+    position: absolute; top: 4px; left: 4px;
+    width: 20px; height: 20px;
+    background: rgba(0,0,0,0.75);
+    color: #E8A855;
+    border-radius: 50%;
+    font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .film-foto-karti .sil {
+    position: absolute; top: 4px; right: 4px;
+    width: 20px; height: 20px;
+    background: rgba(200,50,50,0.85);
+    color: white;
+    border-radius: 50%;
+    font-size: 12px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    border: none;
+  }
+
+  .film-kayit-ipucu {
+    margin-top: 16px; padding: 12px;
+    background: rgba(232,168,85,0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(232,168,85,0.25);
+    font-size: 12px; color: #E8A855;
+    line-height: 1.6;
+    display: none;
+  }
+  .film-kayit-ipucu.goster { display: block; }
+  .film-kayit-ipucu b { color: #F4E4C1; }
+
+  .film-baslat-btn {
+    width: 100%; margin-top: 16px; padding: 14px;
+    background: linear-gradient(135deg, #B85C7A, #E8A855);
+    color: #1A0F18; border: none; border-radius: 14px;
+    font-family: 'Crimson Pro', serif; font-size: 15px; font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(232,168,85,0.3);
+    opacity: 0.4; pointer-events: none;
+    transition: all 0.3s;
+  }
+  .film-baslat-btn.aktif { opacity: 1; pointer-events: all; }
+  .film-kapat {
+    position: absolute; top: 20px; right: 20px;
+    width: 32px; height: 32px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(232,168,85,0.3);
+    color: #E8A855;
+    border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    z-index: 10;
+  }
+
+  /* Film OYNATIM - tam ekran sinema */
+  .film-oynat {
+    position: fixed; inset: 0; z-index: 4000;
+    background: #000;
+    display: none;
+    overflow: hidden;
+  }
+  .film-oynat.acik { display: block; }
+  .film-slide {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  .film-slide.aktif { opacity: 1; }
+
+  /* Kapak ve kapanış kartları */
+  .film-slide.kapak {
+    background: radial-gradient(circle at center, #2D1A0E 0%, #0A0502 100%);
+    color: #E8A855;
+    flex-direction: column;
+  }
+  .film-slide.kapak .film-logo {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: url('https://res.cloudinary.com/dsnmabr1p/image/upload/v1776530616/u2791417416_anadolu_kltrndeki_ana_tanra_kibelenin_mermerden_b_44c980b9-ad85-4973-8768-f04a1de1f095_3_tsqin4.png') center/cover;
+    border: 2px solid #E8A855;
+    margin-bottom: 20px;
+    box-shadow: 0 0 40px rgba(232,168,85,0.4);
+  }
+  .film-slide.kapak h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 36px; letter-spacing: 6px;
+    color: #E8A855;
+    text-shadow: 0 2px 20px rgba(232,168,85,0.6);
+  }
+  .film-slide.kapak .tarih {
+    font-family: 'Crimson Pro', serif;
+    color: #B89968;
+    letter-spacing: 2px;
+    margin-top: 12px; font-style: italic;
+  }
+  .film-slide.foto {
+    overflow: hidden;
+  }
+  .film-slide.foto .resim {
+    width: 100%; height: 100%;
+    background-size: cover; background-position: center;
+    animation: ken-burns 4s ease-out forwards;
+  }
+  @keyframes ken-burns {
+    0%   { transform: scale(1.0); }
+    100% { transform: scale(1.15); }
+  }
+  .film-slide.kapanis {
+    background: radial-gradient(circle at center, #2D1A0E 0%, #0A0502 100%);
+    flex-direction: column; gap: 14px;
+  }
+  .film-slide.kapanis .film-logo {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: url('https://res.cloudinary.com/dsnmabr1p/image/upload/v1776530616/u2791417416_anadolu_kltrndeki_ana_tanra_kibelenin_mermerden_b_44c980b9-ad85-4973-8768-f04a1de1f095_3_tsqin4.png') center/cover;
+    border: 1.5px solid #E8A855;
+    box-shadow: 0 0 30px rgba(232,168,85,0.4);
+  }
+  .film-slide.kapanis .marka {
+    font-family: 'Cinzel', serif;
+    color: #E8A855; font-size: 18px;
+    letter-spacing: 5px;
+  }
+  .film-slide.kapanis .url {
+    color: #B89968; font-size: 12px;
+    font-style: italic; letter-spacing: 1px;
+  }
+
+  /* Watermark */
+  .film-watermark {
+    position: absolute; bottom: 30px; right: 20px;
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(232,168,85,0.25);
+    font-family: 'Crimson Pro', serif;
+    color: #E8A855;
+    font-size: 11px;
+    letter-spacing: 1px;
+    z-index: 100;
+    opacity: 0; animation: fadeIn 0.6s ease 0.8s forwards;
+  }
+  @keyframes fadeIn { to { opacity: 1; } }
+  .film-watermark .mini-logo {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: url('https://res.cloudinary.com/dsnmabr1p/image/upload/v1776530616/u2791417416_anadolu_kltrndeki_ana_tanra_kibelenin_mermerden_b_44c980b9-ad85-4973-8768-f04a1de1f095_3_tsqin4.png') center/cover;
+    border: 1px solid rgba(232,168,85,0.5);
+  }
+
+  /* Alt etiket - yer ismi */
+  .film-yer-etiket {
+    position: absolute; bottom: 30px; left: 20px;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(232,168,85,0.25);
+    color: #F4E4C1;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    z-index: 100;
+  }
+
+  /* Çıkış butonu */
+  .film-cikis {
+    position: absolute; top: 16px; right: 16px;
+    z-index: 200;
+    width: 40px; height: 40px;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(232,168,85,0.3);
+    color: #E8A855;
+    border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
 </style>
 </head>
 <body>
@@ -682,6 +946,10 @@
       <button class="sesli-rehber-btn" id="sesliRehberBtn" style="display:none" onclick="sesliRehberAc()">
         <span class="sr-mic">🎙️</span>
         <span id="sesliRehberBtnLabel">Sesli Rehberi Dinle</span>
+      </button>
+      <button class="film-btn" onclick="filmiYapAc()">
+        <span class="film-icon">🎬</span>
+        <span id="filmiYapBtnLabel">Filmimi Yap</span>
       </button>
       <button class="rehber-btn" onclick="rehberModalAc()">
         🧭  Profesyonel Rehberle Gez
@@ -1238,6 +1506,13 @@ const TERCUMELER = {
     sesliRehberAlt: 'Daniel eşlik ediyor',
     sesliYukleniyor: 'Ses yükleniyor...',
     sesliHata: 'Ses yüklenemedi. İnternet bağlantınızı kontrol edin.',
+    filmBtn: '🎬  Filmimi Yap',
+    filmBaslik: 'Kendi Filmini Yap',
+    filmAlt: 'Efes anılarından 15 saniyelik sinematik bir film',
+    filmFotoSec: 'Fotoğraflarını seç',
+    filmFotoSecAlt: '3-6 fotoğraf • Telefonundan',
+    filmBaslat: '🎬  Filmi Başlat',
+    filmKayitIpucu: '<b>İpucu:</b> Film başlamadan önce telefonunda <b>Ekran Kaydı</b>\'nı aç (Kontrol Merkezi → 🔴 kayıt butonu). Film tamamlandığında kaydı durdur, Instagram\'a yükle.',
   },
   en: {
     baslik: 'ANADOLU', baslikAlt: 'History Guide',
@@ -1276,6 +1551,13 @@ const TERCUMELER = {
     sesliRehberAlt: 'Narrated by Daniel',
     sesliYukleniyor: 'Loading audio...',
     sesliHata: 'Audio could not load. Check your connection.',
+    filmBtn: '🎬  Make My Film',
+    filmBaslik: 'Make Your Own Film',
+    filmAlt: 'A 15-second cinematic film from your Ephesus memories',
+    filmFotoSec: 'Select your photos',
+    filmFotoSecAlt: '3-6 photos • From your phone',
+    filmBaslat: '🎬  Start Film',
+    filmKayitIpucu: '<b>Tip:</b> Before the film starts, turn on <b>Screen Recording</b> on your phone (Control Center → 🔴 record button). When the film ends, stop recording and share to Instagram.',
   },
   de: {
     baslik: 'ANADOLU', baslikAlt: 'Geschichtsführer',
@@ -1314,6 +1596,13 @@ const TERCUMELER = {
     sesliRehberAlt: 'Gesprochen von Daniel',
     sesliYukleniyor: 'Audio wird geladen...',
     sesliHata: 'Audio konnte nicht geladen werden.',
+    filmBtn: '🎬  Meinen Film erstellen',
+    filmBaslik: 'Erstelle deinen eigenen Film',
+    filmAlt: 'Ein 15-sekündiger Kurzfilm aus deinen Ephesos-Erinnerungen',
+    filmFotoSec: 'Wähle deine Fotos',
+    filmFotoSecAlt: '3-6 Fotos • Von deinem Telefon',
+    filmBaslat: '🎬  Film starten',
+    filmKayitIpucu: '<b>Tipp:</b> Starte vor dem Film die <b>Bildschirmaufnahme</b> auf deinem Telefon (Kontrollzentrum → 🔴 Aufnahme). Beende die Aufnahme nach dem Film und teile es auf Instagram.',
   },
   ru: {
     baslik: 'ANADOLU', baslikAlt: 'Путеводитель по истории',
@@ -1352,6 +1641,13 @@ const TERCUMELER = {
     sesliRehberAlt: 'Озвучивает Daniel',
     sesliYukleniyor: 'Загрузка аудио...',
     sesliHata: 'Не удалось загрузить аудио.',
+    filmBtn: '🎬  Создать мой фильм',
+    filmBaslik: 'Создай свой фильм',
+    filmAlt: '15-секундный кинематографический фильм из ваших воспоминаний об Эфесе',
+    filmFotoSec: 'Выберите фото',
+    filmFotoSecAlt: '3-6 фотографий • С вашего телефона',
+    filmBaslat: '🎬  Начать фильм',
+    filmKayitIpucu: '<b>Совет:</b> Перед началом фильма включите <b>Запись экрана</b> (Пункт управления → 🔴 кнопка записи). После фильма остановите запись и поделитесь в Instagram.',
   },
 };
 
@@ -2111,6 +2407,15 @@ unlulerGoster(y.id);
       srBtn.style.display = 'none';
     }
   }
+
+  // Film butonu label
+  const filmLbl = document.getElementById('filmiYapBtnLabel');
+  if (filmLbl) {
+    filmLbl.textContent = t('filmBtn').replace('🎬  ', '').trim();
+  }
+
+  // Aktif yeri global tut (filmiYapAc için)
+  window._aktifDetayYer = y;
   document.getElementById('detayHaritaBtn').onclick = () => { haritaKapat(); haritaAc(y.id); };
   document.getElementById('detayEkrani').classList.add('acik');
   // Yorumları yükle
@@ -4263,6 +4568,221 @@ function srSureFormat(s) {
     };
   });
 })();
+
+/* ====================================================================
+   KENDI FILMIN - Reels Generator
+   ==================================================================== */
+let filmSecilenFotolar = []; // File[] ya da {src, name}[]
+let filmAktifYer = null;
+let filmTimerIds = [];
+
+function filmiYapAc() {
+  // Aktif ören yeri detayAc üzerinden globalde gelir - son detayı açılan yer
+  // detayAc() fonksiyonunda global aktif yer tutulur zaten (aktifYer değişkeni varsa)
+  filmAktifYer = window._aktifDetayYer || null;
+
+  // UI metinlerini güncelle
+  document.getElementById('filmBaslik').textContent = t('filmBaslik');
+  document.getElementById('filmAlt').textContent = t('filmAlt');
+  document.getElementById('filmFotoSecText').textContent = t('filmFotoSec');
+  document.getElementById('filmFotoSecAltText').textContent = t('filmFotoSecAlt');
+  document.getElementById('filmBaslatLabel').innerHTML = t('filmBaslat');
+  document.getElementById('filmKayitIpucu').innerHTML = t('filmKayitIpucu');
+
+  // Modal aç
+  document.getElementById('filmHazirlik').classList.add('acik');
+  filmSecilenFotolar = [];
+  filmGuncelleUI();
+}
+
+function filmiYapKapat() {
+  document.getElementById('filmHazirlik').classList.remove('acik');
+}
+
+// Fotoğraf yükleme
+document.getElementById('filmFotoInput')?.addEventListener('change', (e) => {
+  const dosyalar = Array.from(e.target.files || []);
+  if (!dosyalar.length) return;
+
+  // Mevcut seçimlere ekle (6 sınırı)
+  const maksKalan = 6 - filmSecilenFotolar.length;
+  const alinacak = dosyalar.slice(0, maksKalan);
+
+  alinacak.forEach(dosya => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      filmSecilenFotolar.push({ src: ev.target.result, name: dosya.name });
+      filmGuncelleUI();
+    };
+    reader.readAsDataURL(dosya);
+  });
+
+  // Input'u sıfırla ki aynı fotoğraf tekrar seçilebilsin
+  e.target.value = '';
+});
+
+function filmFotoSil(index) {
+  filmSecilenFotolar.splice(index, 1);
+  filmGuncelleUI();
+}
+
+function filmGuncelleUI() {
+  const onizleme = document.getElementById('filmSecilenOnizleme');
+  const baslatBtn = document.getElementById('filmBaslatBtn');
+  const ipucu = document.getElementById('filmKayitIpucu');
+
+  if (filmSecilenFotolar.length === 0) {
+    onizleme.classList.remove('goster');
+    onizleme.innerHTML = '';
+    baslatBtn.classList.remove('aktif');
+    baslatBtn.disabled = true;
+    ipucu.classList.remove('goster');
+    return;
+  }
+
+  onizleme.classList.add('goster');
+  onizleme.innerHTML = filmSecilenFotolar.map((f, i) => `
+    <div class="film-foto-karti" style="background-image:url('${f.src}')">
+      <div class="sira">${i + 1}</div>
+      <button class="sil" onclick="filmFotoSil(${i})">×</button>
+    </div>
+  `).join('');
+
+  // En az 3 fotoğraf olunca başlat butonu aktif
+  if (filmSecilenFotolar.length >= 3) {
+    baslatBtn.classList.add('aktif');
+    baslatBtn.disabled = false;
+    ipucu.classList.add('goster');
+  } else {
+    baslatBtn.classList.remove('aktif');
+    baslatBtn.disabled = true;
+    ipucu.classList.remove('goster');
+  }
+}
+
+// Film oynatımı - tam ekran sinema
+function filmOynatBaslat() {
+  if (filmSecilenFotolar.length < 3) return;
+
+  // Hazırlık modalını kapat
+  document.getElementById('filmHazirlik').classList.remove('acik');
+
+  const oynatEkran = document.getElementById('filmOynat');
+  const yerIsim = filmAktifYer ? (filmAktifYer.isim || 'ANADOLU').toUpperCase() : 'ANADOLU';
+  const tarih = new Date().toLocaleDateString(aktifDil === 'tr' ? 'tr-TR' : aktifDil === 'de' ? 'de-DE' : aktifDil === 'ru' ? 'ru-RU' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  // Çıkış butonu + watermark'ı koru
+  oynatEkran.innerHTML = `
+    <button class="film-cikis" onclick="filmOynatKapat()">×</button>
+    <div class="film-slide kapak" id="filmKapak">
+      <div class="film-logo"></div>
+      <h1>${yerIsim}</h1>
+      <div class="tarih">${tarih}</div>
+    </div>
+  `;
+
+  // Fotoğraf slide'ları oluştur
+  filmSecilenFotolar.forEach((f, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'film-slide foto';
+    slide.id = `filmSlide${i}`;
+    slide.innerHTML = `
+      <div class="resim" style="background-image:url('${f.src}')"></div>
+      <div class="film-yer-etiket">${yerIsim}</div>
+    `;
+    oynatEkran.appendChild(slide);
+  });
+
+  // Kapanış
+  const kapanis = document.createElement('div');
+  kapanis.className = 'film-slide kapanis';
+  kapanis.id = 'filmKapanis';
+  kapanis.innerHTML = `
+    <div class="film-logo"></div>
+    <div class="marka">ANADOLU REHBERİ</div>
+    <div class="url">anadolu-rehber.app</div>
+  `;
+  oynatEkran.appendChild(kapanis);
+
+  // Watermark (tüm oynatım süresince)
+  const watermark = document.createElement('div');
+  watermark.className = 'film-watermark';
+  watermark.innerHTML = `<div class="mini-logo"></div><span>Anadolu Rehberi</span>`;
+  oynatEkran.appendChild(watermark);
+
+  // Ekranı aç
+  oynatEkran.classList.add('acik');
+
+  // Müziği başlat
+  const muzik = document.getElementById('filmMuzik');
+  muzik.currentTime = 0;
+  muzik.volume = 0.7;
+  muzik.play().catch(err => console.warn('Müzik otomatik oynatılamadı:', err));
+
+  // Slide zamanlaması
+  // Toplam ~15-20 saniye:
+  // Kapak: 2.5s | Her fotoğraf: 3s | Kapanış: 2.5s
+  const kapakSure = 2500;
+  const fotoSure = 3000;
+  const kapanisSure = 2500;
+
+  // Kapak aktif
+  filmTimerIds.push(setTimeout(() => {
+    document.getElementById('filmKapak').classList.add('aktif');
+  }, 50));
+
+  // Kapağı kaldır, 1. fotoyu göster
+  let t = kapakSure;
+  filmTimerIds.push(setTimeout(() => {
+    document.getElementById('filmKapak').classList.remove('aktif');
+  }, t));
+
+  // Fotoğrafları sırayla göster
+  filmSecilenFotolar.forEach((_, i) => {
+    const gosterZamani = t + (i === 0 ? 300 : i * fotoSure + 300);
+    const kaldirZamani = gosterZamani + fotoSure;
+
+    filmTimerIds.push(setTimeout(() => {
+      // Önceki slide'ı kapat
+      document.querySelectorAll('.film-slide.foto').forEach(s => s.classList.remove('aktif'));
+      // Bu slide'ı ve resmi yeniden animate et
+      const slide = document.getElementById(`filmSlide${i}`);
+      slide.classList.add('aktif');
+      // Ken Burns'u sıfırdan başlat
+      const resim = slide.querySelector('.resim');
+      resim.style.animation = 'none';
+      void resim.offsetWidth; // reflow
+      resim.style.animation = `ken-burns ${fotoSure / 1000}s ease-out forwards`;
+    }, gosterZamani));
+  });
+
+  // Son fotoğraftan sonra kapanış
+  const kapanisBaslangic = t + (filmSecilenFotolar.length * fotoSure) + 300;
+  filmTimerIds.push(setTimeout(() => {
+    document.querySelectorAll('.film-slide.foto').forEach(s => s.classList.remove('aktif'));
+    document.getElementById('filmKapanis').classList.add('aktif');
+  }, kapanisBaslangic));
+
+  // Kapanıştan sonra tüm film bitsin
+  filmTimerIds.push(setTimeout(() => {
+    // Müziği yavaşça söndür
+    const kaybolma = setInterval(() => {
+      if (muzik.volume > 0.05) muzik.volume -= 0.05;
+      else { muzik.pause(); clearInterval(kaybolma); }
+    }, 100);
+  }, kapanisBaslangic + kapanisSure));
+}
+
+function filmOynatKapat() {
+  document.getElementById('filmOynat').classList.remove('acik');
+  const muzik = document.getElementById('filmMuzik');
+  muzik.pause();
+  muzik.currentTime = 0;
+  muzik.volume = 0.7;
+  // Tüm timer'ları temizle
+  filmTimerIds.forEach(id => clearTimeout(id));
+  filmTimerIds = [];
+}
 </script>
 
 <!-- GPS Butonu -->
@@ -4327,6 +4847,38 @@ function srSureFormat(s) {
   </div>
 </div>
 <audio id="srAudio" preload="metadata"></audio>
+
+<!-- ====================================================================
+     KENDI FILMIN - Hazırlık Modal & Oynatım Ekranı
+     ==================================================================== -->
+<div class="film-hazirlik" id="filmHazirlik">
+  <div class="film-hazirlik-icerik" style="position:relative">
+    <button class="film-kapat" onclick="filmiYapKapat()">×</button>
+    <h2 id="filmBaslik">Kendi Filmini Yap</h2>
+    <div class="alt" id="filmAlt">Efes anılarından 15 saniyelik sinematik bir film</div>
+
+    <label class="film-upload-area" for="filmFotoInput">
+      <div class="icon">📸</div>
+      <div class="ana-text" id="filmFotoSecText">Fotoğraflarını seç</div>
+      <div class="alt-text" id="filmFotoSecAltText">3-6 fotoğraf • Telefonundan</div>
+    </label>
+    <input type="file" id="filmFotoInput" accept="image/*" multiple style="display:none">
+
+    <div class="film-secilen-onizleme" id="filmSecilenOnizleme"></div>
+
+    <div class="film-kayit-ipucu" id="filmKayitIpucu"></div>
+
+    <button class="film-baslat-btn" id="filmBaslatBtn" onclick="filmOynatBaslat()" disabled>
+      <span id="filmBaslatLabel">🎬  Filmi Başlat</span>
+    </button>
+  </div>
+</div>
+
+<div class="film-oynat" id="filmOynat">
+  <button class="film-cikis" onclick="filmOynatKapat()">×</button>
+  <!-- Slide'lar JS tarafından dinamik olarak eklenecek -->
+</div>
+<audio id="filmMuzik" loop preload="auto" src="https://res.cloudinary.com/dsnmabr1p/video/upload/v1776507051/lexin_music-ancient-world-118017_2_g1mibh.mp3"></audio>
 
 </body>
 </html>
