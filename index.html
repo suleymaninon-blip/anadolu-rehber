@@ -820,6 +820,137 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 18px;
   }
+
+  /* ====================================================================
+     AI DÖNEM PORTRESİ
+     ==================================================================== */
+  .ai-portre-bolum {
+    margin-top: 20px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(138,43,226,0.12), rgba(232,168,85,0.08));
+    border: 1px solid rgba(184,92,122,0.3);
+    border-radius: 14px;
+  }
+  .ai-portre-baslik {
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: 'Cinzel', serif;
+    color: #E8A855;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+  .ai-portre-etiket {
+    font-size: 9px;
+    background: rgba(184,92,122,0.3);
+    color: #F4E4C1;
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 1px;
+    font-family: 'Crimson Pro', serif;
+  }
+  .ai-portre-aciklama {
+    color: #B89968;
+    font-size: 12px;
+    font-style: italic;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  .ai-portre-upload {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px;
+    padding: 14px;
+    background: rgba(0,0,0,0.25);
+    border: 1px dashed rgba(232,168,85,0.4);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .ai-portre-upload:hover {
+    border-color: #E8A855;
+    background: rgba(232,168,85,0.08);
+  }
+  .ai-portre-icon {
+    font-size: 20px;
+  }
+  .ai-portre-text {
+    color: #E8A855;
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+
+  .ai-portre-yukleniyor {
+    text-align: center; padding: 20px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+  }
+  .ai-spinner {
+    width: 36px; height: 36px;
+    border: 3px solid rgba(232,168,85,0.2);
+    border-top-color: #E8A855;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+    animation: ai-spin 1s linear infinite;
+  }
+  @keyframes ai-spin {
+    to { transform: rotate(360deg); }
+  }
+  .ai-portre-durum-text {
+    color: #E8A855; font-size: 13px;
+    font-family: 'Crimson Pro', serif;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .ai-portre-durum-alt {
+    color: #B89968; font-size: 10px;
+    font-style: italic;
+  }
+
+  .ai-portre-sonuc {
+    text-align: center;
+  }
+  .ai-portre-sonuc-resim {
+    width: 100%;
+    aspect-ratio: 9/16;
+    max-height: 280px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 12px;
+    border: 2px solid #E8A855;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 20px rgba(232,168,85,0.3);
+  }
+  .ai-portre-sonuc-aksiyon {
+    display: flex; gap: 8px;
+  }
+  .ai-portre-btn {
+    flex: 1; padding: 10px;
+    border: none; border-radius: 8px;
+    font-family: 'Crimson Pro', serif;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ai-portre-btn.birincil {
+    background: linear-gradient(135deg, #8B5A2B, #E8A855);
+    color: #1A0F18;
+  }
+  .ai-portre-btn.ikincil {
+    background: rgba(0,0,0,0.4);
+    color: #E8A855;
+    border: 1px solid rgba(232,168,85,0.3);
+  }
+
+  .ai-portre-hata {
+    padding: 10px;
+    background: rgba(212,122,85,0.15);
+    border: 1px solid rgba(212,122,85,0.4);
+    border-radius: 8px;
+    color: #E8A070;
+    font-size: 12px;
+    text-align: center;
+  }
 </style>
 </head>
 <body>
@@ -4593,6 +4724,21 @@ function filmiYapAc() {
   document.getElementById('filmHazirlik').classList.add('acik');
   filmSecilenFotolar = [];
   filmGuncelleUI();
+
+  // AI Portre bölümünü sıfırla
+  aiPortreSifirla();
+
+  // AI Portre açıklama metnini aktif yere göre güncelle
+  const aktifYer = window._aktifDetayYer;
+  const yerIsim = aktifYer?.isim || 'Efes';
+  const yerSlug = aktifYer?.audioGuideSlug || aktifYer?.isim?.toLowerCase();
+  const promptData = AI_PORTRE_PROMPTLAR[yerSlug];
+  const aciklamaEl = document.getElementById('aiPortreAciklama');
+  if (promptData) {
+    aciklamaEl.textContent = `Bir selfie yükle, AI seni ${promptData.donem} yılındaki ${yerIsim}'te ${promptData.stil} olarak canlandırsın`;
+  } else {
+    aciklamaEl.textContent = `Bir selfie yükle, AI seni ${yerIsim}'in dönemine götürsün`;
+  }
 }
 
 function filmiYapKapat() {
@@ -4865,6 +5011,147 @@ function filmOynatKapat() {
   filmTimerIds.forEach(id => clearTimeout(id));
   filmTimerIds = [];
 }
+
+/* ====================================================================
+   AI DÖNEM PORTRESİ - Google Imagen (nano-banana) üzerinden
+   ==================================================================== */
+
+// Her ören yeri için özel prompt (genişletilebilir)
+const AI_PORTRE_PROMPTLAR = {
+  efes: {
+    tr_prompt: 'A photorealistic cinematic portrait: the person in the photo, wearing an authentic white Roman toga with red senatorial trim, standing in front of the marble Library of Celsus in ancient Ephesus around 100 AD. Warm golden hour lighting, bustling ancient Roman marketplace in background with columns and citizens. Preserve the person\'s exact facial features, hairstyle and expression. Professional cinematic quality, 4K, depth of field.',
+    stil: 'Roma Senatörü',
+    donem: 'M.S. 100',
+  },
+  // Gelecekte eklenebilecek diğer yerler:
+  // gobeklitepe: { ... Neolitik dönem deri giysi, T-dikilitaşlar ... }
+  // hattusa: { ... Hitit kraliyet kıyafeti, aslanlı kapı ... }
+};
+
+const AI_PORTRE_ENDPOINT_URL = 'https://vdtfjxyktzbuyyvwbufl.supabase.co/functions/v1/generate-period-portrait';
+const AI_PORTRE_DEMO_MODE = false;  // GERÇEK API aktif — Supabase Edge Function kullanılıyor
+
+let aiPortreAktifFoto = null; // AI tarafından üretilmiş son fotoğraf (data URL)
+
+async function aiPortreSecildi(e) {
+  const dosya = e.target.files?.[0];
+  if (!dosya) return;
+
+  console.log('[AI Portre] Selfie seçildi:', dosya.name, dosya.type, Math.round(dosya.size/1024)+'KB');
+
+  // Durum: yükleniyor
+  document.getElementById('aiPortreUpload').style.display = 'none';
+  document.getElementById('aiPortreSonuc').style.display = 'none';
+  document.getElementById('aiPortreHata').style.display = 'none';
+  document.getElementById('aiPortreYukleniyor').style.display = 'block';
+
+  // Aktif yer ve prompt belirleme
+  const aktifYer = window._aktifDetayYer;
+  const yerSlug = aktifYer?.audioGuideSlug || aktifYer?.isim?.toLowerCase();
+  const promptData = AI_PORTRE_PROMPTLAR[yerSlug] || AI_PORTRE_PROMPTLAR.efes;
+
+  // Yer ismini dinamik olarak güncelle
+  document.getElementById('aiPortreDurumText').textContent =
+    `Seni ${promptData.donem}'e götürüyoruz...`;
+
+  try {
+    // Selfie'yi resize edip base64'e çevir
+    const selfieDataUrl = await filmFotoIsle(dosya);
+    console.log('[AI Portre] Selfie işlendi, boyut:', Math.round(selfieDataUrl.length/1024)+'KB');
+
+    let sonucUrl;
+
+    if (AI_PORTRE_DEMO_MODE || !AI_PORTRE_ENDPOINT_URL) {
+      // DEMO MODU: Gerçek API olmadığında - sadece test için
+      console.log('[AI Portre] DEMO MODU aktif, 3 saniye bekle sonra selfie\'yi döndür');
+      await new Promise(r => setTimeout(r, 3000));
+      sonucUrl = selfieDataUrl; // Demo: aynı fotoğrafı döndürür
+      console.log('[AI Portre] Demo sonucu hazır');
+    } else {
+      // GERÇEK API: Supabase Edge Function çağrısı
+      console.log('[AI Portre] Edge Function çağrılıyor:', AI_PORTRE_ENDPOINT_URL);
+      const response = await fetch(AI_PORTRE_ENDPOINT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'apikey': SUPABASE_KEY,
+        },
+        body: JSON.stringify({
+          selfie: selfieDataUrl,
+          prompt: promptData.tr_prompt,
+          yer: yerSlug,
+        }),
+      });
+      if (!response.ok) {
+        const hataBody = await response.text();
+        throw new Error(`API ${response.status}: ${hataBody.substring(0, 100)}`);
+      }
+      const data = await response.json();
+      sonucUrl = data.imageUrl || data.image || data.result;
+      if (!sonucUrl) throw new Error('API geçerli fotoğraf döndürmedi');
+      console.log('[AI Portre] API sonucu alındı');
+    }
+
+    // Sonucu göster
+    aiPortreAktifFoto = sonucUrl;
+    document.getElementById('aiPortreYukleniyor').style.display = 'none';
+    document.getElementById('aiPortreSonucResim').style.backgroundImage = `url('${sonucUrl}')`;
+    document.getElementById('aiPortreSonuc').style.display = 'block';
+
+  } catch (err) {
+    console.error('[AI Portre] Hata:', err);
+    document.getElementById('aiPortreYukleniyor').style.display = 'none';
+    document.getElementById('aiPortreUpload').style.display = 'flex';
+    const hataEl = document.getElementById('aiPortreHata');
+    hataEl.textContent = 'AI portre oluşturulamadı: ' + err.message;
+    hataEl.style.display = 'block';
+  }
+
+  // Input'u sıfırla
+  e.target.value = '';
+}
+
+function aiPortreSifirla() {
+  aiPortreAktifFoto = null;
+  document.getElementById('aiPortreSonuc').style.display = 'none';
+  document.getElementById('aiPortreHata').style.display = 'none';
+  document.getElementById('aiPortreYukleniyor').style.display = 'none';
+  document.getElementById('aiPortreUpload').style.display = 'flex';
+}
+
+function aiPortreFilmeEkle() {
+  if (!aiPortreAktifFoto) return;
+
+  // AI portreyi film fotoğrafları listesine ekle (en başa koy - önce gösterilir)
+  filmSecilenFotolar.unshift({ src: aiPortreAktifFoto, name: 'ai-donem-portresi.jpg', aiPortre: true });
+
+  console.log('[AI Portre] Filme eklendi, toplam foto:', filmSecilenFotolar.length);
+
+  // UI'yi güncelle (grid'de görünür)
+  filmGuncelleUI();
+
+  // AI portre bölümünü sıfırla
+  aiPortreSifirla();
+
+  // Kullanıcıya hafif feedback
+  const hataEl = document.getElementById('aiPortreHata');
+  hataEl.textContent = '✓ Portre filme eklendi! Alttaki grid\'de görebilirsin.';
+  hataEl.style.display = 'block';
+  hataEl.style.color = '#8BC34A';
+  hataEl.style.background = 'rgba(139,195,74,0.15)';
+  hataEl.style.border = '1px solid rgba(139,195,74,0.4)';
+  setTimeout(() => {
+    hataEl.style.display = 'none';
+    // Stili resetle
+    hataEl.style.color = '';
+    hataEl.style.background = '';
+    hataEl.style.border = '';
+  }, 3500);
+}
+
+// Film modal açılınca AI portre bölümünü sıfırla
+const origFilmiYapAc = typeof filmiYapAc === 'function' ? filmiYapAc : null;
 </script>
 
 <!-- GPS Butonu -->
@@ -4947,6 +5234,43 @@ function filmOynatKapat() {
     <input type="file" id="filmFotoInput" accept="image/*,image/heic,image/heif" multiple style="display:none" onchange="filmFotoSecildi(event)">
 
     <div class="film-secilen-onizleme" id="filmSecilenOnizleme"></div>
+
+    <!-- AI DÖNEM PORTRESİ BÖLÜMÜ -->
+    <div class="ai-portre-bolum">
+      <div class="ai-portre-baslik">
+        <span>✨ AI Dönem Portresi</span>
+        <span class="ai-portre-etiket">Opsiyonel</span>
+      </div>
+      <div class="ai-portre-aciklama" id="aiPortreAciklama">
+        Bir selfie yükle, AI seni Roma dönemindeki Efes'te canlandırsın
+      </div>
+
+      <!-- Durum 1: Henüz yüklenmemiş -->
+      <label class="ai-portre-upload" for="aiPortreInput" id="aiPortreUpload">
+        <div class="ai-portre-icon">🪄</div>
+        <div class="ai-portre-text" id="aiPortreText">Selfie yükle</div>
+      </label>
+      <input type="file" id="aiPortreInput" accept="image/*" style="display:none" onchange="aiPortreSecildi(event)">
+
+      <!-- Durum 2: Yükleniyor -->
+      <div class="ai-portre-yukleniyor" id="aiPortreYukleniyor" style="display:none">
+        <div class="ai-spinner"></div>
+        <div class="ai-portre-durum-text" id="aiPortreDurumText">Seni Roma dönemine götürüyoruz...</div>
+        <div class="ai-portre-durum-alt">~15-20 saniye</div>
+      </div>
+
+      <!-- Durum 3: Sonuç -->
+      <div class="ai-portre-sonuc" id="aiPortreSonuc" style="display:none">
+        <div class="ai-portre-sonuc-resim" id="aiPortreSonucResim"></div>
+        <div class="ai-portre-sonuc-aksiyon">
+          <button class="ai-portre-btn ikincil" onclick="aiPortreSifirla()">🔄 Tekrar Dene</button>
+          <button class="ai-portre-btn birincil" onclick="aiPortreFilmeEkle()">✓ Filme Ekle</button>
+        </div>
+      </div>
+
+      <!-- Hata durumu -->
+      <div class="ai-portre-hata" id="aiPortreHata" style="display:none"></div>
+    </div>
 
     <div class="film-kayit-ipucu" id="filmKayitIpucu"></div>
 
