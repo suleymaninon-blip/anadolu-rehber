@@ -4599,27 +4599,104 @@ function filmiYapKapat() {
   document.getElementById('filmHazirlik').classList.remove('acik');
 }
 
-// Fotoğraf yükleme
-document.getElementById('filmFotoInput')?.addEventListener('change', (e) => {
+// Fotoğraf yükleme - inline onchange ile tetiklenir
+async function filmFotoSecildi(e) {
+  console.log('[Film] Dosya seçici change event tetiklendi');
   const dosyalar = Array.from(e.target.files || []);
-  if (!dosyalar.length) return;
+  console.log('[Film] Seçilen dosya sayısı:', dosyalar.length);
+  if (!dosyalar.length) {
+    console.warn('[Film] Hiç dosya seçilmedi');
+    return;
+  }
+
+  // Dosya bilgilerini logla
+  dosyalar.forEach((d, i) => {
+    console.log('[Film] Dosya ' + (i+1) + ':', d.name, d.type, Math.round(d.size/1024)+'KB');
+  });
 
   // Mevcut seçimlere ekle (6 sınırı)
   const maksKalan = 6 - filmSecilenFotolar.length;
   const alinacak = dosyalar.slice(0, maksKalan);
 
-  alinacak.forEach(dosya => {
+  for (let i = 0; i < alinacak.length; i++) {
+    const dosya = alinacak[i];
+    console.log('[Film] ' + (i+1) + '. fotoğraf işleniyor: ' + dosya.name);
+    try {
+      const resizedDataUrl = await filmFotoIsle(dosya);
+      console.log('[Film] ' + (i+1) + '. fotoğraf işlendi, boyut: ' + Math.round(resizedDataUrl.length/1024) + 'KB');
+      filmSecilenFotolar.push({ src: resizedDataUrl, name: dosya.name });
+      filmGuncelleUI();
+    } catch (err) {
+      console.error('[Film] Fotoğraf işlenemedi:', dosya.name, err);
+      // Fallback: orijinal FileReader sonucunu dene
+      try {
+        console.log('[Film] Fallback deneniyor...');
+        const fallback = await new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = (ev) => resolve(ev.target.result);
+          r.onerror = () => reject(new Error('FileReader fallback başarısız'));
+          r.readAsDataURL(dosya);
+        });
+        console.log('[Film] Fallback başarılı, orijinal boyut kullanıldı');
+        filmSecilenFotolar.push({ src: fallback, name: dosya.name });
+        filmGuncelleUI();
+      } catch (fallbackErr) {
+        console.error('[Film] Fallback da başarısız:', fallbackErr);
+        alert('Fotoğraf yüklenemedi: ' + dosya.name + '\nHata: ' + err.message);
+      }
+    }
+  }
+
+  console.log('[Film] Toplam yüklenen fotoğraf:', filmSecilenFotolar.length);
+  // Input'u sıfırla ki aynı fotoğraf tekrar seçilebilsin
+  e.target.value = '';
+}
+
+// Canvas ile resim resize + JPEG dönüşüm (büyük HEIC dosyaları için)
+function filmFotoIsle(dosya) {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (ev) => {
-      filmSecilenFotolar.push({ src: ev.target.result, name: dosya.name });
-      filmGuncelleUI();
+      console.log('[Film] FileReader başarılı, Image load ediliyor...');
+      const img = new Image();
+      img.onload = () => {
+        console.log(`[Film] Image load edildi: ${img.width}x${img.height}`);
+        try {
+          // Canvas ile 1080px'e resize (uzun kenar)
+          const maksBoyut = 1080;
+          let w = img.width, h = img.height;
+          if (w > h) {
+            if (w > maksBoyut) { h = h * (maksBoyut / w); w = maksBoyut; }
+          } else {
+            if (h > maksBoyut) { w = w * (maksBoyut / h); h = maksBoyut; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          // JPEG olarak çıkar (iOS HEIC sorunu çözülür)
+          const jpegData = canvas.toDataURL('image/jpeg', 0.85);
+          console.log('[Film] Canvas → JPEG başarılı');
+          resolve(jpegData);
+        } catch (e) {
+          console.error('[Film] Canvas hatası:', e);
+          reject(e);
+        }
+      };
+      img.onerror = (err) => {
+        console.error('[Film] Image load hatası - muhtemelen HEIC format', err);
+        reject(new Error('Image yüklenemedi (HEIC olabilir)'));
+      };
+      img.src = ev.target.result;
+    };
+    reader.onerror = (err) => {
+      console.error('[Film] FileReader hatası:', err);
+      reject(new Error('FileReader hatası'));
     };
     reader.readAsDataURL(dosya);
   });
-
-  // Input'u sıfırla ki aynı fotoğraf tekrar seçilebilsin
-  e.target.value = '';
-});
+}
 
 function filmFotoSil(index) {
   filmSecilenFotolar.splice(index, 1);
@@ -4629,6 +4706,7 @@ function filmFotoSil(index) {
 function filmGuncelleUI() {
   const onizleme = document.getElementById('filmSecilenOnizleme');
   const baslatBtn = document.getElementById('filmBaslatBtn');
+  const baslatLbl = document.getElementById('filmBaslatLabel');
   const ipucu = document.getElementById('filmKayitIpucu');
 
   if (filmSecilenFotolar.length === 0) {
@@ -4636,6 +4714,7 @@ function filmGuncelleUI() {
     onizleme.innerHTML = '';
     baslatBtn.classList.remove('aktif');
     baslatBtn.disabled = true;
+    baslatLbl.innerHTML = t('filmBaslat');
     ipucu.classList.remove('goster');
     return;
   }
@@ -4652,10 +4731,13 @@ function filmGuncelleUI() {
   if (filmSecilenFotolar.length >= 3) {
     baslatBtn.classList.add('aktif');
     baslatBtn.disabled = false;
+    baslatLbl.innerHTML = `🎬  Filmi Başlat (${filmSecilenFotolar.length} foto)`;
     ipucu.classList.add('goster');
   } else {
     baslatBtn.classList.remove('aktif');
     baslatBtn.disabled = true;
+    const kalan = 3 - filmSecilenFotolar.length;
+    baslatLbl.innerHTML = `📸  ${kalan} foto daha seç (${filmSecilenFotolar.length}/3)`;
     ipucu.classList.remove('goster');
   }
 }
@@ -4862,7 +4944,7 @@ function filmOynatKapat() {
       <div class="ana-text" id="filmFotoSecText">Fotoğraflarını seç</div>
       <div class="alt-text" id="filmFotoSecAltText">3-6 fotoğraf • Telefonundan</div>
     </label>
-    <input type="file" id="filmFotoInput" accept="image/*" multiple style="display:none">
+    <input type="file" id="filmFotoInput" accept="image/*,image/heic,image/heif" multiple style="display:none" onchange="filmFotoSecildi(event)">
 
     <div class="film-secilen-onizleme" id="filmSecilenOnizleme"></div>
 
