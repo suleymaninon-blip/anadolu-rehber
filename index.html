@@ -5033,6 +5033,40 @@ const AI_PORTRE_DEMO_MODE = false;  // GERÇEK API aktif — Supabase Edge Funct
 
 let aiPortreAktifFoto = null; // AI tarafından üretilmiş son fotoğraf (data URL)
 
+// AI portre için ÖZEL küçültücü - 512px, quality 0.65
+// (Mobil veride 200KB+ POST'lar timeout veriyor, ~50KB hedefliyoruz)
+function aiPortreFotoKucult(dosya) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const maksBoyut = 512;
+          let w = img.width, h = img.height;
+          if (w > h) {
+            if (w > maksBoyut) { h = h * (maksBoyut / w); w = maksBoyut; }
+          } else {
+            if (h > maksBoyut) { w = w * (maksBoyut / h); h = maksBoyut; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.65));
+        } catch (e) {
+          reject(e);
+        }
+      };
+      img.onerror = () => reject(new Error('Image yüklenemedi'));
+      img.src = ev.target.result;
+    };
+    reader.onerror = () => reject(new Error('FileReader hatası'));
+    reader.readAsDataURL(dosya);
+  });
+}
+
 async function aiPortreSecildi(e) {
   const dosya = e.target.files?.[0];
   if (!dosya) return;
@@ -5055,8 +5089,9 @@ async function aiPortreSecildi(e) {
     `Seni ${promptData.donem}'e götürüyoruz...`;
 
   try {
-    // Selfie'yi resize edip base64'e çevir
-    const selfieDataUrl = await filmFotoIsle(dosya);
+    // AI portre için ÖZEL küçültücü kullan - 512px / 64KB
+    // (Mobil veride 200KB+ POST'lar timeout oluyor)
+    const selfieDataUrl = await aiPortreFotoKucult(dosya);
     console.log('[AI Portre] Selfie işlendi, boyut:', Math.round(selfieDataUrl.length/1024)+'KB');
 
     let sonucUrl;
@@ -5069,23 +5104,37 @@ async function aiPortreSecildi(e) {
       console.log('[AI Portre] Demo sonucu hazır');
     } else {
       // GERÇEK API: Supabase Edge Function çağrısı
+      // Not: 'apikey' header CORS preflight tetikliyor, sadece Authorization yeterli
       console.log('[AI Portre] Edge Function çağrılıyor:', AI_PORTRE_ENDPOINT_URL);
-      const response = await fetch(AI_PORTRE_ENDPOINT_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'apikey': SUPABASE_KEY,
-        },
-        body: JSON.stringify({
-          selfie: selfieDataUrl,
-          prompt: promptData.tr_prompt,
-          yer: yerSlug,
-        }),
+
+      const requestBody = JSON.stringify({
+        selfie: selfieDataUrl,
+        prompt: promptData.tr_prompt,
+        yer: yerSlug,
       });
+      console.log('[AI Portre] Tam request boyutu:', Math.round(requestBody.length/1024) + 'KB');
+
+      let response;
+      try {
+        response = await fetch(AI_PORTRE_ENDPOINT_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+          },
+          body: requestBody,
+        });
+      } catch (fetchErr) {
+        console.error('[AI Portre] Fetch network hatası:', fetchErr);
+        console.error('[AI Portre] Hata adı:', fetchErr.name);
+        console.error('[AI Portre] Hata mesajı:', fetchErr.message);
+        throw new Error('Network hatası: ' + (fetchErr.message || fetchErr.name || 'Bilinmeyen'));
+      }
+
+      console.log('[AI Portre] Response alındı, status:', response.status);
       if (!response.ok) {
         const hataBody = await response.text();
-        throw new Error(`API ${response.status}: ${hataBody.substring(0, 100)}`);
+        throw new Error(`API ${response.status}: ${hataBody.substring(0, 200)}`);
       }
       const data = await response.json();
       sonucUrl = data.imageUrl || data.image || data.result;
