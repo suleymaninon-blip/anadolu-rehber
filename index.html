@@ -4737,7 +4737,7 @@ function filmiYapAc() {
   const aktifYer = window._aktifDetayYer;
   const yerIsim = aktifYer?.isim || 'Efes';
   const yerSlug = aktifYer?.audioGuideSlug || aktifYer?.isim?.toLowerCase();
-  const promptData = AI_PORTRE_PROMPTLAR[yerSlug];
+  const promptData = AI_PORTRE_PROMPTLAR[yerSlug] || medeniyetPromptBul(aktifYer);
   const aciklamaEl = document.getElementById('aiPortreAciklama');
   if (promptData) {
     aciklamaEl.textContent = `Bir selfie yükle, AI seni ${promptData.donem} yılındaki ${yerIsim}'te ${promptData.stil} olarak canlandırsın`;
@@ -5021,16 +5021,166 @@ function filmOynatKapat() {
    AI DÖNEM PORTRESİ - Google Imagen (nano-banana) üzerinden
    ==================================================================== */
 
-// Her ören yeri için özel prompt (genişletilebilir)
+// Her medeniyete göre jenerik promptlar (fallback sistemi)
+const DONEM_PROMPTLAR = {
+  neolitik: {
+    tr_prompt: 'A photorealistic portrait: the person wearing Neolithic clothing made of animal hides and woven plant fibers, with clay bead necklace, standing inside a mud-brick Neolithic dwelling with painted bull-head murals on the walls, resembling ancient Çatalhöyük around 7000 BC. Warm firelight, ochre-painted walls. Preserve the exact facial features, hairstyle and expression of the person.',
+    stil: 'Neolitik Yerleşimci',
+    donem: 'M.Ö. 7000',
+  },
+  hitit: {
+    tr_prompt: 'A photorealistic cinematic portrait: the person wearing authentic Hittite royal garments — layered wool robes with geometric embroidery, bronze belt and arm cuffs, tall ceremonial headdress — standing before the Lion Gate of Hattusa around 1300 BC. Ancient stone walls with cuneiform carvings, Anatolian highlands in background. Preserve exact facial features, hairstyle and expression.',
+    stil: 'Hitit Savaşçısı',
+    donem: 'M.Ö. 1300',
+  },
+  tuncCagi: {
+    tr_prompt: 'A photorealistic portrait: the person wearing Bronze Age Anatolian warrior armor — hammered bronze breastplate, plumed crested helmet, leather greaves — standing before ancient citadel walls around 1200 BC. Rocky Aegean hillside landscape, sea visible in distance. Preserve exact facial features and expression.',
+    stil: 'Tunç Çağı Savaşçısı',
+    donem: 'M.Ö. 1200',
+  },
+  frig: {
+    tr_prompt: 'A photorealistic portrait: the person wearing Phrygian royal attire — soft pointed Phrygian cap, richly embroidered wool robes with geometric patterns, bronze fibula — standing before the carved rock façade of a Phrygian monument around 800 BC. Anatolian plateau landscape with pine trees. Preserve exact facial features and expression.',
+    stil: 'Frig Prensi',
+    donem: 'M.Ö. 800',
+  },
+  lidya: {
+    tr_prompt: 'A photorealistic portrait: the person wearing opulent Lydian royal attire — fine linen robes with gold embroidery, heavy gold jewelry with electrum coins as ornaments — standing before the ancient marketplace of Sardis with gold refineries in background around 600 BC. Preserve exact facial features and expression.',
+    stil: 'Lidya Tüccarı',
+    donem: 'M.Ö. 600',
+  },
+  pers: {
+    tr_prompt: 'A photorealistic portrait: the person wearing Persian satrapal robes — luxurious layered Persian court dress with elaborate gold jewelry and a tiara — standing before a columned Persian palatial hall around 500 BC. Rich tapestries and golden torches in background. Preserve exact facial features and expression.',
+    stil: 'Pers Satrabı',
+    donem: 'M.Ö. 500',
+  },
+  yunan: {
+    tr_prompt: 'A photorealistic cinematic portrait: the person wearing ancient Greek Ionian chiton — white linen robe with decorative border, olive wreath crown — standing before a marble Doric temple colonnade around 400 BC. Blue Aegean sea visible in background, warm Mediterranean light. Preserve exact facial features, hairstyle and expression.',
+    stil: 'Yunan Filozofu',
+    donem: 'M.Ö. 400',
+  },
+  helenistik: {
+    tr_prompt: 'A photorealistic portrait: the person wearing Hellenistic-era fine wool himation draped over chiton, with gold diadem, standing in front of a grand Hellenistic agora with marble columns around 200 BC. Cosmopolitan Aegean city atmosphere. Preserve exact facial features and expression.',
+    stil: 'Helenistik Vatandaş',
+    donem: 'M.Ö. 200',
+  },
+  roma: {
+    tr_prompt: 'A photorealistic cinematic portrait: the person wearing an authentic white Roman toga with red trim, standing in front of a marble Roman temple colonnade around 100 AD. Warm golden hour lighting, ancient Roman forum in background with columns and citizens. Preserve exact facial features, hairstyle and expression. Professional cinematic quality, 4K.',
+    stil: 'Roma Vatandaşı',
+    donem: 'M.S. 100',
+  },
+  likya: {
+    tr_prompt: 'A photorealistic portrait: the person wearing Lycian warrior costume — distinctive crested helmet, bronze cuirass, and short wool chiton — standing before a Lycian rock-cut tomb façade around 400 BC. Rugged Mediterranean coastal landscape with pine trees and turquoise sea. Preserve exact facial features and expression.',
+    stil: 'Likya Savaşçısı',
+    donem: 'M.Ö. 400',
+  },
+  pisidya: {
+    tr_prompt: 'A photorealistic portrait: the person wearing Pisidian mountain warrior attire — layered wool cloak over leather armor, with metal fibula and short sword at belt — standing on a rocky Taurus mountain citadel around 200 AD. Ancient theatre ruins visible below on the mountainside. Preserve exact facial features and expression.',
+    stil: 'Pisidya Savaşçısı',
+    donem: 'M.S. 200',
+  },
+  bizans: {
+    tr_prompt: 'A photorealistic portrait: the person wearing Byzantine court robes — richly embroidered silk dalmatic with gold clavi stripes, a jeweled collar, and a simple gold cross pendant — standing before gilded mosaic walls of a Byzantine church around 1000 AD. Candlelight, golden tesserae reflecting light. Preserve exact facial features and expression.',
+    stil: 'Bizans Soylusu',
+    donem: 'M.S. 1000',
+  },
+  selcuklu: {
+    tr_prompt: 'A photorealistic portrait: the person wearing Seljuk court attire — fine wool kaftan with geometric arabesque embroidery, silk turban, and soft leather boots — standing in the courtyard of a Seljuk caravanserai with pointed arched portals around 1200 AD. Anatolian landscape, stone carvings visible. Preserve exact facial features and expression.',
+    stil: 'Selçuklu Beyefendisi',
+    donem: 'M.S. 1200',
+  },
+  osmanli: {
+    tr_prompt: 'A photorealistic cinematic portrait: the person wearing Ottoman court dress — richly embroidered silk kaftan with wide sleeves, tall felt Ottoman turban, and ceremonial belt — standing inside a grand domed Ottoman mosque with calligraphy panels and stained glass windows around 1500 AD. Warm interior light. Preserve exact facial features and expression.',
+    stil: 'Osmanlı Soylusu',
+    donem: 'M.S. 1500',
+  },
+};
+
+// Medeniyet listesine göre en uygun prompt'u bul
+function medeniyetPromptBul(yer) {
+  if (!yer) return null;
+  const m = yer.medeniyetler || [];
+  const d = String(yer.donem || '');
+  if (m.includes('Neolitik') || m.includes('Kalkolitik')) return DONEM_PROMPTLAR.neolitik;
+  if (m.includes('Hitit')) return DONEM_PROMPTLAR.hitit;
+  if (m.includes('Tunç Çağı')) return DONEM_PROMPTLAR.tuncCagi;
+  if (m.includes('Frig')) return DONEM_PROMPTLAR.frig;
+  if (m.includes('Lidya')) return DONEM_PROMPTLAR.lidya;
+  if (m.includes('Pers')) return DONEM_PROMPTLAR.pers;
+  if (m.includes('Likya')) return DONEM_PROMPTLAR.likya;
+  if (m.includes('Pisidya')) return DONEM_PROMPTLAR.pisidya;
+  if (m.includes('Osmanlı')) return DONEM_PROMPTLAR.osmanli;
+  if (m.includes('Selçuklu')) return DONEM_PROMPTLAR.selcuklu;
+  if (m.includes('Bizans')) return DONEM_PROMPTLAR.bizans;
+  if (m.includes('Roma')) return DONEM_PROMPTLAR.roma;
+  if (m.includes('Helenistik')) return DONEM_PROMPTLAR.helenistik;
+  if (m.includes('İyon') || m.includes('Yunan') || m.includes('Dor')) return DONEM_PROMPTLAR.yunan;
+  if (d === '1') return DONEM_PROMPTLAR.neolitik;
+  if (d === '2') return DONEM_PROMPTLAR.hitit;
+  if (d === '3') return DONEM_PROMPTLAR.yunan;
+  if (d === '4') return DONEM_PROMPTLAR.roma;
+  if (d === '5') return DONEM_PROMPTLAR.bizans;
+  if (d === '6') return DONEM_PROMPTLAR.selcuklu;
+  if (d === '7') return DONEM_PROMPTLAR.osmanli;
+  return null;
+}
+
+// Ören yerine özel promptlar (slug → prompt)
 const AI_PORTRE_PROMPTLAR = {
   efes: {
     tr_prompt: 'A photorealistic cinematic portrait: the person in the photo, wearing an authentic white Roman toga with red senatorial trim, standing in front of the marble Library of Celsus in ancient Ephesus around 100 AD. Warm golden hour lighting, bustling ancient Roman marketplace in background with columns and citizens. Preserve the person\'s exact facial features, hairstyle and expression. Professional cinematic quality, 4K, depth of field.',
     stil: 'Roma Senatörü',
     donem: 'M.S. 100',
   },
-  // Gelecekte eklenebilecek diğer yerler:
-  // gobeklitepe: { ... Neolitik dönem deri giysi, T-dikilitaşlar ... }
-  // hattusa: { ... Hitit kraliyet kıyafeti, aslanlı kapı ... }
+  hattuşa: {
+    tr_prompt: 'A photorealistic cinematic portrait: the person wearing authentic Hittite royal warrior garments — layered wool robes with geometric embroidery, bronze belt and arm cuffs, tall ceremonial headdress — standing before the famous Lion Gate of Hattusa around 1300 BC. Massive carved lion guardians flanking the gate, ancient stone walls extending behind. Anatolian highlands landscape. Preserve exact facial features, hairstyle and expression.',
+    stil: 'Hitit Savaşçısı',
+    donem: 'M.Ö. 1300',
+  },
+  truva: {
+    tr_prompt: 'A photorealistic cinematic portrait: the person wearing Bronze Age Trojan warrior armor — hammered bronze breastplate with shoulder guards, tall plumed crested Trojan helmet, leather greaves — standing before the great walls of ancient Troy around 1200 BC. The Aegean sea visible in the distance, ancient citadel towers and wooden structures behind. Preserve exact facial features, hairstyle and expression.',
+    stil: 'Truvalı Savaşçı',
+    donem: 'M.Ö. 1200',
+  },
+  'çatalhöyük': {
+    tr_prompt: 'A photorealistic portrait: the person wearing Neolithic clothing made of animal hides and woven plant fibers, with clay and bone bead necklace, crouching inside a Neolithic mud-brick dwelling with vivid ochre and red painted bull-head murals (bucrania) on the walls, resembling Çatalhöyük around 7000 BC. Warm firelight from a central hearth. Preserve exact facial features and expression.',
+    stil: 'Neolitik Yerleşimci',
+    donem: 'M.Ö. 7000',
+  },
+  'bergama (pergamon)': {
+    tr_prompt: 'A photorealistic cinematic portrait: the person wearing Hellenistic royal robes — fine white wool himation over linen chiton, gold diadem — standing on the grand terrace of the Pergamon Acropolis around 200 BC, with the breathtaking panoramic view of the Caicus valley below and the famous altar of Zeus partially visible. Preserve exact facial features, hairstyle and expression.',
+    stil: 'Bergama Soylusu',
+    donem: 'M.Ö. 200',
+  },
+  aspendos: {
+    tr_prompt: 'A photorealistic portrait: the person wearing Roman theatrical costume — draped toga and decorated mask held in hand — standing on the stage of the grand Roman theatre of Aspendos around 150 AD, with the perfectly preserved two-story stone scaenae frons behind them and the terraced seating rising above. Preserve exact facial features and expression.',
+    stil: 'Roma Oyuncusu',
+    donem: 'M.S. 150',
+  },
+  'hierapolis - pamukkale': {
+    tr_prompt: 'A photorealistic portrait: the person wearing Roman spa attire — simple white linen tunica and sandals, with a laurel wreath — standing beside the famous white travertine terraces and thermal pools of Hierapolis-Pamukkale around 200 AD. Steam rising from hot springs, ancient marble columns of the nymphaeum visible nearby. Preserve exact facial features and expression.',
+    stil: 'Roma Spa Misafiri',
+    donem: 'M.S. 200',
+  },
+  kapadokya: {
+    tr_prompt: 'A photorealistic portrait: the person wearing Byzantine monastic robes — a simple dark wool habit and wooden cross pendant — standing at the entrance of a cave church carved into volcanic rock in Cappadocia around 1000 AD. Vibrant red and blue frescoes of saints visible inside, distinctive fairy chimney rock formations rising behind in the landscape. Preserve exact facial features and expression.',
+    stil: 'Bizans Keşişi',
+    donem: 'M.S. 1000',
+  },
+  gordion: {
+    tr_prompt: 'A photorealistic portrait: the person wearing Phrygian royal attire — soft pointed Phrygian cap in deep red, richly embroidered wool robes with geometric meander patterns, bronze fibula clasping the cloak — standing before the great tumulus mound of Gordion with the central Anatolian plateau stretching behind around 800 BC. Preserve exact facial features and expression.',
+    stil: 'Frig Prensi',
+    donem: 'M.Ö. 800',
+  },
+  sardes: {
+    tr_prompt: 'A photorealistic portrait: the person wearing opulent Lydian royal merchant attire — fine linen robes with elaborate gold-thread embroidery, heavy gold and electrum jewelry, coins at belt — standing before the ancient gold-refining workshops of Sardis with the Temple of Artemis columns visible behind around 550 BC. Preserve exact facial features and expression.',
+    stil: 'Lidya Tüccarı',
+    donem: 'M.Ö. 550',
+  },
+  xanthos: {
+    tr_prompt: 'A photorealistic portrait: the person wearing Lycian warrior costume — distinctive tall crested helmet, decorated bronze cuirass over short wool chiton, leather greaves — standing before the famous Harpy Monument pillar tomb of Xanthos around 480 BC. Rocky Mediterranean landscape with pine trees and carved Lycian sarcophagi in background. Preserve exact facial features and expression.',
+    stil: 'Likya Savaşçısı',
+    donem: 'M.Ö. 480',
+  },
 };
 
 const AI_PORTRE_ENDPOINT_URL = 'https://vdtfjxyktzbuyyvwbufl.supabase.co/functions/v1/generate-period-portrait';
@@ -5087,7 +5237,7 @@ async function aiPortreSecildi(e) {
   // Aktif yer ve prompt belirleme
   const aktifYer = window._aktifDetayYer;
   const yerSlug = aktifYer?.audioGuideSlug || aktifYer?.isim?.toLowerCase();
-  const promptData = AI_PORTRE_PROMPTLAR[yerSlug] || AI_PORTRE_PROMPTLAR.efes;
+  const promptData = AI_PORTRE_PROMPTLAR[yerSlug] || medeniyetPromptBul(aktifYer) || AI_PORTRE_PROMPTLAR.efes;
 
   // Yer ismini dinamik olarak güncelle
   document.getElementById('aiPortreDurumText').textContent =
