@@ -294,6 +294,32 @@
   @keyframes parla { 0%,100% { text-shadow: 0 0 20px rgba(184,92,42,0.3); } 50% { text-shadow: 0 0 40px rgba(184,92,42,0.7), 0 0 80px rgba(184,92,42,0.3); } }
   .sinema-baslik.gorsel { animation: parla 3s ease-in-out infinite; }
 
+  /* DÖNEM PORTRESİ */
+  .portre-modal { position: fixed; inset: 0; background: rgba(0,0,0,0); z-index: 600; display: flex; flex-direction: column; pointer-events: none; transition: background 0.4s; }
+  .portre-modal.acik { background: rgba(0,0,0,0.95); pointer-events: all; }
+  .portre-icerik { position: absolute; inset: 0; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.45s cubic-bezier(0.4,0,0.2,1); }
+  .portre-modal.acik .portre-icerik { transform: translateY(0); }
+  .portre-gorsel-alan { position: relative; height: 52vh; flex-shrink: 0; overflow: hidden; background: #0A0A08; display: flex; align-items: center; justify-content: center; }
+  .portre-gorsel-alan img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1s; }
+  .portre-gorsel-alan img.yuklendi { opacity: 1; }
+  .portre-gorsel-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.75) 100%); z-index: 1; }
+  .portre-placeholder-emoji { font-size: 64px; position: relative; z-index: 0; opacity: 0.4; }
+  .portre-donem-etiket { position: absolute; top: 52px; left: 16px; z-index: 3; background: rgba(184,92,42,0.85); padding: 5px 14px; border-radius: 20px; font-size: 10px; color: #fff; letter-spacing: 1.5px; font-family: 'Cinzel', serif; text-transform: uppercase; }
+  .portre-kapat-btn { position: absolute; top: 46px; right: 16px; z-index: 3; background: rgba(255,255,255,0.12); border: none; color: #fff; font-size: 18px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .portre-baslik-alan { position: absolute; bottom: 20px; left: 20px; right: 20px; z-index: 2; }
+  .portre-baslik { font-family: 'Cinzel', serif; font-size: 26px; color: #fff; margin-bottom: 6px; line-height: 1.2; }
+  .portre-tarih { font-size: 13px; color: rgba(255,255,255,0.65); font-style: italic; }
+  .portre-alt { flex: 1; background: #0C0B09; overflow-y: auto; padding: 28px 20px 48px; scrollbar-width: none; display: flex; flex-direction: column; gap: 20px; }
+  .portre-alt::-webkit-scrollbar { display: none; }
+  .portre-yuklenme { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 0; gap: 14px; }
+  .portre-spinner { width: 38px; height: 38px; border: 2px solid rgba(184,92,42,0.25); border-top-color: #B85C2A; border-radius: 50%; animation: portre-don 1s linear infinite; }
+  @keyframes portre-don { to { transform: rotate(360deg); } }
+  .portre-yuklenme-yazi { font-size: 13px; color: #6B6560; font-style: italic; }
+  .portre-metin { font-family: 'Crimson Pro', Georgia, serif; font-size: 16px; color: #D8CFC0; line-height: 2; white-space: pre-wrap; display: none; }
+  .portre-etiket-satir { display: flex; flex-wrap: wrap; gap: 8px; display: none; }
+  .portre-chip { padding: 5px 14px; border-radius: 20px; background: rgba(184,92,42,0.12); border: 0.5px solid rgba(184,92,42,0.35); font-size: 12px; color: #B85C2A; }
+  .portre-gorsel-not { font-size: 11px; color: #3A3530; text-align: center; margin-top: 8px; display: none; }
+
   /* LEZZETLER BÖLÜMÜ */
   .lezzet-kaydirici { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
   .lezzet-kaydirici::-webkit-scrollbar { display: none; }
@@ -1459,6 +1485,32 @@
     </button>
   </div>
 
+  <!-- DÖNEM PORTRESİ -->
+  <div class="portre-modal" id="portreModal">
+    <div class="portre-icerik">
+      <div class="portre-gorsel-alan">
+        <img id="portreGorsel" alt="" />
+        <div class="portre-gorsel-overlay"></div>
+        <div class="portre-placeholder-emoji" id="portreEmoji">🏛</div>
+        <span class="portre-donem-etiket" id="portreEtiket"></span>
+        <button class="portre-kapat-btn" onclick="portreKapat()">✕</button>
+        <div class="portre-baslik-alan">
+          <div class="portre-baslik" id="portreBaslik"></div>
+          <div class="portre-tarih" id="portreTarih"></div>
+        </div>
+      </div>
+      <div class="portre-alt" id="portreAlt">
+        <div class="portre-yuklenme" id="portreYuklenme">
+          <div class="portre-spinner"></div>
+          <div class="portre-yuklenme-yazi">Dönem portresi hazırlanıyor…</div>
+        </div>
+        <div class="portre-metin" id="portreMetin"></div>
+        <div class="portre-etiket-satir" id="portreChipler"></div>
+        <div class="portre-gorsel-not" id="portreGorselNot">✦ Görsel yapay zeka tarafından oluşturulmuştur</div>
+      </div>
+    </div>
+  </div>
+
 </div>
 <script>
 const YERLER = [
@@ -2450,7 +2502,114 @@ function donemSec(el,id) {
   el.classList.add('aktif');
   if(id){const r=el.style.getPropertyValue('--renk')||'#B85C2A';el.style.background=r;el.style.borderColor=r;el.style.color='#fff';}
   kartlarGoster();
+  if(id) donemPortresiAc(id);
 }
+
+// ── DÖNEM PORTRESİ ────────────────────────────────────────────────────────────
+const DONEM_META = {
+  '1': {
+    isim: 'Taş Devri', tarih: 'M.Ö. 10.000 – 3.000', emoji: '🪨',
+    medeniyetler: ['Neolitik', 'Kalkolitik', 'Çatalhöyük', 'Göbeklitepe'],
+    imgPrompt: 'neolithic stone age Anatolia ancient stone temple prehistoric ritual pillars dramatic golden sunrise cinematic oil painting',
+    aiPrompt: `Anadolu'nun Taş Devri (M.Ö. 10.000 – 3.000) için büyüleyici bir dönem portresi yaz. Bu dönemde insanlar nasıl yaşıyordu, neye inanıyordu? Göbeklitepe ve Çatalhöyük gibi yapıları kim inşa etti? Anadolu bu dönemde insanlık tarihine ne kattı? Sanki o çağa açılan bir pencereden bakıyormuş gibi, şiirsel ve etkileyici bir dille anlat. Türkçe, maksimum 180 kelime.`
+  },
+  '2': {
+    isim: 'Tunç Çağı', tarih: 'M.Ö. 3.000 – 1.200', emoji: '⚔️',
+    medeniyetler: ['Hitit', 'Truva', 'Asur', 'Sümer'],
+    imgPrompt: 'Bronze Age Anatolia Hittite empire ancient city gates stone walls dramatic epic landscape golden light cinematic',
+    aiPrompt: `Anadolu'nun Tunç Çağı (M.Ö. 3.000 – 1.200) için büyüleyici bir dönem portresi yaz. Hitit İmparatorluğu nasıl bir güçtü? Truva savaşları gerçek miydi? Bu çağda Anadolu hangi medeniyetlerin beşiği oldu? O dönemin havasını, gücünü ve sırlarını hissettiren, şiirsel bir dille anlat. Türkçe, maksimum 180 kelime.`
+  },
+  '3': {
+    isim: 'Demir Çağı', tarih: 'M.Ö. 1.200 – 550', emoji: '👑',
+    medeniyetler: ['Lidya', 'Frig', 'Urartu', 'İyon'],
+    imgPrompt: 'Iron Age Anatolia Phrygian Lydian ancient kingdom rocky fortress dramatic moody landscape cinematic historical',
+    aiPrompt: `Anadolu'nun Demir Çağı (M.Ö. 1.200 – 550) için büyüleyici bir dönem portresi yaz. Paranın icadından Gordion düğümüne, Kral Midas'ın altınlarından ilk filozoflara kadar bu çağın ruhu neydi? Anadolu bu dönemde nasıl değişti? Şiirsel ve etkileyici bir dille anlat. Türkçe, maksimum 180 kelime.`
+  },
+  '4': {
+    isim: 'Antik Çağ', tarih: 'M.Ö. 550 – M.S. 395', emoji: '🏛',
+    medeniyetler: ['Yunan', 'Pers', 'Roma', 'Helenistik'],
+    imgPrompt: 'ancient classical Greco-Roman Anatolia magnificent marble temple columns agora Mediterranean sea golden hour dramatic cinematic',
+    aiPrompt: `Anadolu'nun Antik Çağı (M.Ö. 550 – M.S. 395) için büyüleyici bir dönem portresi yaz. Efes, Bergama, Afrodisyas gibi dev şehirlerde hayat nasıldı? İskender'in fırtınası, Roma'nın ihtişamı bu toprakları nasıl dönüştürdü? O çağın görkemini, felsefesini, sanatını hissettiren şiirsel bir dille anlat. Türkçe, maksimum 180 kelime.`
+  },
+  '5': {
+    isim: 'Bizans', tarih: 'M.S. 395 – 1453', emoji: '⛪',
+    medeniyetler: ['Bizans', 'Hristiyan', 'Rum', 'Ermeni'],
+    imgPrompt: 'Byzantine empire Anatolia grand cathedral golden mosaic dome dramatic candlelight atmospheric medieval cinematic painting',
+    aiPrompt: `Anadolu'nun Bizans Dönemi (M.S. 395 – 1453) için büyüleyici bir dönem portresi yaz. Konstantinopolis'in ihtişamı, kaya kiliseler, manastırlar, imparatorluk sarayları… Bu bin yıllık çağda Anadolu nasıl bir dünya kurdu? O dönemin ruhani derinliğini, siyasi çalkantısını, sanatsal zenginliğini şiirsel bir dille anlat. Türkçe, maksimum 180 kelime.`
+  },
+  '6': {
+    isim: 'Selçuklu', tarih: 'M.S. 1071 – 1299', emoji: '🌙',
+    medeniyetler: ['Selçuklu', 'İslam', 'Artuklu', 'Danişmend'],
+    imgPrompt: 'Seljuk Sultanate Anatolia grand caravanserai mosque minaret medieval Islamic architecture dramatic desert light cinematic',
+    aiPrompt: `Anadolu'nun Selçuklu Dönemi (1071 – 1299) için büyüleyici bir dönem portresi yaz. Malazgirt'ten Konya'ya uzanan bu büyük dönüşümde Anadolu nasıl bir İslam medeniyeti kurdu? Kervansaraylar, medreseler, Mevlana'nın Konya'sı, taş işçiliğinin şaheserleri… O çağın ruhunu hissettiren şiirsel bir dille anlat. Türkçe, maksimum 180 kelime.`
+  },
+  '7': {
+    isim: 'Osmanlı', tarih: 'M.S. 1299 – 1922', emoji: '🕌',
+    medeniyetler: ['Osmanlı', 'İslam', 'Türk', 'Çok uluslu'],
+    imgPrompt: 'Ottoman empire Anatolia grand mosque palace Bosphorus golden age dramatic sunset cinematic historical painting',
+    aiPrompt: `Anadolu'nun Osmanlı Dönemi (1299 – 1922) için büyüleyici bir dönem portresi yaz. Küçük bir beylikten üç kıtaya yayılan imparatorluğa uzanan bu yolculukta Anadolu nasıl bir merkeze dönüştü? Camileri, sarayları, çarşıları, çeşmeleriyle hangi dünya kuruldu? O dönemin ihtişamını ve insanının ruhunu şiirsel bir dille anlat. Türkçe, maksimum 180 kelime.`
+  }
+};
+
+const _portreOnbellek = {};
+
+async function donemPortresiAc(donemId) {
+  const meta = DONEM_META[donemId];
+  if (!meta) return;
+  const modal = document.getElementById('portreModal');
+  modal.classList.add('acik');
+
+  document.getElementById('portreEmoji').textContent = meta.emoji;
+  document.getElementById('portreEtiket').textContent = 'DÖNEM PORTRESİ';
+  document.getElementById('portreBaslik').textContent = meta.isim;
+  document.getElementById('portreTarih').textContent = meta.tarih;
+  document.getElementById('portreMetin').style.display = 'none';
+  document.getElementById('portreChipler').style.display = 'none';
+  document.getElementById('portreGorselNot').style.display = 'none';
+  document.getElementById('portreYuklenme').style.display = 'flex';
+
+  const gorsel = document.getElementById('portreGorsel');
+  gorsel.classList.remove('yuklendi');
+  gorsel.src = '';
+
+  const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(meta.imgPrompt)}&width=800&height=500&nologo=true&seed=${donemId}`;
+  const img = new Image();
+  img.onload = () => { gorsel.src = imgUrl; requestAnimationFrame(() => gorsel.classList.add('yuklendi')); document.getElementById('portreGorselNot').style.display = 'block'; };
+  img.src = imgUrl;
+
+  if (_portreOnbellek[donemId]) {
+    _portreOnbellegiGoster(donemId, meta);
+    return;
+  }
+
+  try {
+    const res = await fetch('https://vdtfjxyktzbuyyvwbufl.supabase.co/functions/v1/tur-planlayici', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY },
+      body: JSON.stringify({ prompt: meta.aiPrompt })
+    });
+    const data = await res.json();
+    _portreOnbellek[donemId] = data.plan || data.response || data.result || '';
+  } catch(e) {
+    _portreOnbellek[donemId] = `${meta.isim} dönemi, Anadolu'nun en önemli çağlarından biridir. Bu dönemde Anadolu, büyük uygarlıklara ev sahipliği yapmış ve insanlık tarihine derin izler bırakmıştır.`;
+  }
+  _portreOnbellegiGoster(donemId, meta);
+}
+
+function _portreOnbellegiGoster(donemId, meta) {
+  document.getElementById('portreYuklenme').style.display = 'none';
+  const metinEl = document.getElementById('portreMetin');
+  metinEl.textContent = _portreOnbellek[donemId];
+  metinEl.style.display = 'block';
+  const chipler = document.getElementById('portreChipler');
+  chipler.innerHTML = meta.medeniyetler.map(m => `<span class="portre-chip">${m}</span>`).join('');
+  chipler.style.display = 'flex';
+}
+
+function portreKapat() {
+  document.getElementById('portreModal').classList.remove('acik');
+}
+// ─────────────────────────────────────────────────────────────────────────────
 function bolgeSec(el,id) { aktifBolge=id; document.querySelectorAll('#bolgeScroll .pill').forEach(p=>p.classList.remove('aktif')); el.classList.add('aktif'); kartlarGoster(); }
 function zamanGuncelle(val) {
   zamanYili=parseInt(val);
