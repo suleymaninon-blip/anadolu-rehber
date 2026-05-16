@@ -5318,6 +5318,37 @@ async function aiPortreSecildi(e) {
   e.target.value = '';
 }
 
+function aiPortreIndir() {
+  if (!aiPortreAktifFoto) return;
+  const a = document.createElement('a');
+  a.href = aiPortreAktifFoto;
+  a.download = 'donem-portrem.jpg';
+  a.click();
+}
+
+async function aiPortrePaylasVeyaKopyala() {
+  if (!aiPortreAktifFoto) return;
+  try {
+    // base64 → Blob dönüştür
+    const res = await fetch(aiPortreAktifFoto);
+    const blob = await res.blob();
+    const file = new File([blob], 'donem-portrem.jpg', { type: 'image/jpeg' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: 'Dönem Portrem',
+        text: 'Anadolu Rehberi ile tarihe döndüm!',
+      });
+    } else {
+      // Web Share API yoksa direkt indir
+      aiPortreIndir();
+    }
+  } catch (err) {
+    if (err.name !== 'AbortError') aiPortreIndir();
+  }
+}
+
 function aiPortreSifirla() {
   aiPortreAktifFoto = null;
   document.getElementById('aiPortreSonuc').style.display = 'none';
@@ -5470,6 +5501,8 @@ const origFilmiYapAc = typeof filmiYapAc === 'function' ? filmiYapAc : null;
         <div class="ai-portre-sonuc-resim" id="aiPortreSonucResim"></div>
         <div class="ai-portre-sonuc-aksiyon">
           <button class="ai-portre-btn ikincil" onclick="aiPortreSifirla()">🔄 Tekrar Dene</button>
+          <button class="ai-portre-btn ikincil" onclick="aiPortreIndir()">⬇ İndir</button>
+          <button class="ai-portre-btn ikincil" onclick="aiPortrePaylasVeyaKopyala()">↗ Paylaş</button>
           <button class="ai-portre-btn birincil" onclick="aiPortreFilmeEkle()">✓ Filme Ekle</button>
         </div>
       </div>
