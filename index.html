@@ -820,6 +820,22 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 18px;
   }
+  .film-indir-btn {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    z-index: 200;
+    padding: 12px 28px;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(232,168,85,0.5);
+    color: #E8A855;
+    border-radius: 30px; cursor: pointer;
+    font-family: 'Crimson Pro', serif;
+    font-size: 15px; font-weight: 600;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .film-indir-btn:disabled { opacity: 0.6; cursor: default; }
 
   /* ====================================================================
      AI DÖNEM PORTRESİ
@@ -4907,6 +4923,7 @@ function filmOynatBaslat() {
   // Çıkış butonu + watermark'ı koru
   oynatEkran.innerHTML = `
     <button class="film-cikis" onclick="filmOynatKapat()">×</button>
+    <button class="film-indir-btn" id="filmIndirBtn" onclick="filmVideoKaydet()">⬇ İndir / Paylaş</button>
     <div class="film-slide kapak" id="filmKapak">
       <div class="film-logo"></div>
       <h1>${yerIsim}</h1>
@@ -5012,9 +5029,186 @@ function filmOynatKapat() {
   muzik.pause();
   muzik.currentTime = 0;
   muzik.volume = 0.7;
-  // Tüm timer'ları temizle
   filmTimerIds.forEach(id => clearTimeout(id));
   filmTimerIds = [];
+}
+
+async function filmVideoKaydet() {
+  const btn = document.getElementById('filmIndirBtn');
+  if (!btn || btn.disabled) return;
+
+  // iOS/eski tarayıcı fallback
+  if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) {
+    alert('Filmi kaydetmek için:\nKontrol Merkezi → Ekran Kaydı\nFilm oynarken kaydı başlatın, bitince durdurun.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Hazırlanıyor...';
+
+  const W = 1080, H = 1920, FPS = 25;
+  const kapakSure = 2.5, fotoSure = 3.0, kapanisSure = 2.5;
+  const toplam = kapakSure + filmSecilenFotolar.length * fotoSure + kapanisSure;
+  const yerIsim = filmAktifYer ? (filmAktifYer.isim || 'ANADOLU').toUpperCase() : 'ANADOLU';
+  const tarih = new Date().toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  // Görselleri yükle
+  let gorseller;
+  try {
+    gorseller = await Promise.all(filmSecilenFotolar.map(f => new Promise((res, rej) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => res(img);
+      img.onerror = rej;
+      img.src = f.src;
+    })));
+  } catch(e) {
+    btn.disabled = false; btn.textContent = '⬇ İndir / Paylaş';
+    alert('Görseller yüklenemedi.'); return;
+  }
+
+  // Logo yükle
+  const logo = new Image();
+  logo.crossOrigin = 'anonymous';
+  logo.src = 'https://res.cloudinary.com/dsnmabr1p/image/upload/v1776530616/u2791417416_anadolu_kltrndeki_ana_tanra_kibelenin_mermerden_b_44c980b9-ad85-4973-8768-f04a1de1f095_3_tsqin4.png';
+  await new Promise(res => { logo.onload = res; logo.onerror = res; });
+
+  // Canvas + stream
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  const stream = canvas.captureStream(FPS);
+
+  // Ses eklemeyi dene
+  const muzik = document.getElementById('filmMuzik');
+  try {
+    if (muzik.captureStream) {
+      const audioTracks = muzik.captureStream().getAudioTracks();
+      audioTracks.forEach(t => stream.addTrack(t));
+    }
+  } catch(e) {}
+
+  // Desteklenen mime tipi bul
+  const mime = ['video/mp4;codecs=avc1','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm']
+    .find(m => MediaRecorder.isTypeSupported(m));
+  if (!mime) {
+    btn.disabled = false; btn.textContent = '⬇ İndir / Paylaş';
+    alert('Tarayıcınız video kaydetmeyi desteklemiyor.\nEkran Kaydı kullanın.'); return;
+  }
+
+  const recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 8_000_000 });
+  const chunks = [];
+  recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+
+  muzik.currentTime = 0; muzik.volume = 0.7;
+  muzik.play().catch(() => {});
+  recorder.start(200);
+
+  function cizKapak(alpha) {
+    ctx.fillStyle = '#100A08'; ctx.fillRect(0, 0, W, H);
+    const g = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, W*0.6);
+    g.addColorStop(0, 'rgba(139,90,43,0.35)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+    if (logo.naturalWidth > 0) {
+      ctx.save(); ctx.beginPath(); ctx.arc(W/2, H/2-140, 130, 0, Math.PI*2); ctx.clip();
+      ctx.drawImage(logo, W/2-130, H/2-270, 260, 260); ctx.restore();
+      ctx.beginPath(); ctx.arc(W/2, H/2-140, 133, 0, Math.PI*2);
+      ctx.strokeStyle = '#E8A855'; ctx.lineWidth = 5; ctx.stroke();
+    }
+    ctx.fillStyle = '#E8A855'; ctx.font = 'bold 80px serif'; ctx.textAlign = 'center';
+    ctx.fillText(yerIsim, W/2, H/2+60);
+    ctx.fillStyle = 'rgba(232,168,85,0.7)'; ctx.font = 'italic 40px serif';
+    ctx.fillText(tarih, W/2, H/2+140);
+    ctx.globalAlpha = 1;
+  }
+
+  function cizFoto(img, ilerleme, alpha) {
+    const scale = 1 + ilerleme * 0.08;
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    let dw, dh;
+    if (iw/ih > W/H) { dh = H*scale; dw = iw*(dh/ih); } else { dw = W*scale; dh = ih*(dw/iw); }
+    ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+    ctx.drawImage(img, (W-dw)/2, (H-dh)/2, dw, dh);
+    ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(0, H-120, W*0.55, 80);
+    ctx.fillStyle = '#E8A855'; ctx.font = 'bold 38px serif'; ctx.textAlign = 'left';
+    ctx.fillText(yerIsim, 30, H-68);
+    ctx.fillStyle = 'rgba(232,168,85,0.75)'; ctx.font = '26px serif'; ctx.textAlign = 'right';
+    ctx.fillText('Anadolu Rehberi', W-30, H-30);
+    ctx.globalAlpha = 1;
+  }
+
+  function cizKapanis(alpha) {
+    ctx.fillStyle = '#100A08'; ctx.fillRect(0, 0, W, H);
+    const g = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, W*0.5);
+    g.addColorStop(0, 'rgba(139,90,43,0.25)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+    if (logo.naturalWidth > 0) {
+      ctx.save(); ctx.beginPath(); ctx.arc(W/2, H/2-90, 90, 0, Math.PI*2); ctx.clip();
+      ctx.drawImage(logo, W/2-90, H/2-180, 180, 180); ctx.restore();
+      ctx.beginPath(); ctx.arc(W/2, H/2-90, 93, 0, Math.PI*2);
+      ctx.strokeStyle = '#E8A855'; ctx.lineWidth = 3; ctx.stroke();
+    }
+    ctx.fillStyle = '#E8A855'; ctx.font = 'bold 56px serif'; ctx.textAlign = 'center';
+    ctx.fillText('ANADOLU REHBERİ', W/2, H/2+70);
+    ctx.fillStyle = 'rgba(232,168,85,0.6)'; ctx.font = 'italic 36px serif';
+    ctx.fillText('anadolu-rehber.app', W/2, H/2+130);
+    ctx.globalAlpha = 1;
+  }
+
+  await new Promise(resolve => {
+    recorder.onstop = async () => {
+      muzik.pause();
+      const ext = mime.startsWith('video/mp4') ? 'mp4' : 'webm';
+      const blob = new Blob(chunks, { type: mime });
+      // Web Share API (mobil)
+      if (navigator.canShare) {
+        try {
+          const file = new File([blob], `donem-filmim.${ext}`, { type: mime });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: 'Dönem Filmim', text: 'Anadolu Rehberi ile tarihe döndüm!' });
+            btn.disabled = false; btn.textContent = '⬇ İndir / Paylaş'; resolve(); return;
+          }
+        } catch(e) {
+          if (e.name === 'AbortError') { btn.disabled = false; btn.textContent = '⬇ İndir / Paylaş'; resolve(); return; }
+        }
+      }
+      // Fallback: direkt indir
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url;
+      a.download = `donem-filmim.${ext}`; a.click();
+      btn.disabled = false; btn.textContent = '⬇ İndir / Paylaş'; resolve();
+    };
+
+    const baslangic = performance.now();
+    function kare() {
+      const elapsed = (performance.now() - baslangic) / 1000;
+      btn.textContent = elapsed < toplam ? `⏺ %${Math.round((elapsed/toplam)*100)}` : 'Hazırlanıyor...';
+      ctx.clearRect(0, 0, W, H);
+
+      const fadeAlpha = (t, sure) => t < 0.5 ? t/0.5 : (t > sure-0.5 ? (sure-t)/0.5 : 1);
+
+      if (elapsed <= kapakSure) {
+        cizKapak(fadeAlpha(elapsed, kapakSure));
+      } else {
+        const fotoElapsed = elapsed - kapakSure;
+        const idx = Math.floor(fotoElapsed / fotoSure);
+        if (idx < gorseller.length) {
+          const ic = fotoElapsed - idx * fotoSure;
+          cizFoto(gorseller[idx], ic/fotoSure, fadeAlpha(ic, fotoSure));
+        } else {
+          const kElapsed = fotoElapsed - gorseller.length * fotoSure;
+          cizKapanis(fadeAlpha(kElapsed, kapanisSure));
+        }
+      }
+
+      if (elapsed < toplam) requestAnimationFrame(kare);
+      else recorder.stop();
+    }
+    requestAnimationFrame(kare);
+  });
 }
 
 /* ====================================================================
