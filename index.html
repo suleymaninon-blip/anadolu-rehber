@@ -5033,6 +5033,9 @@ function filmOynatKapat() {
   filmTimerIds = [];
 }
 
+let _filmAudioCtx = null;
+let _filmAudioSrc = null;
+
 async function filmVideoKaydet() {
   const btn = document.getElementById('filmIndirBtn');
   if (!btn || btn.disabled) return;
@@ -5079,14 +5082,23 @@ async function filmVideoKaydet() {
   const ctx = canvas.getContext('2d');
   const stream = canvas.captureStream(FPS);
 
-  // Ses eklemeyi dene
+  // AudioContext ile ses yakala
   const muzik = document.getElementById('filmMuzik');
+  let audioDest = null;
   try {
-    if (muzik.captureStream) {
-      const audioTracks = muzik.captureStream().getAudioTracks();
-      audioTracks.forEach(t => stream.addTrack(t));
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) {
+      if (!_filmAudioCtx) {
+        _filmAudioCtx = new AudioCtx();
+        _filmAudioSrc = _filmAudioCtx.createMediaElementSource(muzik);
+        _filmAudioSrc.connect(_filmAudioCtx.destination); // hoparlörden de çalsın
+      }
+      if (_filmAudioCtx.state === 'suspended') await _filmAudioCtx.resume();
+      audioDest = _filmAudioCtx.createMediaStreamDestination();
+      _filmAudioSrc.connect(audioDest);
+      audioDest.stream.getAudioTracks().forEach(t => stream.addTrack(t));
     }
-  } catch(e) {}
+  } catch(e) { console.warn('[Film] Ses yakalanamamadı:', e); }
 
   // Desteklenen mime tipi bul
   const mime = ['video/mp4;codecs=avc1','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm']
@@ -5161,6 +5173,7 @@ async function filmVideoKaydet() {
   await new Promise(resolve => {
     recorder.onstop = async () => {
       muzik.pause();
+      if (audioDest && _filmAudioSrc) try { _filmAudioSrc.disconnect(audioDest); } catch(e) {}
       const ext = mime.startsWith('video/mp4') ? 'mp4' : 'webm';
       const blob = new Blob(chunks, { type: mime });
       // Web Share API (mobil)
@@ -5717,7 +5730,7 @@ const origFilmiYapAc = typeof filmiYapAc === 'function' ? filmiYapAc : null;
   <button class="film-cikis" onclick="filmOynatKapat()">×</button>
   <!-- Slide'lar JS tarafından dinamik olarak eklenecek -->
 </div>
-<audio id="filmMuzik" loop preload="auto" src="https://res.cloudinary.com/dsnmabr1p/video/upload/v1776507051/lexin_music-ancient-world-118017_2_g1mibh.mp3"></audio>
+<audio id="filmMuzik" loop preload="auto" crossorigin="anonymous" src="https://res.cloudinary.com/dsnmabr1p/video/upload/v1776507051/lexin_music-ancient-world-118017_2_g1mibh.mp3"></audio>
 
 </body>
 </html>
