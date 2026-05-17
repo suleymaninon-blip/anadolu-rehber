@@ -110,16 +110,30 @@
   .unlu-isim { font-family: 'Cinzel', serif; font-size: 12px; color: #1A1A18; margin-bottom: 2px; line-height: 1.3; }
   .unlu-unvan { font-size: 10px; color: #B85C2A; margin-bottom: 3px; }
   .unlu-donem { font-size: 10px; color: #9B9B97; }
-  .unlu-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .unlu-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 200; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
   .unlu-modal.acik { opacity: 1; pointer-events: all; }
-  .unlu-modal-icerik { background: #FAFAF8; border-radius: 24px 24px 0 0; padding: 28px 24px 40px; width: 100%; }
-  .unlu-modal-foto { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #B85C2A33, #8B3A1A33); font-size: 40px; text-align: center; overflow: hidden; flex-shrink: 0; }
-  .unlu-modal-foto img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; object-position: center top; display: block; }
-  .unlu-modal-isim { font-family: 'Cinzel', serif; font-size: 20px; color: #1A1A18; text-align: center; margin-bottom: 4px; }
-  .unlu-modal-unvan { font-size: 13px; color: #B85C2A; text-align: center; margin-bottom: 4px; }
-  .unlu-modal-donem { font-size: 12px; color: #9B9B97; text-align: center; margin-bottom: 16px; }
-  .unlu-modal-ozet { font-size: 14px; color: #4A4A48; line-height: 1.7; text-align: center; }
-  .unlu-modal-kapat { background: #F5F4F0; color: #1A1A18; border: none; border-radius: 12px; padding: 13px; font-family: 'Crimson Pro', serif; font-size: 14px; cursor: pointer; width: 100%; margin-top: 20px; }
+  .unlu-modal-icerik { background: #FAFAF8; border-radius: 24px 24px 0 0; width: 100%; max-height: 88vh; overflow-y: auto; padding-bottom: 40px; }
+  .unlu-hero { position: relative; height: 150px; border-radius: 24px 24px 0 0; overflow: hidden; background: linear-gradient(135deg, #4A1A0A, #8B3A1A); display: flex; align-items: flex-end; justify-content: center; }
+  .unlu-hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center top; filter: blur(14px) brightness(0.35); transform: scale(1.1); }
+  .unlu-modal-foto { position: relative; z-index: 1; width: 100px; height: 100px; border-radius: 50%; transform: translateY(50%); border: 3px solid #E8A855; box-shadow: 0 4px 20px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #B85C2A33, #8B3A1A33); font-size: 40px; text-align: center; overflow: hidden; flex-shrink: 0; }
+  .unlu-modal-foto img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: center top; display: block; }
+  .unlu-modal-info { padding: 62px 24px 0; text-align: center; }
+  .unlu-modal-isim { font-family: 'Cinzel', serif; font-size: 22px; color: #1A1A18; text-align: center; margin-bottom: 4px; }
+  .unlu-modal-unvan { font-size: 13px; color: #B85C2A; text-align: center; margin-bottom: 4px; font-weight: 600; }
+  .unlu-modal-donem { font-size: 12px; color: #9B9B97; text-align: center; margin-bottom: 14px; }
+  .unlu-soz-kart { margin: 0 20px 6px; background: linear-gradient(135deg, rgba(139,58,26,0.06), rgba(184,92,42,0.1)); border-left: 3px solid #E8A855; border-radius: 0 14px 14px 0; padding: 14px 18px 10px; }
+  .unlu-soz-tirnak { font-size: 44px; line-height: 0.6; color: #E8A855; font-family: Georgia, serif; display: block; margin-bottom: 4px; }
+  .unlu-soz-metin { font-family: 'Crimson Pro', serif; font-style: italic; font-size: 17px; color: #3A3A38; line-height: 1.65; transition: opacity 0.35s; }
+  .unlu-soz-nav { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 8px 0 16px; }
+  .soz-dot { width: 7px; height: 7px; border-radius: 50%; background: #D8D4CC; transition: background 0.3s, transform 0.3s; cursor: pointer; }
+  .soz-dot.aktif { background: #E8A855; transform: scale(1.3); }
+  .soz-onceki, .soz-sonraki { background: none; border: 1px solid #E0DBD0; border-radius: 50%; width: 28px; height: 28px; color: #B85C2A; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+  .unlu-modal-ozet { font-size: 14px; color: #4A4A48; line-height: 1.7; padding: 0 24px; margin-bottom: 18px; }
+  .unlu-eserler-bolum { padding: 0 24px; margin-bottom: 4px; }
+  .unlu-eserler-baslik { font-family: 'Cinzel', serif; font-size: 10px; color: #9B9B97; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .unlu-eserler-liste { display: flex; flex-wrap: wrap; gap: 8px; }
+  .unlu-eser-pill { background: #F0EDE8; border: 1px solid #E0DBD0; border-radius: 20px; padding: 7px 14px; font-size: 13px; color: #4A4A48; line-height: 1.3; }
+  .unlu-modal-kapat { background: #F5F4F0; color: #1A1A18; border: none; border-radius: 12px; padding: 13px; font-family: 'Crimson Pro', serif; font-size: 14px; cursor: pointer; width: calc(100% - 48px); margin: 20px 24px 0; display: block; }
   .detay-aciklama { font-size: 15px; color: #1A1A18; line-height: 1.7; }
   .med-etiketler { display: flex; flex-wrap: wrap; gap: 8px; }
   .med-etiket { padding: 7px 14px; border-radius: 20px; border: 0.5px solid #E8E6E0; background: #fff; font-size: 13px; color: #6B6B67; }
@@ -1289,11 +1303,31 @@
   <!-- ÜNLÜ KİŞİ MODAL -->
   <div class="unlu-modal" id="unluModal" onclick="unluModalKapat()">
     <div class="unlu-modal-icerik" onclick="event.stopPropagation()">
-      <div id="unluModalFoto" class="unlu-modal-foto">👤</div>
-      <div id="unluModalIsim" class="unlu-modal-isim"></div>
-      <div id="unluModalUnvan" class="unlu-modal-unvan"></div>
-      <div id="unluModalDonem" class="unlu-modal-donem"></div>
+      <div class="unlu-hero" id="unluHero">
+        <div class="unlu-hero-bg" id="unluHeroBg"></div>
+        <div id="unluModalFoto" class="unlu-modal-foto">👤</div>
+      </div>
+      <div class="unlu-modal-info">
+        <div id="unluModalIsim" class="unlu-modal-isim"></div>
+        <div id="unluModalUnvan" class="unlu-modal-unvan"></div>
+        <div id="unluModalDonem" class="unlu-modal-donem"></div>
+      </div>
+      <div id="unluSozBolum" style="display:none">
+        <div class="unlu-soz-kart">
+          <span class="unlu-soz-tirnak">"</span>
+          <div class="unlu-soz-metin" id="unluSozMetin"></div>
+        </div>
+        <div class="unlu-soz-nav">
+          <button class="soz-onceki" id="sozOnceki" onclick="sozGezin(-1)">‹</button>
+          <div id="sozDotlar"></div>
+          <button class="soz-sonraki" id="sozSonraki" onclick="sozGezin(1)">›</button>
+        </div>
+      </div>
       <div id="unluModalOzet" class="unlu-modal-ozet"></div>
+      <div id="unluEserlerBolum" class="unlu-eserler-bolum" style="display:none">
+        <div class="unlu-eserler-baslik">Eserleri & Başarıları</div>
+        <div class="unlu-eserler-liste" id="unluEserlerListe"></div>
+      </div>
       <button class="unlu-modal-kapat" onclick="unluModalKapat()">Kapat</button>
     </div>
   </div>
@@ -3810,17 +3844,134 @@ function unlulerGoster(yerId) {
     </div>`).join('');
 }
 
+const UNLULER_DETAY = {
+  'Herakleitos': {
+    sozler: ['Aynı nehre iki kez giremezsin.','Her şey akar, hiçbir şey durağan değildir.','Savaş her şeyin babasıdır.','Kendini bilmek en yüce bilgeliktir.'],
+    eserler: ['Peri Physeos — Doğa Üzerine (fragmanlar)','Logos kavramının babası','Ateş felsefesi — evrenin döngüsel doğası','Karşıtların birliği teorisi'],
+  },
+  'Aziz Yuhanna': {
+    sozler: ['Tanrı sevgidir.','Sizi sevdiğim gibi birbirinizi sevin.','Gerçek sizi özgür kılacaktır.'],
+    eserler: ['Yuhanna İncili','1, 2, 3. Yuhanna Mektupları','Vahiy Kitabı','Efes\'te Meryem Ana\'ya ev sahipliği'],
+  },
+  'Galenos': {
+    sozler: ['En iyi doktor hem doğanın hem de hastalığın dostudur.','İsteksiz öğrenci hiçbir zaman öğrenemez.'],
+    eserler: ['De Usu Partium — Anatomi başyapıtı','500\'den fazla tıp kitabı','Deneysel tıbbın kurucusu','Nöroloji ve farmakolojide öncü'],
+  },
+  'Thales': {
+    sozler: ['Her şeyin başı sudur.','Kendini bil.','En güç şey kendini tanımaktır.','En kolay şey başkasına öğüt vermektir.'],
+    eserler: ['M.Ö. 585\'te güneş tutulmasını öngördü','Thales teoremi — yarım daire açısı 90°','İlk doğa felsefesi sistemi','Mısır piramitlerini gölgeyle ölçtü','Elektriğin ilk gözlemi (kehribar)'],
+  },
+  'Anaximandros': {
+    sozler: ['Başlangıçta sonsuz ve belirsiz bir öz vardı.','Her şey apeiron\'dan gelir ve ona geri döner.'],
+    eserler: ['Dünyanın ilk haritasını çizdi','Apeiron (sonsuz) kavramını geliştirdi','Canlıların balıktan evrildiğini öne sürdü','Güneş saatini Yunanistan\'a tanıttı','İlk evren modeli — Dünya askıda yüzer'],
+  },
+  'Aristoteles': {
+    sozler: ['İnsan doğası gereği sosyal bir varlıktır.','Biz alışkanlıklarımızın ürünüyüz.','Bilginin kendisi güçtür.','Mutluluk en yüce iyi\'dir.','Eğitimin kökü acı, meyvesi tatlıdır.'],
+    eserler: ['Organon — Mantık külliyatı','Metafizik','Nikomakhos Etiği','Politika','Poetika','540 hayvan türünü inceledi — Zoolojinin babası','Assos\'ta ve Atina\'da Lykeion okulunu kurdu'],
+  },
+  'Kral Kroisos': {
+    sozler: ['Kimseyi yaşarken mutlu sayma.','Tanrı sana büyük bir felaket gösterecek, sonra onu geri alacak.'],
+    eserler: ['Dünyanın ilk elektrum (altın-gümüş alaşım) madeni parasını bastırdı','Delphi Tapınağı\'na büyük bağışlar','Lidya-İyon ticaret ağını kurdu','Para ekonomisinin kurucusu'],
+  },
+  'Homeros': {
+    sozler: ['Tahammül et, yüreğim; daha kötüsünü de tahammül ettin.','Güzel bir şeyin hiçbir zaman sonu gelmez.','En iyi şey, bir insanın konuşurken kendi anlayışıyla konuşmasıdır.'],
+    eserler: ['İlyada — Truva Savaşı\'nın büyük destanı','Odysseia — Odysseus\'un efsanevi dönüş yolculuğu','2.800 yıldır kesintisiz okunan ilk Batı edebiyat eserleri','Yunan alfabesini edebi dile taşıdı'],
+  },
+  'Fatih Sultan Mehmed': {
+    sozler: ['İstanbul mutlaka fethedilecektir. Onu fetheden komutan ne güzel komutan, o ordu ne güzel ordudur.','Ben yeryüzünün padişahıyım.'],
+    eserler: ['İstanbul\'un Fethi (29 Mayıs 1453)','Topkapı Sarayı\'nın inşaatı','Fatih Külliyesi','7 dil öğrendi — Türkçe, Arapça, Farsça, Latince, Yunanca, Sırpça, İtalyanca','Osmanlı kanunnamelerini kodifiye etti'],
+  },
+  'Mimar Sinan': {
+    sozler: ['Selimiye benim ustalık eserim, Şehzade çıraklık, Süleymaniye kalfalık.','Taşa ruh vermek sanatçının işidir.'],
+    eserler: ['Selimiye Camii — Edirne (şaheser)','Süleymaniye Camii — İstanbul','Şehzade Camii','400\'den fazla yapı','Su kemerleri ve köprüler','Boğazkesen hamamı'],
+  },
+  'Mevlana Celaleddin Rumi': {
+    sozler: ['Gel, gel, ne olursan ol yine gel.','Dün geçti, dün ile ilgili konuşma. Bugün yeni şeyler söyle.','İnsanı sevmek Tanrı\'yı sevmektir.','Aşk olmayınca hiçbir şey olmaz.'],
+    eserler: ['Mesnevi — 6 cilt 25.000 beyit','Divan-ı Kebir','Fihi Ma Fih','Mektubat','Mevlevîlik tarikatının kurucusu','UNESCO "İnsanlığın Ortak Mirası" listesinde'],
+  },
+  'Diyojen': {
+    sozler: ['Gölgemi geçme (İskender\'e).','İnsan arıyorum (fenerle).','İhtiyacım olmayan şey ne kadar çok.','Namusu olan adam için tüm dünya vatandır.'],
+    eserler: ['Kinik felsefenin kurucusu','Özgürlük ve doğaya dönüş felsefesi','Sosyal normları sorgulayan ilk düşünür','Fıçıda yaşam — sadelik felsefesini bedenleştirdi'],
+  },
+  'Aziz Nikolaos': {
+    sozler: ['Vermek, almaktan daha büyük bir mutluluktur.'],
+    eserler: ['Noel Baba geleneğinin kaynağı','Myra piskoposluğu','Denizci, çocuk ve yoksulların koruyucusu','İznik Konsili\'ne katılım (M.S. 325)','Dünyanın en çok kilise inşa edilen azizi'],
+  },
+  'Aziz Pavlus': {
+    sozler: ['Her şeye gücüm yeten Mesih aracılığıyla yapabilirim.','Sevgi sabırlıdır, sevgi şefkatlidir.','İnançla yürürüz, gözle değil.'],
+    eserler: ['13 Pavlus Mektubu — Yeni Ahit\'in temeli','Hristiyanlığı Anadolu, Yunanistan ve Roma\'ya yaydı','Efes, Antakya, Korint ve Roma\'da topluluklar kurdu','Teolojik kavramları (lütuf, iman, kefaret) sistematize etti'],
+  },
+  'Praksiteles': {
+    sozler: ['Güzellik tanrısaldır; onu taşa yansıtmak ilahi bir görevdir.'],
+    eserler: ['Knidos Afroditi — tarihin ilk çıplak kadın heykeli','Hermes ve bebek Dionysos (Olimpia Müzesi)','Apollon Sauroktonos','Mermer işçiliğinde "etli" ve "yumuşak" tekniğin kurucusu'],
+  },
+  'Bias': {
+    sozler: ['Çoğu insan kötüdür.','En büyük güç bilgeliktir.','Kazandığında büyüklenme, kaybettiğinde çökmek zorunda kalmayasın.'],
+    eserler: ['Yedi Yunan Bilgesinden biri','Priene\'de adil yargılama sistemi kurdu','Sözlü felsefi öğretileri — derlenerek aktarıldı'],
+  },
+};
+
+let _sozIndex = 0;
+let _sozler = [];
+
+function sozGezin(yon) {
+  _sozIndex = (_sozIndex + yon + _sozler.length) % _sozler.length;
+  const metin = document.getElementById('unluSozMetin');
+  metin.style.opacity = 0;
+  setTimeout(() => { metin.textContent = _sozler[_sozIndex]; metin.style.opacity = 1; }, 300);
+  document.querySelectorAll('.soz-dot').forEach((d, i) => d.classList.toggle('aktif', i === _sozIndex));
+}
+
 function unluModalAc(kisi) {
   const modal = document.getElementById('unluModal');
   const fotoDiv = document.getElementById('unluModalFoto');
-  fotoDiv.innerHTML = kisi.foto
-    ? `<img src="${kisi.foto}" alt="${kisi.isim}" onerror="this.parentNode.textContent='👤'">`
-    : '👤';
+  const heroBg = document.getElementById('unluHeroBg');
+
+  // Fotoğraf
+  if (kisi.foto) {
+    fotoDiv.innerHTML = `<img src="${kisi.foto}" alt="${kisi.isim}" onerror="this.parentNode.innerHTML='👤'">`;
+    heroBg.style.backgroundImage = `url('${kisi.foto}')`;
+  } else {
+    fotoDiv.textContent = '👤';
+    heroBg.style.backgroundImage = 'none';
+  }
+
   document.getElementById('unluModalIsim').textContent = kisi.isim;
   document.getElementById('unluModalUnvan').textContent = kisi.unvan;
   document.getElementById('unluModalDonem').textContent = kisi.donem;
   document.getElementById('unluModalOzet').textContent = kisi.ozet;
+
+  // Sözler
+  const detay = UNLULER_DETAY[kisi.isim];
+  const sozBolum = document.getElementById('unluSozBolum');
+  if (detay?.sozler?.length) {
+    _sozler = detay.sozler;
+    _sozIndex = 0;
+    document.getElementById('unluSozMetin').textContent = _sozler[0];
+    document.getElementById('unluSozMetin').style.opacity = 1;
+    // Dots
+    document.getElementById('sozDotlar').innerHTML = _sozler.map((_, i) =>
+      `<div class="soz-dot${i === 0 ? ' aktif' : ''}" onclick="sozGezin(${i} - _sozIndex)"></div>`).join('');
+    document.getElementById('sozOnceki').style.display = _sozler.length > 1 ? '' : 'none';
+    document.getElementById('sozSonraki').style.display = _sozler.length > 1 ? '' : 'none';
+    sozBolum.style.display = '';
+  } else {
+    sozBolum.style.display = 'none';
+  }
+
+  // Eserler
+  const eserlerBolum = document.getElementById('unluEserlerBolum');
+  if (detay?.eserler?.length) {
+    document.getElementById('unluEserlerListe').innerHTML =
+      detay.eserler.map(e => `<div class="unlu-eser-pill">${e}</div>`).join('');
+    eserlerBolum.style.display = '';
+  } else {
+    eserlerBolum.style.display = 'none';
+  }
+
   modal.classList.add('acik');
+  // Scroll sıfırla
+  modal.querySelector('.unlu-modal-icerik').scrollTop = 0;
 }
 
 function unluModalKapat() {
