@@ -113,11 +113,13 @@
   .unlu-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 200; display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
   .unlu-modal.acik { opacity: 1; pointer-events: all; }
   .unlu-modal-icerik { background: #FAFAF8; border-radius: 24px 24px 0 0; width: 100%; max-height: 88vh; overflow-y: auto; padding-bottom: 40px; }
-  .unlu-hero { position: relative; height: 150px; border-radius: 24px 24px 0 0; overflow: hidden; background: linear-gradient(135deg, #4A1A0A, #8B3A1A); display: flex; align-items: flex-end; justify-content: center; }
-  .unlu-hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center top; filter: blur(14px) brightness(0.35); transform: scale(1.1); }
-  .unlu-modal-foto { position: relative; z-index: 1; width: 100px; height: 100px; border-radius: 50%; transform: translateY(50%); border: 3px solid #E8A855; box-shadow: 0 4px 20px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #B85C2A33, #8B3A1A33); font-size: 40px; text-align: center; overflow: hidden; flex-shrink: 0; }
+  .unlu-hero { position: relative; height: 240px; border-radius: 24px 24px 0 0; overflow: hidden; background: linear-gradient(160deg, #2A0D05, #6B2A10); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; }
+  .unlu-hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center top; filter: blur(16px) brightness(0.3); transform: scale(1.15); }
+  .unlu-hero-alt-golge { position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(to top, rgba(250,250,248,0.18), transparent); }
+  .unlu-modal-foto { position: relative; z-index: 1; width: 120px; height: 120px; border-radius: 50%; border: 3px solid #E8A855; box-shadow: 0 0 0 6px rgba(232,168,85,0.18), 0 6px 28px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #B85C2A55, #8B3A1A55); font-size: 48px; text-align: center; overflow: hidden; flex-shrink: 0; }
   .unlu-modal-foto img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: center top; display: block; }
-  .unlu-modal-info { padding: 62px 24px 0; text-align: center; }
+  .unlu-hero-isim { position: relative; z-index: 1; font-family: 'Cinzel', serif; font-size: 13px; color: rgba(232,168,85,0.85); letter-spacing: 2px; text-transform: uppercase; margin-top: 12px; }
+  .unlu-modal-info { padding: 16px 24px 0; text-align: center; }
   .unlu-modal-isim { font-family: 'Cinzel', serif; font-size: 22px; color: #1A1A18; text-align: center; margin-bottom: 4px; }
   .unlu-modal-unvan { font-size: 13px; color: #B85C2A; text-align: center; margin-bottom: 4px; font-weight: 600; }
   .unlu-modal-donem { font-size: 12px; color: #9B9B97; text-align: center; margin-bottom: 14px; }
@@ -1306,6 +1308,8 @@
       <div class="unlu-hero" id="unluHero">
         <div class="unlu-hero-bg" id="unluHeroBg"></div>
         <div id="unluModalFoto" class="unlu-modal-foto">👤</div>
+        <div class="unlu-hero-isim" id="unluHeroUnvan"></div>
+        <div class="unlu-hero-alt-golge"></div>
       </div>
       <div class="unlu-modal-info">
         <div id="unluModalIsim" class="unlu-modal-isim"></div>
@@ -3936,6 +3940,7 @@ function unluModalAc(kisi) {
     heroBg.style.backgroundImage = 'none';
   }
 
+  document.getElementById('unluHeroUnvan').textContent = kisi.unvan;
   document.getElementById('unluModalIsim').textContent = kisi.isim;
   document.getElementById('unluModalUnvan').textContent = kisi.unvan;
   document.getElementById('unluModalDonem').textContent = kisi.donem;
