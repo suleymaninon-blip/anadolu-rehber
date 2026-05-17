@@ -988,6 +988,311 @@
     line-height: 1.5;
     font-family: 'Crimson Pro', serif;
   }
+
+  /* ── Tarihin Ruhu Sende — Quiz Banner ── */
+  .quiz-banner {
+    margin: 0 16px 12px;
+    background: linear-gradient(135deg, #1A0F05 0%, #2D1A0E 60%, #1A0F05 100%);
+    border-radius: 18px;
+    padding: 18px 18px 16px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .quiz-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at top right, rgba(232,168,85,0.18) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .quiz-banner-tag {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #E8A855;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    opacity: 0.85;
+  }
+  .quiz-banner-baslik {
+    font-family: 'Cinzel', serif;
+    font-size: 17px;
+    color: #F5E8C8;
+    letter-spacing: 1px;
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+  .quiz-banner-alt {
+    font-size: 13px;
+    color: rgba(232,168,85,0.7);
+    font-style: italic;
+    margin-bottom: 14px;
+  }
+  .quiz-banner-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #E8A855;
+    color: #1A0F05;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 9px 18px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+  }
+  .quiz-banner-deco {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 56px;
+    opacity: 0.18;
+    pointer-events: none;
+  }
+
+  /* ── Quiz Overlay ── */
+  .quiz-overlay {
+    position: absolute;
+    inset: 0;
+    background: #0F0804;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+    overflow: hidden;
+  }
+  .quiz-overlay.acik { transform: translateY(0); }
+  .quiz-kapat-btn {
+    position: absolute;
+    top: 52px;
+    right: 20px;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: #E8A855;
+    font-size: 20px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .quiz-ilerleme {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: #E8A855;
+    transition: width 0.4s ease;
+    z-index: 5;
+  }
+  .quiz-icerik {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 80px 24px 32px;
+    overflow: hidden;
+  }
+  .quiz-no {
+    font-size: 11px;
+    color: rgba(232,168,85,0.6);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+  .quiz-soru {
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    color: #F5E8C8;
+    line-height: 1.4;
+    margin-bottom: 28px;
+    flex-shrink: 0;
+    min-height: 80px;
+  }
+  .quiz-secenekler {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+  .quiz-secenek {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(232,168,85,0.2);
+    border-radius: 14px;
+    padding: 16px 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .quiz-secenek:active, .quiz-secenek.secildi {
+    background: rgba(232,168,85,0.12);
+    border-color: #E8A855;
+  }
+  .quiz-secenek-harf {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(232,168,85,0.35);
+    color: #E8A855;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .quiz-secenek.secildi .quiz-secenek-harf {
+    background: #E8A855;
+    color: #1A0F05;
+    border-color: #E8A855;
+  }
+  .quiz-secenek-metin {
+    font-size: 15px;
+    color: rgba(245,232,200,0.9);
+    line-height: 1.4;
+  }
+
+  /* ── Quiz Sonuç Ekranı ── */
+  .quiz-sonuc {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #1A0F05 0%, #0F0804 50%, #160A00 100%);
+    z-index: 6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 28px 32px;
+    overflow-y: auto;
+    transform: scale(0.9);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .quiz-sonuc.goster {
+    transform: scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .quiz-sonuc-etiket {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: rgba(232,168,85,0.6);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .quiz-sonuc-tip {
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    color: #E8A855;
+    text-align: center;
+    margin-bottom: 4px;
+    letter-spacing: 2px;
+  }
+  .quiz-sonuc-foto-wrap {
+    position: relative;
+    margin: 24px 0 18px;
+  }
+  .quiz-sonuc-foto {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #E8A855;
+    box-shadow: 0 0 0 8px rgba(232,168,85,0.12), 0 0 40px rgba(232,168,85,0.3);
+  }
+  .quiz-sonuc-isim {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    color: #F5E8C8;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .quiz-sonuc-unvan {
+    font-size: 13px;
+    color: rgba(232,168,85,0.7);
+    text-align: center;
+    font-style: italic;
+    margin-bottom: 20px;
+  }
+  .quiz-sonuc-soz {
+    background: rgba(232,168,85,0.08);
+    border-left: 3px solid #E8A855;
+    border-radius: 0 12px 12px 0;
+    padding: 14px 18px;
+    font-size: 15px;
+    color: rgba(245,232,200,0.85);
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    width: 100%;
+  }
+  .quiz-sonuc-yer {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(232,168,85,0.2);
+    border-radius: 14px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .quiz-sonuc-yer-emoji { font-size: 28px; }
+  .quiz-sonuc-yer-isim {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: #F5E8C8;
+  }
+  .quiz-sonuc-yer-alt { font-size: 12px; color: rgba(232,168,85,0.6); margin-top: 2px; }
+  .quiz-sonuc-btnler {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+  .quiz-sonuc-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+  .quiz-sonuc-btn.ana {
+    background: #E8A855;
+    color: #1A0F05;
+  }
+  .quiz-sonuc-btn.ikincil {
+    background: rgba(255,255,255,0.06);
+    color: #E8A855;
+    border: 1px solid rgba(232,168,85,0.3);
+  }
+  .quiz-puan-bar {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .quiz-puan-bant {
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(232,168,85,0.15);
+    flex: 1;
+    max-width: 40px;
+  }
+  .quiz-puan-bant.dolu { background: #E8A855; }
 </style>
 </head>
 <body>
@@ -1063,7 +1368,51 @@
     <span class="sonuc-yil" id="sonucYil"></span>
   </div>
 
+  <!-- Tarihin Ruhu Sende — Quiz Banner -->
+  <div class="quiz-banner" onclick="quizBaslat()">
+    <div class="quiz-banner-tag">✦ Kişilik Testi</div>
+    <div class="quiz-banner-baslik">Tarihin Ruhu Sende</div>
+    <div class="quiz-banner-alt">Hangi antik kişiliğin ruhunu taşıyorsun?</div>
+    <button class="quiz-banner-btn">Keşfet →</button>
+    <div class="quiz-banner-deco">🏺</div>
+  </div>
+
   <div class="kartlar" id="kartlar"></div>
+
+  <!-- Quiz Overlay -->
+  <div class="quiz-overlay" id="quizOverlay">
+    <div class="quiz-ilerleme" id="quizIlerleme"></div>
+    <button class="quiz-kapat-btn" onclick="quizKapat()">✕</button>
+    <div class="quiz-icerik">
+      <div class="quiz-no" id="quizNo">SORU 1 / 5</div>
+      <div class="quiz-soru" id="quizSoru"></div>
+      <div class="quiz-secenekler" id="quizSecenekler"></div>
+    </div>
+    <!-- Sonuç Ekranı -->
+    <div class="quiz-sonuc" id="quizSonuc">
+      <div class="quiz-sonuc-etiket">Senin Tarihin Ruhu</div>
+      <div class="quiz-sonuc-tip" id="qsTip"></div>
+      <div class="quiz-puan-bar" id="qsPuanBar"></div>
+      <div class="quiz-sonuc-foto-wrap">
+        <img class="quiz-sonuc-foto" id="qsFoto" src="" alt="">
+      </div>
+      <div class="quiz-sonuc-isim" id="qsIsim"></div>
+      <div class="quiz-sonuc-unvan" id="qsUnvan"></div>
+      <div class="quiz-sonuc-soz" id="qsSoz"></div>
+      <div class="quiz-sonuc-yer" id="qsYer">
+        <div class="quiz-sonuc-yer-emoji" id="qsYerEmoji">🏛</div>
+        <div>
+          <div class="quiz-sonuc-yer-isim" id="qsYerIsim"></div>
+          <div class="quiz-sonuc-yer-alt">Ruhunun mekânı</div>
+        </div>
+      </div>
+      <div class="quiz-sonuc-btnler">
+        <button class="quiz-sonuc-btn ana" onclick="quizYereGit()">Yeri Keşfet</button>
+        <button class="quiz-sonuc-btn ikincil" onclick="quizPaylasVeyaKopyala()">↗ Paylaş</button>
+      </div>
+      <button style="margin-top:14px;background:none;border:none;color:rgba(232,168,85,0.5);font-size:13px;cursor:pointer;font-family:'Crimson Pro',serif;" onclick="quizTekrarla()">↺ Tekrar dene</button>
+    </div>
+  </div>
 
   <div class="ekran" id="detayEkrani">
     <div class="detay-hero" id="detayHero">
@@ -4781,6 +5130,219 @@ async function tokenKontrol() {
   } catch(e) { console.log('Token hatası:', e); }
 }
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ═══════════════════════════════════════════════════════
+// TARİHİN RUHU SENDE — KİŞİLİK QUIZ
+// ═══════════════════════════════════════════════════════
+const QUIZ_SORULAR = [
+  {
+    soru: 'Antik bir şehirde bir gün serbest bırakılsaydın, ilk ne yapardın?',
+    secenekler: [
+      { metin: 'Agora\'ya gider, filozoflarla tartışırdım', tip: 'f' },
+      { metin: 'Surları ve kaleyi inceleyerek savunma zayıflıklarını bulurdum', tip: 'ft' },
+      { metin: 'Tapınak kabartmalarını çizerek saatlerce vakit geçirirdim', tip: 's' },
+      { metin: 'Şehrin haritasını çıkarır, bilinmeyen sokakları keşfederdim', tip: 'k' },
+    ]
+  },
+  {
+    soru: 'Tarihe nasıl iz bırakmak isterdin?',
+    secenekler: [
+      { metin: 'Asırlarca okunacak bir düşünce sistemi kurarak', tip: 'f' },
+      { metin: 'Tarihin seyrini değiştiren bir zafer kazanarak', tip: 'ft' },
+      { metin: 'İnsanları yüzyıllar sonra da etkileyen bir eser yaratarak', tip: 's' },
+      { metin: 'Hiç bilinmeyen toprakları keşfedip haritaya çizerek', tip: 'k' },
+    ]
+  },
+  {
+    soru: 'Zor bir kararla karşılaştığında ne yaparsın?',
+    secenekler: [
+      { metin: 'Tüm olasılıkları mantıkla değerlendiririm, sonra hareket ederim', tip: 'f' },
+      { metin: 'Hızla karar verip uygulamaya geçerim — tereddüt avantaj kaybettirir', tip: 'ft' },
+      { metin: 'Sezgime güvenirim, içimden gelen sese kulak veririm', tip: 's' },
+      { metin: 'Bilinmeyeni araştırır, farklı bakış açıları toplarım', tip: 'k' },
+    ]
+  },
+  {
+    soru: 'Seni en çok ne motive eder?',
+    secenekler: [
+      { metin: 'Evrenin ve insanın sırlarını anlamak', tip: 'f' },
+      { metin: 'İnsanlığa yön vermek, büyük bir amaç için mücadele etmek', tip: 'ft' },
+      { metin: 'Güzellik yaratmak ve insanları derinden dokundurmak', tip: 's' },
+      { metin: 'Bilinmeyene adım atmak, sınırları zorlamak', tip: 'k' },
+    ]
+  },
+  {
+    soru: 'Hangi mekân ruhuna en çok hitap eder?',
+    secenekler: [
+      { metin: 'Güneş batan saatlerde ıssız bir felsefe bahçesi', tip: 'f' },
+      { metin: 'Ordunun toplanıp stratejilerin kurulduğu bir kale meydanı', tip: 'ft' },
+      { metin: 'Heykellerin ve fresklerin dizili olduğu bir tapınak', tip: 's' },
+      { metin: 'Henüz kimsenin geçmediği ücra bir dağ geçidi', tip: 'k' },
+    ]
+  },
+];
+
+const QUIZ_TIPLER = {
+  f: {
+    tip: 'Filozof',
+    aciklama: 'Düşünce adamı',
+    kisiler: [
+      { isim: 'Herakleitos', unvan: 'Efes\'in Karanlık Filozofu', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_herakleitos_ugm8gf', soz: 'Aynı nehre iki kez giremezsin.', yerSlug: 'efes' },
+      { isim: 'Aristoteles', unvan: 'Her Şeyin Öğretmeni', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_aristoteles_jtc6b6', soz: 'Eğitim, yaşlılığın en iyi azığıdır.', yerSlug: 'efes' },
+      { isim: 'Thales', unvan: 'Milet\'in Bilgesi', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_thales_x4yzou', soz: 'Kendini tanı.', yerSlug: 'milet' },
+      { isim: 'Mevlana Celaleddin Rumi', unvan: 'Konya\'nın Sufi Bilgesi', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_mevlana_zq6awa', soz: 'Gel, gel, ne olursan ol yine gel.', yerSlug: 'konya (mevlana)' },
+    ]
+  },
+  ft: {
+    tip: 'Fatih',
+    aciklama: 'Tarihin mimarı',
+    kisiler: [
+      { isim: 'Büyük İskender', unvan: 'Dünyanın Fatihi', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_iskender_s1qcr8', soz: 'Cesaret güçten değil, azimden doğar.', yerSlug: 'gordion' },
+      { isim: 'Alparslan', unvan: 'Arslan Kalpli Sultan', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_alparslan_gj3gal', soz: 'Asker sayısıyla değil, tevekkül ve imanla zafer kazanılır.', yerSlug: 'malazgirt' },
+      { isim: 'Fatih Sultan Mehmed', unvan: 'İstanbul\'un Fatihi', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_fatih_ldkbqj', soz: 'Ya İstanbul\'u alırım ya da İstanbul beni.', yerSlug: 'istanbul surları ve boğaz hisarları' },
+      { isim: 'III. Hattusili', unvan: 'Barışın Hükümdarı', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_hattusili_mjewqz', soz: 'En büyük zafer, savaşmadan kazanılandır.', yerSlug: 'hattuşa' },
+    ]
+  },
+  s: {
+    tip: 'Sanatçı',
+    aciklama: 'Güzelliğin efendisi',
+    kisiler: [
+      { isim: 'Homeros', unvan: 'Destanların Atası', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_homeros_g6mvqj', soz: 'Tanrılar insanlara acı verir ki hatıra değer hikâyeler anlatsınlar.', yerSlug: 'truva (troia)' },
+      { isim: 'Mimar Sinan', unvan: 'Taşın Ustası', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_sinan_uzfetf', soz: 'Selimiye benim ustalık eserim.', yerSlug: 'selimiye camii' },
+      { isim: 'Praksiteles', unvan: 'Mermerin Şairi', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_praksiteles_b1vwwh', soz: 'Taşın içindeki tanrıyı serbest bırakıyorum.', yerSlug: 'efes' },
+      { isim: 'Anakreon', unvan: 'Aşkın Ozanı', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_anakreon_cphqxk', soz: 'Şarap ve aşk olmasa ne fark eder yaşamak.', yerSlug: 'efes' },
+    ]
+  },
+  k: {
+    tip: 'Kaşif',
+    aciklama: 'Sınırları aşan ruh',
+    kisiler: [
+      { isim: 'Evliya Çelebi', unvan: 'Yolların Sultanı', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_evliya_tz7jhj', soz: 'Gezmek ibadet, görmek ibret, anlatmak sanattır.', yerSlug: 'edirne' },
+      { isim: 'Strabon', unvan: 'Dünyanın İlk Coğrafyacısı', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_strabon_qiuuze', soz: 'Yeryüzünü tanımayan insan, kendi ruhunu da tanıyamaz.', yerSlug: 'amasya' },
+      { isim: 'Klaus Schmidt', unvan: 'Tarihin Kazıcısı', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_schmidt_uuqz4x', soz: 'Tapınak, şehrin önünde gelir.', yerSlug: 'göbeklitepe' },
+      { isim: 'Anaksagoras', unvan: 'Kozmosun Meraklısı', foto: 'https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_400/unlu_anaksagoras_i1pcrr', soz: 'Her şeyde her şeyden bir parça vardır.', yerSlug: 'klazomenai' },
+    ]
+  }
+};
+
+let _quizAktifSoru = 0;
+let _quizPuanlar = { f: 0, ft: 0, s: 0, k: 0 };
+let _quizSonucKisi = null;
+let _quizSonucYer = null;
+
+function quizBaslat() {
+  _quizAktifSoru = 0;
+  _quizPuanlar = { f: 0, ft: 0, s: 0, k: 0 };
+  _quizSonucKisi = null;
+  document.getElementById('quizSonuc').classList.remove('goster');
+  document.getElementById('quizOverlay').classList.add('acik');
+  quizSoruGoster(0);
+}
+
+function quizKapat() {
+  document.getElementById('quizOverlay').classList.remove('acik');
+}
+
+function quizSoruGoster(idx) {
+  const soru = QUIZ_SORULAR[idx];
+  const pct = (idx / QUIZ_SORULAR.length) * 100;
+  document.getElementById('quizIlerleme').style.width = pct + '%';
+  document.getElementById('quizNo').textContent = `SORU ${idx + 1} / ${QUIZ_SORULAR.length}`;
+
+  const soruEl = document.getElementById('quizSoru');
+  soruEl.style.opacity = 0;
+  setTimeout(() => { soruEl.textContent = soru.soru; soruEl.style.opacity = 1; soruEl.style.transition = 'opacity 0.3s'; }, 50);
+
+  const harfler = ['A', 'B', 'C', 'D'];
+  const secEl = document.getElementById('quizSecenekler');
+  secEl.style.opacity = 0;
+  setTimeout(() => {
+    secEl.innerHTML = soru.secenekler.map((s, i) => `
+      <div class="quiz-secenek" onclick="quizCevapSec(this,'${s.tip}')">
+        <div class="quiz-secenek-harf">${harfler[i]}</div>
+        <div class="quiz-secenek-metin">${s.metin}</div>
+      </div>
+    `).join('');
+    secEl.style.opacity = 1;
+    secEl.style.transition = 'opacity 0.3s';
+  }, 100);
+}
+
+function quizCevapSec(el, tip) {
+  if (el.classList.contains('secildi')) return;
+  el.classList.add('secildi');
+  _quizPuanlar[tip]++;
+
+  setTimeout(() => {
+    _quizAktifSoru++;
+    if (_quizAktifSoru < QUIZ_SORULAR.length) {
+      quizSoruGoster(_quizAktifSoru);
+    } else {
+      quizSonucGoster();
+    }
+  }, 400);
+}
+
+function quizSonucGoster() {
+  document.getElementById('quizIlerleme').style.width = '100%';
+
+  // Kazanan tipi bul
+  const kazanan = Object.entries(_quizPuanlar).sort((a, b) => b[1] - a[1])[0][0];
+  const tipData = QUIZ_TIPLER[kazanan];
+
+  // Puanı sırala ve bir kişi seç
+  const toplam = Object.values(_quizPuanlar).reduce((a,b) => a+b, 0);
+  const idx = Math.floor(Math.random() * tipData.kisiler.length);
+  const kisi = tipData.kisiler[idx];
+  _quizSonucKisi = kisi;
+
+  // Yer bul
+  const slug = kisi.yerSlug.toLowerCase();
+  _quizSonucYer = YERLER.find(y => y.isim.toLowerCase() === slug || y.isim.toLowerCase().includes(slug.split(' ')[0]));
+
+  // UI doldur
+  document.getElementById('qsTip').textContent = tipData.tip;
+  document.getElementById('qsFoto').src = kisi.foto;
+  document.getElementById('qsFoto').onerror = function() { this.src = ''; };
+  document.getElementById('qsIsim').textContent = kisi.isim;
+  document.getElementById('qsUnvan').textContent = kisi.unvan;
+  document.getElementById('qsSoz').textContent = `"${kisi.soz}"`;
+
+  if (_quizSonucYer) {
+    document.getElementById('qsYerEmoji').textContent = _quizSonucYer.emoji || '🏛';
+    document.getElementById('qsYerIsim').textContent = _quizSonucYer.isim;
+  }
+
+  // Puan barları
+  const max = Math.max(...Object.values(_quizPuanlar));
+  document.getElementById('qsPuanBar').innerHTML = Array(toplam).fill(0).map((_, i) => {
+    const dolu = i < _quizPuanlar[kazanan];
+    return `<div class="quiz-puan-bant${dolu ? ' dolu' : ''}"></div>`;
+  }).join('');
+
+  setTimeout(() => document.getElementById('quizSonuc').classList.add('goster'), 100);
+}
+
+function quizYereGit() {
+  if (!_quizSonucYer) return;
+  quizKapat();
+  setTimeout(() => { detayAc(_quizSonucYer.id); }, 450);
+}
+
+function quizTekrarla() {
+  document.getElementById('quizSonuc').classList.remove('goster');
+  setTimeout(() => quizBaslat(), 300);
+}
+
+async function quizPaylasVeyaKopyala() {
+  if (!_quizSonucKisi) return;
+  const metin = `🏺 Tarihin Ruhu Sende testi yaptım!\n\nBenim ruhumda "${_quizSonucKisi.isim}" var.\n"${_quizSonucKisi.soz}"\n\nSen de dene → anadolurehberi.com`;
+  if (navigator.share) {
+    try { await navigator.share({ text: metin, title: 'Tarihin Ruhu Sende — Anadolu Rehberi' }); return; } catch(e) {}
+  }
+  try { await navigator.clipboard.writeText(metin); alert('Sonuç panoya kopyalandı!'); } catch(e) {}
+}
+// ═══════════════════════════════════════════════════════
 
 kartlarGoster();
 tokenKontrol();
