@@ -38,6 +38,8 @@
   .filtreler { flex-shrink: 0; padding-bottom: 10px; border-bottom: 0.5px solid #E8E6E0; }
   .donem-scroll, .bolge-scroll { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
   .donem-scroll { padding: 10px 20px 0; }
+  .donem-pencere-btn { display: none; margin: 10px 20px 0; padding: 8px 14px; border-radius: 12px; border: 0.5px solid rgba(184,92,42,0.35); background: rgba(184,92,42,0.08); color: #B85C2A; font-family: 'Crimson Pro', serif; font-size: 13px; cursor: pointer; }
+  .donem-pencere-btn.gorsel { display: inline-block; }
   .bolge-scroll { padding: 8px 20px 0; }
   .donem-scroll::-webkit-scrollbar, .bolge-scroll::-webkit-scrollbar { display: none; }
   .pill { white-space: nowrap; padding: 7px 14px; border-radius: 20px; border: 0.5px solid #E8E6E0; background: #fff; font-family: 'Crimson Pro', serif; font-size: 13px; color: #6B6B67; cursor: pointer; flex-shrink: 0; }
@@ -310,7 +312,7 @@
   @keyframes parla { 0%,100% { text-shadow: 0 0 20px rgba(184,92,42,0.3); } 50% { text-shadow: 0 0 40px rgba(184,92,42,0.7), 0 0 80px rgba(184,92,42,0.3); } }
   .sinema-baslik.gorsel { animation: parla 3s ease-in-out infinite; }
 
-  /* DÖNEM PORTRESİ */
+  /* DÖNEM PENCERESİ (yer sayfasındaki selfie'li AI Dönem Portresi'nden ayrı) */
   .portre-modal { position: fixed; inset: 0; background: rgba(0,0,0,0); z-index: 600; display: flex; flex-direction: column; pointer-events: none; transition: background 0.4s; }
   .portre-modal.acik { background: rgba(0,0,0,0.95); pointer-events: all; }
   .portre-icerik { position: absolute; inset: 0; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.45s cubic-bezier(0.4,0,0.2,1); }
@@ -1370,6 +1372,7 @@
       <div class="pill" onclick="donemSec(this,'6')" style="--renk:#2E7D52">Selçuklu</div>
       <div class="pill" onclick="donemSec(this,'7')" style="--renk:#1A5FA8">Osmanlı</div>
     </div>
+    <button class="donem-pencere-btn" id="donemPencereBtn" onclick="if(aktifDonem) donemPortresiAc(aktifDonem)"></button>
     <div class="zaman-wrap" id="zamanWrap" style="display:none">
       <div class="zaman-labels">
         <span class="zaman-sinir">M.Ö. 8000</span>
@@ -1888,7 +1891,7 @@
     </button>
   </div>
 
-  <!-- DÖNEM PORTRESİ -->
+  <!-- DÖNEM PENCERESİ -->
   <div class="portre-modal" id="portreModal">
     <div class="portre-icerik">
       <div class="portre-gorsel-alan">
@@ -1905,7 +1908,7 @@
       <div class="portre-alt" id="portreAlt">
         <div class="portre-yuklenme" id="portreYuklenme">
           <div class="portre-spinner"></div>
-          <div class="portre-yuklenme-yazi">Dönem portresi hazırlanıyor…</div>
+          <div class="portre-yuklenme-yazi">Dönem penceresi hazırlanıyor…</div>
         </div>
         <div class="portre-metin" id="portreMetin"></div>
         <div class="portre-etiket-satir" id="portreChipler"></div>
@@ -2897,6 +2900,7 @@ function modSec(mod) {
   document.getElementById('btnZaman').classList.toggle('aktif',mod==='zaman');
   document.getElementById('donemScroll').style.display=mod==='donem'?'flex':'none';
   document.getElementById('zamanWrap').style.display=mod==='zaman'?'block':'none';
+  donemPencereBtnGuncelle();
   kartlarGoster();
 }
 function donemSec(el,id) {
@@ -2905,10 +2909,18 @@ function donemSec(el,id) {
   el.classList.add('aktif');
   if(id){const r=el.style.getPropertyValue('--renk')||'#B85C2A';el.style.background=r;el.style.borderColor=r;el.style.color='#fff';}
   kartlarGoster();
-  if(id) donemPortresiAc(id);
+  donemPencereBtnGuncelle();
 }
 
-// ── DÖNEM PORTRESİ ────────────────────────────────────────────────────────────
+// Dönem seçilince pencere kendiliğinden açılmaz; filtrenin altında açma düğmesi çıkar
+function donemPencereBtnGuncelle() {
+  const btn = document.getElementById('donemPencereBtn');
+  const meta = aktifMod === 'donem' && aktifDonem && DONEM_META[aktifDonem];
+  btn.classList.toggle('gorsel', !!meta);
+  if (meta) btn.textContent = `${meta.emoji} ${meta.isim} Penceresi'ni aç →`;
+}
+
+// ── DÖNEM PENCERESİ ────────────────────────────────────────────────────────────
 const DONEM_META = {
   '1': {
     isim: 'Taş Devri', tarih: 'M.Ö. 10.000 – 3.000', emoji: '🪨',
@@ -2965,7 +2977,7 @@ async function donemPortresiAc(donemId) {
   modal.classList.add('acik');
 
   document.getElementById('portreEmoji').textContent = meta.emoji;
-  document.getElementById('portreEtiket').textContent = 'DÖNEM PORTRESİ';
+  document.getElementById('portreEtiket').textContent = 'DÖNEM PENCERESİ';
   document.getElementById('portreBaslik').textContent = meta.isim;
   document.getElementById('portreTarih').textContent = meta.tarih;
   document.getElementById('portreMetin').style.display = 'none';
