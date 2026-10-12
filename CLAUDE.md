@@ -21,7 +21,7 @@ There are no scripts to run. To work on this project:
 
 ### Data model
 
-All 120 historical sites are hardcoded in `YERLER` (line ~1867 in `index.html`). Each entry is a plain JS object:
+All 118 historical sites are hardcoded in `YERLER` (line ~1867 in `index.html`). Each entry is a plain JS object:
 
 ```js
 {
@@ -81,7 +81,7 @@ CRUD wrappers in `admin-panel.html`: `sb()` (GET), `sbPatch()` (PATCH), `sbDelet
 
 ## Adding or editing historical sites
 
-Edit the `YERLER` array in `index.html`. The site immediately reflects the change — no rebuild needed. Keep the `id` unique and never reuse or renumber ids (Supabase rows reference them via `oren_yeri_id`). Id 115 was removed on purpose, so ids are not contiguous; new sites continue from 122. If a site has audio-guide support, add `audioGuideSlug: '<slug>'`; omitting it hides the audio-guide button automatically.
+Edit the `YERLER` array in `index.html`. The site immediately reflects the change — no rebuild needed. Keep the `id` unique and never reuse or renumber ids (Supabase rows reference them via `oren_yeri_id`). Ids 115, 119 and 121 were removed on purpose (119 duplicated 33 Anavarza, 121 duplicated 101 Smyrna), so ids are not contiguous; new sites continue from 122. If a site has audio-guide support, add `audioGuideSlug: '<slug>'`; omitting it hides the audio-guide button automatically.
 
 ## Image handling
 
