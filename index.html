@@ -5381,11 +5381,13 @@ async function rezvDogrula() {
   const btn = document.querySelector('#ryAdim1 .dogrulama-btn');
   btn.disabled = true; btn.textContent = 'Doğrulanıyor...';
   try {
-    const res = await fetch(`${SAPI}/rezervasyonlar?id=eq.${rezvId}&rehber_id=eq.${aktifRehberYorumId}&durum=eq.onaylandi`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    // Rezervasyonlar herkese kapalı; doğrulama Supabase'teki güvenli fonksiyonla yapılır
+    const res = await fetch(`${SAPI}/rpc/rezervasyon_dogrula`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_rezervasyon_id: rezvId, p_rehber_id: String(aktifRehberYorumId) })
     });
-    const data = await res.json();
-    if (data.length > 0) {
+    if (res.ok && (await res.json()) === true) {
       dogrulanmisRezvId = rezvId;
       document.getElementById('ryAdim1').style.display = 'none';
       document.getElementById('ryAdim2').style.display = 'block';
@@ -5493,9 +5495,11 @@ async function rehberlerYukle(bolge) {
   const div = document.getElementById('rehberListesiDiv');
   div.innerHTML = '<div class="rehber-bos">Yükleniyor...</div>';
   try {
+    // E-posta ve telefon herkese açık değil; yalnız kartta gösterilen alanlar istenir
+    const alanlar = 'select=id,ad_soyad,sehir,bolgeler,diller,uzmanlik,deneyim_yil,hakkinda,gunluk_ucret,foto_url,ortalama_puan,yorum_sayisi,tamamlanan_tur,one_cikan';
     const url = bolge
-      ? `${SAPI}/rehberler?bolgeler=cs.{${bolge}}&onaylandi=eq.true`
-      : `${SAPI}/rehberler?onaylandi=eq.true`;
+      ? `${SAPI}/rehberler?${alanlar}&bolgeler=cs.{${bolge}}&onaylandi=eq.true`
+      : `${SAPI}/rehberler?${alanlar}&onaylandi=eq.true`;
     const res = await fetch(url, {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
     });
@@ -5684,8 +5688,10 @@ async function tokenKontrol() {
   const token = params.get('degerlendirme');
   if (!token) return;
   try {
-    const res = await fetch(`${SAPI}/rezervasyonlar?degerlendirme_token=eq.${token}&select=*`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    const res = await fetch(`${SAPI}/rpc/degerlendirme_bul`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_token: token })
     });
     const data = await res.json();
     if (!data.length) { alert('Bu değerlendirme linki geçersiz.'); return; }
