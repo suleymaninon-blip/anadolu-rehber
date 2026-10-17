@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Anadolu Rehberi** is a Turkish historical-site travel guide delivered as two standalone HTML files with no build toolchain. Open either file directly in a browser; there is no compile step, no `npm install`, and no dev server.
 
 - `index.html` — Mobile-first user app (~6 600 lines). Simulates a 430 px phone viewport on desktop.
-- `admin-panel.html` — Desktop admin dashboard (~1 380 lines). Password-protected with a client-side check.
+- `admin-panel.html` — Desktop admin dashboard (~1 400 lines). Login via Supabase Auth (email + password).
 
 ## No build system
 
@@ -57,9 +57,12 @@ Supabase Edge Function `tur-planlayici` generates AI tour plans and is called by
 
 CRUD wrappers in `admin-panel.html`: `sb()` (GET), `sbPatch()` (PATCH), `sbDelete()` (DELETE).
 
+Row Level Security is defined in `supabase/guvenlik_1_hazirlik.sql` and `supabase/guvenlik_2_kilitleme.sql`. The public site (anon key) can only read approved rows and non-personal columns; `rehberler.email/telefon/sertifika`, `rezervasyonlar` and `komisyonlar` are admin-only. The public site therefore must request explicit columns from `rehberler` and uses the RPCs `rezervasyon_dogrula` and `degerlendirme_bul` instead of reading `rezervasyonlar`.
+
 ### Admin panel
 
-- Login is a client-side password check (`ADMIN_SIFRE = 'anadolu2024'` at line 866 of `admin-panel.html`). This is intentionally a simple gate, not a secure auth system.
+- Login uses Supabase Auth (`/auth/v1/token`); the session lives in `sessionStorage` and every REST call sends the admin's access token via `authHeaders()`. Only emails listed in the `admin_kullanicilar` table count as admin (`is_admin()`).
+- E-mail is sent through the `mail-gonder` Edge Function (`supabase/functions/mail-gonder`); the Resend key is the `RESEND_API_KEY` Supabase secret. Never put secrets in the HTML files — the repo is public.
 - Pages: Dashboard, Rehber Başvuruları, Kullanıcı Fotoğrafları, Rezervasyonlar, Komisyon Yönetimi, Yorum Yönetimi.
 
 ### Multilingual system
