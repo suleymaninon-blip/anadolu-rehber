@@ -4,6 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
+> **Pre-launch:** `index.html` is a temporary "Coming soon" page for anatoliaguides.com (custom domain via `CNAME`). The mobile app lives at `uygulama.html` until launch; at launch move it back to `index.html`.
+
 **Anadolu Rehberi** is a Turkish historical-site travel guide delivered as two standalone HTML files with no build toolchain. Open either file directly in a browser; there is no compile step, no `npm install`, and no dev server.
 
 - `index.html` — Mobile-first user app (~6 600 lines). Simulates a 430 px phone viewport on desktop.

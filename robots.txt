@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /uygulama.html
+Disallow: /admin-panel.html
+Disallow: /web.html
