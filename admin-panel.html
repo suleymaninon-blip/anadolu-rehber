@@ -812,7 +812,7 @@ function rezervasyonOnayMaili(rezervasyon) {
         </div>
         <p style="color:#6B6B67;font-size:14px;margin:0 0 24px">Rehberiniz yakında sizinle iletişime geçecektir. Sorularınız için bize ulaşabilirsiniz.</p>
         <div style="text-align:center">
-          <a href="https://suleymaninon-blip.github.io/anadolu-rehber/" style="background:#B85C2A;color:#fff;padding:12px 32px;border-radius:6px;text-decoration:none;font-size:14px;display:inline-block">Uygulamaya Git</a>
+          <a href="https://anatoliaguides.com/" style="background:#B85C2A;color:#fff;padding:12px 32px;border-radius:6px;text-decoration:none;font-size:14px;display:inline-block">Uygulamaya Git</a>
         </div>
       </div>
       <p style="text-align:center;color:#9B9B97;font-size:12px;margin-top:24px">© 2026 Anadolu Rehberi · Türkiye'nin Tarihi Mirası</p>
@@ -831,7 +831,7 @@ function rezervasyonIptalMaili(rezervasyon) {
         <p style="color:#6B6B67;margin:0 0 24px">Sayın ${rezervasyon.musteri_adi}, maalesef ${tarihFormat(rezervasyon.tur_tarihi)} tarihli ${orenIsim(rezervasyon.oren_yeri_id)} rezervasyonunuz iptal edilmiştir.</p>
         <p style="color:#6B6B67;font-size:14px">Başka bir tarih için rezervasyon yaptırmak ister misiniz?</p>
         <div style="text-align:center;margin-top:24px">
-          <a href="https://suleymaninon-blip.github.io/anadolu-rehber/" style="background:#B85C2A;color:#fff;padding:12px 32px;border-radius:6px;text-decoration:none;font-size:14px;display:inline-block">Yeni Rezervasyon</a>
+          <a href="https://anatoliaguides.com/" style="background:#B85C2A;color:#fff;padding:12px 32px;border-radius:6px;text-decoration:none;font-size:14px;display:inline-block">Yeni Rezervasyon</a>
         </div>
       </div>
       <p style="text-align:center;color:#9B9B97;font-size:12px;margin-top:24px">© 2026 Anadolu Rehberi · Türkiye'nin Tarihi Mirası</p>
@@ -1229,7 +1229,7 @@ async function turTamamlandi(rezvId, musteriEmail, musteriAdi, rehberId, btn) {
     if (!res.ok) throw new Error();
 
     // Değerlendirme linki
-    const link = `https://suleymaninon-blip.github.io/anadolu-rehber/?degerlendirme=${token}`;
+    const link = `https://anatoliaguides.com/?degerlendirme=${token}`;
 
     // Mail gönder
     const mailHtml = `
