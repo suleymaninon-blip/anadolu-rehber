@@ -4,9 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-**Anadolu Rehberi** is a Turkish historical-site travel guide delivered as two standalone HTML files with no build toolchain. Open either file directly in a browser; there is no compile step, no `npm install`, and no dev server.
+**Anadolu Rehberi** is a Turkish historical-site travel guide delivered as standalone HTML files with no build toolchain. Open either file directly in a browser; there is no compile step, no `npm install`, and no dev server.
 
 - `index.html` — Mobile-first user app (~6 600 lines). Simulates a 430 px phone viewport on desktop.
+- `web.html` — Desktop website / web app (hash routes: `#/`, `#/yerler`, `#/yer/:id`, `#/rehberler`, `#/tur-planla`, `#/hakkimizda`, `#/rehber-ol`, `#/iletisim`). Own 4-language UI dictionary `T`. `index.html` redirects wide screens (≥1024px, no query string) here; `web.html` sends phones (<760px) back to `index.html`. Use `index.html?mobil` to force the mobile app.
+- `veri.js` — Shared content data loaded by both `index.html` and `web.html` (`YERLER`, translations, `GALERI_MAP`, `KOORDINATLAR`, `EFSANELER`, `UNLULER`, `UNLULER_DETAY`, `DONEM_META`, `LEZZETLER`).
 - `admin-panel.html` — Desktop admin dashboard (~1 400 lines). Login via Supabase Auth (email + password).
 
 ## No build system
@@ -21,7 +23,7 @@ There are no scripts to run. To work on this project:
 
 ### Data model
 
-All 118 historical sites are hardcoded in `YERLER` (line ~1867 in `index.html`). Each entry is a plain JS object:
+All 118 historical sites are hardcoded in `YERLER` in `veri.js`. Each entry is a plain JS object:
 
 ```js
 {
@@ -84,8 +86,8 @@ Row Level Security is defined in `supabase/guvenlik_1_hazirlik.sql` and `supabas
 
 ## Adding or editing historical sites
 
-Edit the `YERLER` array in `index.html`. The site immediately reflects the change — no rebuild needed. Keep the `id` unique and never reuse or renumber ids (Supabase rows reference them via `oren_yeri_id`). Ids 115, 119 and 121 were removed on purpose (119 duplicated 33 Anavarza, 121 duplicated 101 Smyrna), so ids are not contiguous; new sites continue from 122. If a site has audio-guide support, add `audioGuideSlug: '<slug>'`; omitting it hides the audio-guide button automatically.
+Edit the `YERLER` array in `veri.js` (shared by the mobile app and the website). The site immediately reflects the change — no rebuild needed. Keep the `id` unique and never reuse or renumber ids (Supabase rows reference them via `oren_yeri_id`). Ids 115, 119 and 121 were removed on purpose (119 duplicated 33 Anavarza, 121 duplicated 101 Smyrna), so ids are not contiguous; new sites continue from 122. If a site has audio-guide support, add `audioGuideSlug: '<slug>'`; omitting it hides the audio-guide button automatically.
 
 ## Image handling
 
-Cloudinary images are transformed via `cldUrl(key, width)` (line ~2574 in `index.html`), which constructs `https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_{w}/{key}`. Wikipedia images and fallback emoji are also used; `foto: null` on a `YERLER` entry triggers the emoji fallback.
+Cloudinary images are transformed via `cldUrl(key, width)` (in `index.html`; `web.html` has its own `fotolar()` helper), which constructs `https://res.cloudinary.com/dsnmabr1p/image/upload/f_auto,q_auto,w_{w}/{key}`. Wikipedia images and fallback emoji are also used; `foto: null` on a `YERLER` entry triggers the emoji fallback.

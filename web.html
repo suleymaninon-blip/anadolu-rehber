@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anadolu Rehberi — Ören yerleri ve uzman rehberler</title>
+<meta name="description" content="Anadolu'nun 118 ören yerini hikâyeleriyle keşfedin, uzman rehberle gezin. Türkçe, English, Deutsch, Русский.">
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dsnmabr1p/image/upload/v1776530616/u2791417416_anadolu_kltrndeki_ana_tanra_kibelenin_mermerden_b_44c980b9-ad85-4973-8768-f04a1de1f095_3_tsqin4.png">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  // Telefonda mobil uygulamayı aç (web sürümünü zorla görmek için ?web)
+  if (window.innerWidth < 760 && !/[?&]web\b/.test(location.search)) location.replace('index.html' + location.hash);
+</script>
+<style>
+  :root {
+    --kagit: #FAFAF8; --kagit2: #F3F1EC; --murekkep: #1A1A18; --gri: #6B6B67; --gri2: #9B9B97;
+    --cizgi: #E8E6E0; --vurgu: #B85C2A; --vurgu2: #9A4A20; --gece: #12110F; --gece2: #1E1C19; --altin: #C9A84C;
+    --serif: 'Crimson Pro', Georgia, serif; --baslik: 'Cinzel', serif;
+    --genislik: 1200px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--serif); font-size: 19px; line-height: 1.6; color: var(--murekkep); background: var(--kagit); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+  button, input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+  .kap { max-width: var(--genislik); margin: 0 auto; padding: 0 40px; }
+
+  /* ÜST MENÜ */
+  .ust { position: sticky; top: 0; z-index: 50; background: rgba(250,250,248,0.94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--cizgi); }
+  .ust .kap { display: flex; align-items: center; height: 76px; gap: 36px; }
+  .logo { font-family: var(--baslik); font-size: 22px; font-weight: 600; letter-spacing: 3px; white-space: nowrap; }
+  .logo span { color: var(--vurgu); }
+  .logo small { display: block; font-family: var(--serif); font-size: 11px; font-weight: 400; letter-spacing: 2px; color: var(--gri2); margin-top: -2px; }
+  .menu { display: flex; gap: 28px; flex: 1; }
+  .menu a { font-size: 16px; color: var(--gri); padding: 6px 0; border-bottom: 1px solid transparent; transition: color .2s, border-color .2s; }
+  .menu a:hover, .menu a.aktif { color: var(--murekkep); border-bottom-color: var(--vurgu); }
+  .dil-sec { display: flex; gap: 2px; border: 1px solid var(--cizgi); border-radius: 20px; padding: 3px; }
+  .dil-sec button { border: 0; background: none; padding: 3px 9px; border-radius: 14px; font-size: 13px; letter-spacing: 1px; color: var(--gri); cursor: pointer; }
+  .dil-sec button.aktif { background: var(--murekkep); color: #fff; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--murekkep); background: var(--murekkep); color: #fff; padding: 12px 26px; border-radius: 2px; font-size: 16px; letter-spacing: .5px; cursor: pointer; transition: background .2s, border-color .2s, color .2s; white-space: nowrap; }
+  .btn:hover { background: var(--vurgu); border-color: var(--vurgu); }
+  .btn.vurgu { background: var(--vurgu); border-color: var(--vurgu); }
+  .btn.vurgu:hover { background: var(--vurgu2); border-color: var(--vurgu2); }
+  .btn.cerceve { background: transparent; color: var(--murekkep); }
+  .btn.cerceve:hover { background: var(--murekkep); color: #fff; }
+  .btn.acik { background: transparent; color: #fff; border-color: rgba(255,255,255,.6); }
+  .btn.acik:hover { background: #fff; color: var(--murekkep); }
+  .btn:disabled { opacity: .5; cursor: default; }
+
+  /* GENEL BÖLÜM */
+  .bolum { padding: 110px 0; }
+  .bolum.ince { padding: 70px 0; }
+  .bolum.gece { background: var(--gece); color: #E9E3D8; }
+  .bolum.kagit2 { background: var(--kagit2); }
+  .ust-etiket { font-family: var(--baslik); font-size: 12px; letter-spacing: 4px; text-transform: uppercase; color: var(--vurgu); margin-bottom: 18px; }
+  h1, h2, h3 { font-family: var(--baslik); font-weight: 500; line-height: 1.2; letter-spacing: .5px; }
+  h2 { font-size: 40px; margin-bottom: 18px; }
+  h3 { font-size: 22px; margin-bottom: 10px; }
+  .giris { font-size: 21px; color: var(--gri); max-width: 640px; font-weight: 300; }
+  .gece .giris { color: #A9A398; }
+  .bolum-bas { display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; margin-bottom: 52px; }
+  .alt-yazi { font-size: 13px; color: var(--gri2); font-style: italic; margin-top: 8px; }
+  .not-tr { font-size: 14px; color: var(--gri2); font-style: italic; margin-bottom: 14px; }
+
+  /* AÇILIŞ */
+  .acilis { position: relative; min-height: calc(100vh - 76px); max-height: 860px; display: flex; align-items: flex-end; color: #fff; overflow: hidden; background: var(--gece); }
+  .acilis-gorsel { position: absolute; inset: 0; background-size: cover; background-position: center 40%; transform: scale(1.04); animation: yavasYaklas 18s ease-out forwards; }
+  @keyframes yavasYaklas { to { transform: scale(1); } }
+  .acilis::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,9,8,.15) 0%, rgba(10,9,8,.25) 45%, rgba(10,9,8,.82) 100%); }
+  .acilis .kap { position: relative; z-index: 1; padding-bottom: 90px; width: 100%; }
+  .acilis h1 { font-size: 58px; max-width: 820px; margin-bottom: 22px; }
+  .acilis .giris { color: rgba(255,255,255,.85); font-size: 23px; margin-bottom: 36px; }
+  .acilis-arama { display: flex; max-width: 620px; background: #fff; border-radius: 2px; margin-bottom: 26px; position: relative; }
+  .acilis-arama input { flex: 1; border: 0; outline: 0; padding: 18px 22px; font-size: 18px; color: var(--murekkep); background: transparent; }
+  .acilis-arama .btn { border-radius: 0 2px 2px 0; }
+  .oneri-liste { position: absolute; top: 100%; left: 0; right: 0; background: #fff; color: var(--murekkep); border-top: 1px solid var(--cizgi); box-shadow: 0 18px 40px rgba(0,0,0,.25); display: none; z-index: 5; max-height: 360px; overflow-y: auto; }
+  .oneri-liste a { display: flex; justify-content: space-between; padding: 12px 22px; font-size: 17px; border-bottom: 1px solid var(--kagit2); }
+  .oneri-liste a:hover { background: var(--kagit2); }
+  .oneri-liste a span { color: var(--gri2); font-size: 14px; }
+  .acilis-butonlar { display: flex; gap: 14px; }
+  .acilis-imza { position: absolute; right: 40px; bottom: 30px; z-index: 1; font-size: 13px; font-style: italic; color: rgba(255,255,255,.7); }
+
+  /* NEDEN REHBER */
+  .uclu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px; }
+  .madde-no { font-family: var(--baslik); font-size: 14px; color: var(--vurgu); letter-spacing: 3px; margin-bottom: 14px; }
+  .madde p { color: var(--gri); font-size: 18px; }
+
+  /* REHBER KARTLARI */
+  .rehber-izgara { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px; }
+  .rehber-kart { background: #fff; border: 1px solid var(--cizgi); padding: 30px 28px 26px; display: flex; flex-direction: column; transition: border-color .2s, transform .2s; }
+  .rehber-kart:hover { border-color: var(--murekkep); transform: translateY(-2px); }
+  .rehber-portre { width: 84px; height: 84px; border-radius: 50%; background: var(--kagit2) center/cover; display: flex; align-items: center; justify-content: center; font-family: var(--baslik); font-size: 32px; color: var(--vurgu); margin-bottom: 18px; }
+  .rehber-kart h3 { font-size: 20px; margin-bottom: 4px; }
+  .rehber-yer { font-size: 15px; color: var(--gri2); margin-bottom: 14px; }
+  .rehber-kart p { font-size: 16px; color: var(--gri); flex: 1; margin-bottom: 16px; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+  .rozetler { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .rozet { font-size: 13px; padding: 2px 10px; border: 1px solid var(--cizgi); border-radius: 20px; color: var(--gri); }
+  .rehber-alt { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--cizgi); padding-top: 16px; }
+  .fiyat { font-size: 22px; font-weight: 500; }
+  .fiyat small { font-size: 14px; color: var(--gri2); font-weight: 400; }
+  .puan { font-size: 15px; color: var(--gri); }
+  .rehber-kart .btn { margin-top: 18px; justify-content: center; }
+  .bos-durum { padding: 40px; border: 1px dashed var(--cizgi); text-align: center; color: var(--gri); }
+
+  /* DÖNEM ÇİZELGESİ */
+  .cizelge { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid #3A3631; }
+  .donem { padding: 26px 18px 30px; border-right: 1px solid #3A3631; cursor: pointer; position: relative; transition: background .25s; }
+  .donem:last-child { border-right: 0; }
+  .donem::before { content: ''; position: absolute; top: -5px; left: 18px; width: 9px; height: 9px; border-radius: 50%; background: var(--gece); border: 1px solid var(--altin); transition: background .25s; }
+  .donem:hover { background: var(--gece2); }
+  .donem:hover::before { background: var(--altin); }
+  .donem-emoji { font-size: 26px; margin-bottom: 14px; }
+  .donem h3 { font-size: 17px; color: #fff; margin-bottom: 6px; }
+  .donem-tarih { font-size: 14px; color: #8D877C; margin-bottom: 14px; }
+  .donem-sayi { font-size: 14px; color: var(--altin); }
+
+  /* HARİTA */
+  .harita-kap { height: 560px; border: 1px solid var(--cizgi); }
+  .harita-kap.kucuk { height: 300px; }
+  .leaflet-popup-content { font-family: var(--serif); font-size: 15px; }
+  .leaflet-popup-content b { font-family: var(--baslik); font-weight: 500; }
+  .leaflet-popup-content a { color: var(--vurgu); }
+
+  /* HİKÂYE */
+  .hikaye { display: grid; grid-template-columns: 1.05fr 1fr; gap: 72px; align-items: center; }
+  .hikaye-gorsel { aspect-ratio: 4/5; background: var(--gece2) center/cover; }
+  .hikaye blockquote { font-size: 21px; line-height: 1.75; color: #D8CFC0; white-space: pre-line; margin: 24px 0 30px; max-height: 15.5em; overflow: hidden; -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent); mask-image: linear-gradient(180deg, #000 70%, transparent); }
+
+  /* TUR PLANLA */
+  .ikili { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
+  .form-izgara { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .form-izgara .tam { grid-column: 1 / -1; }
+  label.etiket { display: block; font-size: 14px; letter-spacing: 1px; color: var(--gri); margin-bottom: 6px; }
+  .girdi { width: 100%; border: 1px solid var(--cizgi); background: #fff; padding: 12px 14px; font-size: 17px; border-radius: 2px; outline: 0; transition: border-color .2s; }
+  .girdi:focus { border-color: var(--murekkep); }
+  textarea.girdi { min-height: 110px; resize: vertical; }
+  .secimler { display: flex; flex-wrap: wrap; gap: 8px; }
+  .secim { border: 1px solid var(--cizgi); background: #fff; padding: 6px 14px; border-radius: 20px; font-size: 15px; cursor: pointer; transition: all .2s; user-select: none; }
+  .secim.aktif { background: var(--murekkep); border-color: var(--murekkep); color: #fff; }
+  .plan-sonuc { background: #fff; border: 1px solid var(--cizgi); padding: 34px 38px; white-space: pre-wrap; font-size: 17px; line-height: 1.75; min-height: 420px; color: var(--gri); }
+  .plan-sonuc.dolu { color: var(--murekkep); }
+  .form-mesaj { margin-top: 14px; font-size: 16px; }
+  .form-mesaj.hata { color: #B03A2E; }
+  .form-mesaj.basari { color: #2E7D52; }
+
+  /* YORUMLAR */
+  .yorum-izgara { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .yorum { border-top: 1px solid var(--murekkep); padding-top: 22px; }
+  .yorum p { font-size: 19px; font-style: italic; margin-bottom: 16px; }
+  .yorum-kim { font-size: 15px; color: var(--gri); }
+  #yPuan .secim { border: 0; background: none; padding: 0 2px; font-size: 28px; color: var(--cizgi); }
+  #yPuan .secim.aktif { color: var(--altin); background: none; }
+  .yildiz { color: var(--altin); letter-spacing: 2px; font-size: 14px; }
+
+  /* UYGULAMA */
+  .uygulama { display: flex; justify-content: space-between; align-items: center; gap: 40px; }
+
+  /* ÖREN YERİ KARTLARI */
+  .filtreler { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 36px; padding-bottom: 26px; border-bottom: 1px solid var(--cizgi); }
+  .filtreler .girdi { width: auto; padding: 9px 12px; font-size: 16px; }
+  .filtreler .arama { flex: 1; min-width: 220px; }
+  .sonuc-sayi { font-size: 15px; color: var(--gri2); margin-left: auto; }
+  .yer-izgara { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 36px 28px; }
+  .yer-kart { cursor: pointer; }
+  .yer-kart-gorsel { aspect-ratio: 4/3; background: var(--kagit2) center/cover; margin-bottom: 14px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 46px; }
+  .yer-kart-gorsel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .6s; }
+  .yer-kart:hover .yer-kart-gorsel img { transform: scale(1.04); }
+  .unesco-rozet { position: absolute; top: 10px; left: 10px; z-index: 1; background: rgba(18,17,15,.75); color: #fff; font-size: 11px; letter-spacing: 2px; padding: 3px 8px; }
+  .yer-kart h3 { font-size: 19px; margin-bottom: 2px; }
+  .yer-kart-alt { font-size: 15px; color: var(--gri2); }
+
+  /* ÖREN YERİ DETAY */
+  .galeri { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 8px; height: 560px; margin-bottom: 52px; }
+  .galeri div { background: var(--kagit2) center/cover; cursor: zoom-in; }
+  .galeri div:first-child { grid-row: 1 / 3; }
+  .galeri.tek { grid-template-columns: 1fr; display: flex; align-items: center; justify-content: center; font-size: 90px; background: var(--kagit2); height: 360px; }
+  .detay { display: grid; grid-template-columns: 1fr 360px; gap: 72px; }
+  .detay h1 { font-size: 50px; margin-bottom: 6px; }
+  .detay-sehir { font-size: 20px; color: var(--gri); margin-bottom: 30px; }
+  .bilgi-satir { display: flex; gap: 40px; padding: 18px 0; border-top: 1px solid var(--cizgi); border-bottom: 1px solid var(--cizgi); margin-bottom: 36px; }
+  .bilgi-satir div small { display: block; font-size: 13px; letter-spacing: 1px; color: var(--gri2); }
+  .bilgi-satir div b { font-weight: 500; font-size: 18px; }
+  .detay-metin { font-size: 21px; line-height: 1.75; margin-bottom: 44px; }
+  .detay h2 { font-size: 26px; margin: 48px 0 18px; }
+  .efsane-kutu { background: var(--gece); color: #D8CFC0; padding: 40px 44px; }
+  .efsane-kutu h3 { color: #fff; font-size: 22px; }
+  .efsane-kutu div { white-space: pre-line; font-size: 18px; line-height: 1.8; }
+  .unlu-satir { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px; }
+  .unlu { border: 1px solid var(--cizgi); padding: 18px; cursor: pointer; display: flex; gap: 14px; align-items: center; background: #fff; transition: border-color .2s; }
+  .unlu:hover { border-color: var(--murekkep); }
+  .unlu-foto { width: 54px; height: 54px; border-radius: 50%; background: var(--kagit2) center/cover; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .unlu b { display: block; font-weight: 500; font-size: 17px; line-height: 1.3; }
+  .unlu small { color: var(--gri2); font-size: 14px; }
+  .yan { position: sticky; top: 106px; align-self: start; }
+  .yan-kutu { border: 1px solid var(--cizgi); background: #fff; padding: 28px; margin-bottom: 24px; }
+  .yan-kutu h3 { font-size: 18px; margin-bottom: 16px; }
+  .ziyaret dl { display: grid; grid-template-columns: auto 1fr; gap: 10px 18px; font-size: 16px; }
+  .ziyaret dt { color: var(--gri2); }
+  .yorum-liste .yorum { margin-bottom: 26px; }
+
+  /* SAYFA BAŞLIĞI */
+  .sayfa-bas { padding: 90px 0 50px; }
+  .sayfa-bas h1 { font-size: 52px; margin-bottom: 18px; }
+  .metin-sutun { max-width: 760px; }
+  .metin-sutun p { font-size: 20px; line-height: 1.8; margin-bottom: 22px; }
+  .metin-sutun h2 { font-size: 28px; margin: 46px 0 16px; }
+  .adimlar { counter-reset: adim; display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin: 30px 0 70px; }
+  .adim { border-top: 1px solid var(--murekkep); padding-top: 18px; }
+  .adim::before { counter-increment: adim; content: '0' counter(adim); font-family: var(--baslik); color: var(--vurgu); font-size: 14px; letter-spacing: 3px; display: block; margin-bottom: 8px; }
+  .adim p { color: var(--gri); font-size: 17px; }
+
+  /* MODAL */
+  .modal { position: fixed; inset: 0; z-index: 100; background: rgba(10,9,8,.72); display: none; align-items: center; justify-content: center; padding: 30px; }
+  .modal.acik { display: flex; }
+  .modal-ic { background: var(--kagit); width: 100%; max-width: 640px; max-height: calc(100vh - 60px); overflow-y: auto; position: relative; padding: 44px 48px; }
+  .modal-ic.genis { max-width: 980px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; }
+  .modal-kapat { position: absolute; top: 14px; right: 16px; border: 0; background: none; font-size: 26px; cursor: pointer; color: var(--gri); z-index: 2; line-height: 1; }
+  .modal-ic h2 { font-size: 30px; }
+  .pencere-gorsel { background: var(--gece) center/cover; min-height: 520px; display: flex; align-items: center; justify-content: center; font-size: 80px; }
+  .pencere-metin { padding: 48px 44px; overflow-y: auto; max-height: calc(100vh - 60px); }
+  .pencere-metin .govde { white-space: pre-wrap; font-size: 18px; line-height: 1.8; color: #3A3631; }
+  .soz { font-size: 21px; font-style: italic; border-left: 2px solid var(--vurgu); padding-left: 20px; margin: 22px 0; }
+  .buyuk-foto { max-width: 92vw; max-height: 88vh; }
+
+  /* ALT BİLGİ */
+  .alt { background: var(--gece); color: #8D877C; padding: 80px 0 40px; font-size: 16px; }
+  .alt-izgara { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 60px; }
+  .alt .logo { color: #fff; margin-bottom: 16px; }
+  .alt h4 { font-family: var(--baslik); font-weight: 500; color: #E9E3D8; font-size: 14px; letter-spacing: 2px; margin-bottom: 16px; }
+  .alt a { display: block; margin-bottom: 8px; transition: color .2s; }
+  .alt a:hover { color: #fff; }
+  .alt-cizgi { border-top: 1px solid #2A2724; padding-top: 26px; display: flex; justify-content: space-between; font-size: 14px; }
+
+  .yukleniyor { color: var(--gri2); font-style: italic; }
+  .gizli { display: none !important; }
+
+  @media (max-width: 1100px) {
+    .menu { gap: 18px; } .menu a { font-size: 15px; }
+    .cizelge { grid-template-columns: repeat(4, 1fr); }
+    .detay { grid-template-columns: 1fr; } .yan { position: static; }
+    .alt-izgara { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 900px) {
+    .kap { padding: 0 24px; }
+    .ust .rehberle-btn { display: none; }
+    .acilis h1 { font-size: 42px; }
+    .uclu, .yorum-izgara, .hikaye, .ikili, .adimlar { grid-template-columns: 1fr; gap: 40px; }
+    .modal-ic.genis { grid-template-columns: 1fr; } .pencere-gorsel { min-height: 260px; }
+    .galeri { height: 380px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="ust">
+  <div class="kap">
+    <a href="#/" class="logo">ANADO<span>L</span>U<small data-t="logoAlt"></small></a>
+    <nav class="menu">
+      <a href="#/yerler" data-t="mYerler" data-yol="yerler"></a>
+      <a href="#/rehberler" data-t="mRehberler" data-yol="rehberler"></a>
+      <a href="#/tur-planla" data-t="mTur" data-yol="tur-planla"></a>
+      <a href="#/hakkimizda" data-t="mHakkimizda" data-yol="hakkimizda"></a>
+      <a href="#/rehber-ol" data-t="mRehberOl" data-yol="rehber-ol"></a>
+      <a href="#/iletisim" data-t="mIletisim" data-yol="iletisim"></a>
+    </nav>
+    <div class="dil-sec" id="dilSec"></div>
+    <a href="#/rehberler" class="btn vurgu rehberle-btn" data-t="rehberleGez"></a>
+  </div>
+</header>
+
+<main id="sayfa"></main>
+
+<footer class="alt">
+  <div class="kap">
+    <div class="alt-izgara">
+      <div>
+        <div class="logo">ANADO<span>L</span>U</div>
+        <p data-t="altTanitim"></p>
+      </div>
+      <div>
+        <h4 data-t="altKesfet"></h4>
+        <a href="#/yerler" data-t="mYerler"></a>
+        <a href="#/rehberler" data-t="mRehberler"></a>
+        <a href="#/tur-planla" data-t="mTur"></a>
+        <a href="index.html?mobil" data-t="mobilUygulama"></a>
+      </div>
+      <div>
+        <h4 data-t="altKurum"></h4>
+        <a href="#/hakkimizda" data-t="mHakkimizda"></a>
+        <a href="#/rehber-ol" data-t="mRehberOl"></a>
+        <a href="#/iletisim" data-t="mIletisim"></a>
+      </div>
+      <div>
+        <h4 data-t="altBolgeler"></h4>
+        <div id="altBolgeler"></div>
+      </div>
+    </div>
+    <div class="alt-cizgi"><span>© <span id="yil"></span> Anadolu Rehberi</span><span data-t="altDiller"></span></div>
+  </div>
+</footer>
+
+<div class="modal" id="modal" onclick="if(event.target===this)modalKapat()">
+  <div class="modal-ic" id="modalIc"></div>
+</div>
+
+<script src="veri.js"></script>
+<script>
+// ════════════════════════════════════════════════════════════════════════
+// AYARLAR
+// ════════════════════════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://vdtfjxyktzbuyyvwbufl.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_i-I5FvMSIONTUDuiROoCqA_ilt-aBpG';
+const SAPI = `${SUPABASE_URL}/rest/v1`;
+const SB_BASLIK = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` };
+const CDN = 'https://res.cloudinary.com/dsnmabr1p/image/upload';
+// İletişim bilgileri — doldurulunca İletişim sayfasında görünür
+const ILETISIM = { email: '', whatsapp: '', instagram: '' };
+// Açılış fotoğrafı: Kaunos kaya mezarları
+const ACILIS_FOTO = 'kaunos_1_usvci0';
+// Rehber kartında gösterilecek alanlar (e-posta ve telefon herkese açık değil)
+const REHBER_ALANLAR = 'id,ad_soyad,sehir,bolgeler,diller,uzmanlik,deneyim_yil,hakkinda,gunluk_ucret,foto_url,ortalama_puan,yorum_sayisi,tamamlanan_tur,one_cikan';
+
+// ════════════════════════════════════════════════════════════════════════
+// ÇEVİRİLER
+// ════════════════════════════════════════════════════════════════════════
+const T = {
+  tr: {
+    logoAlt: 'TARİHİN İZİNDE', mYerler: 'Ören Yerleri', mRehberler: 'Rehberler', mTur: 'Tur Planla', mHakkimizda: 'Hakkımızda', mRehberOl: 'Rehber Ol', mIletisim: 'İletişim',
+    rehberleGez: 'Rehberle Gez', mobilUygulama: 'Mobil uygulama',
+    acilisBaslik: 'Anadolu\'yu taşlarından değil, hikâyelerinden tanıyın.',
+    acilisAlt: '118 ören yeri, on bin yıllık tarih ve onu en iyi anlatan rehberler.',
+    aramaPh: 'Nereye gitmek istiyorsunuz? Kaunos, Hattuşa, Likya…', ara: 'Ara',
+    kesfetBtn: 'Ören yerlerini keşfet', acilisImza: 'Kaunos kaya mezarları, Dalyan — M.Ö. 4. yüzyıl',
+    nedenEtiket: 'Neden rehberle', nedenBaslik: 'Tabelanın anlatmadığını, rehberiniz anlatır.',
+    neden1B: 'Taşın arkasındaki insan', neden1: 'Aspendos tiyatrosunu tasarlayan mimar Zenon\'un adı hâlâ tiyatronun yazıtlarında duruyor. Rehberiniz o satırı size gösterir; tabelalar göstermez.',
+    neden2B: 'Kendi dilinizde', neden2: 'Türkçe, İngilizce, Almanca ve Rusça konuşan rehberler. Gezerken soru sorabileceğiniz, sohbet edebileceğiniz biri.',
+    neden3B: 'Size göre bir rota', neden3: 'Kalabalığın gelmediği saatler, aynı gün görülebilecek komşu kentler, yolun üstündeki yerel sofra. Rehberiniz günü sizin için kurar.',
+    rehberEtiket: 'Rehberlerimiz', rehberBaslik: 'Anadolu\'yu en iyi bilenlerle gezin', tumRehberler: 'Tüm rehberler', gun: 'gün', yilDeneyim: 'yıl deneyim', rezervasyon: 'Rezervasyon yap', rehberYok: 'Bu bölge için henüz rehberimiz yok. Yakında burada olacaklar.', yukleniyor: 'Yükleniyor…', hata: 'Bir sorun oluştu, lütfen tekrar deneyin.', tur: 'tur', degerlendirme: 'değerlendirme', yeni: 'Yeni rehber',
+    donemEtiket: 'Zaman çizelgesi', donemBaslik: 'On bin yılda bir yolculuk', donemAlt: 'Bir döneme tıklayın; o çağın penceresi açılsın.', orenYeri: 'ören yeri',
+    haritaEtiket: 'Harita', haritaBaslik: '118 ören yeri, tek harita', haritaAlt: 'Bir noktaya tıklayın, yerin hikâyesine gidin.', detayaGit: 'Ayrıntılar →',
+    hikayeEtiket: 'Haftanın hikâyesi', devami: 'Hikâyenin devamı →',
+    turEtiket: 'Yapay zekâ ile tur planlama', turBaslik: 'Kendi rotanızı bir dakikada çizin', turAlt: 'Kaç gün kalacağınızı, nereden başlayacağınızı ve neyi merak ettiğinizi söyleyin; size gün gün bir tur planı hazırlayalım. Beğendiğiniz planı bir rehberle hayata geçirin.',
+    gunSayisi: 'Kaç gün?', baslangic: 'Başlangıç noktası', baslangicPh: 'Örn. İzmir', ilgi: 'İlgi alanları', bolgeTercih: 'Bölgeler', butce: 'Bütçe', butce1: 'Ekonomik', butce2: 'Orta', butce3: 'Konforlu', ekNot: 'Eklemek istedikleriniz', ekNotPh: 'Örn. çocuklarla seyahat ediyoruz', planOlustur: 'Planımı oluştur', planHazirlaniyor: 'Planınız hazırlanıyor…', planBos: 'Planınız burada görünecek.',
+    ilgiler: ['Antik kentler','Tapınaklar','Tiyatrolar','Mozaikler','Hitit ve Tunç Çağı','Bizans','Selçuklu ve Osmanlı','Doğa ve manzara','Yerel mutfak'],
+    yorumEtiket: 'Gezginler ne diyor', yorumBaslik: 'Yolculuktan dönenlerin sözleri',
+    uygBaslik: 'Sahada telefonunuzla devam edin', uygAlt: 'Ören yerinde harita, sesli rehber ve efsaneler cebinizde. Web\'de başladığınız yolculuk telefonunuzda sürsün.', uygBtn: 'Mobil uygulamayı aç',
+    yerlerBaslik: 'Ören Yerleri', yerlerAlt: 'Neolitik köylerden Osmanlı saraylarına, Anadolu\'nun 118 ören yeri.', tumDonemler: 'Tüm dönemler', tumBolgeler: 'Tüm bölgeler', yalnizUnesco: 'Yalnız UNESCO', araPh: 'Yer ya da şehir ara', sonuc: 'yer',
+    kurulus: 'Kuruluş', sonDonem: 'Son dönem', sure: 'Süre', yil: 'yıl', medeniyetler: 'Medeniyetler', hakkinda: 'Hakkında', efsane: 'Efsane', unluler: 'Bu topraklardan geçenler', ziyaret: 'Ziyaret bilgisi', ucret: 'Giriş', ucretsiz: 'Ücretsiz', saatler: 'Saatler', otopark: 'Otopark', var: 'Var', yok: 'Yok', yolTarifi: 'Yol tarifi al', konum: 'Konum',
+    buYerRehber: 'Bu bölgedeki rehberler', yorumlar: 'Ziyaretçi yorumları', yorumYok: 'Henüz yorum yok. İlk yorumu siz yazın.', yorumYaz: 'Yorum yazın', adiniz: 'Adınız', sehriniz: 'Şehriniz', yorumunuz: 'Yorumunuz', puaniniz: 'Puanınız', gonder: 'Gönder', yorumTesekkur: 'Teşekkürler, yorumunuz yayında.', eksikAlan: 'Lütfen gerekli alanları doldurun.',
+    yalnizTr: 'Bu bölüm şimdilik yalnızca Türkçe.', eserler: 'Eserleri ve başarıları', sozler: 'Sözleri',
+    rehberlerBaslik: 'Rehberler', rehberlerAlt: 'Bölgesini, dilini ve tarihini bilen rehberler. Günlük özel tur; fiyat grup başına.', tumBolgeSec: 'Tüm bölgeler',
+    rezBaslik: 'Rezervasyon', rezAd: 'Ad soyad', rezEmail: 'E-posta', rezTel: 'Telefon (isteğe bağlı)', rezYer: 'Ören yeri', rezTarih: 'Tur tarihi', rezKisi: 'Kişi sayısı', rezDil: 'Tur dili', rezNot: 'Notlar', rezGonder: 'Rezervasyon talebi gönder', rezTesekkur: 'Talebiniz alındı. Rehberimiz e-posta ile size dönecek.', rezBilgi: 'Ödeme şimdi alınmaz. Rehber talebinizi onaylayınca e-posta ile bilgilendirilirsiniz.',
+    hakBaslik: 'Hakkımızda', hakAlt: 'Anadolu\'nun hikâyesini doğru anlatmak için yola çıktık.',
+    hakMetin: [
+      ['', 'Anadolu, insanlığın yerleşik hayata geçtiği Göbeklitepe\'den Osmanlı saraylarına kadar on bin yıllık kesintisiz bir tarih taşıyor. Bu tarihin büyük kısmı ise ziyaretçiye birkaç satırlık tabelalarla anlatılıyor.'],
+      ['', 'Anadolu Rehberi bu boşluğu doldurmak için kuruldu. 118 ören yerini dönemleri, efsaneleri ve o topraklardan geçen insanlarla birlikte anlatıyoruz; gezmek isteyenleri de bölgesini en iyi bilen rehberlerle buluşturuyoruz.'],
+      ['Neye önem veriyoruz', 'Doğruluk. Her tarih, her isim ve her rakam kaynaklarla kontrol edilir; bir hata bulduğumuzda düzeltir, düzelttiğimizi söyleriz. Abartılı sıfatlar yerine somut ayrıntıyı tercih ederiz.'],
+      ['Rehberlerimiz', 'Platformdaki her rehber başvurusu tek tek incelenir ve onaylandıktan sonra yayına alınır. Rehberlerimizi gezginlerin değerlendirmeleriyle birlikte gösteririz; puanlar yalnız gerçekleşmiş turlardan sonra verilebilir.'],
+      ['Dört dil, tek platform', 'Sitemiz ve uygulamamız Türkçe, İngilizce, Almanca ve Rusça. Web\'de planladığınız yolculuğa sahada mobil uygulamayla devam edebilirsiniz.']
+    ],
+    rolBaslik: 'Rehber Olun', rolAlt: 'Anadolu\'yu anlatmayı meslek edinmiş rehberleri, onları arayan gezginlerle buluşturuyoruz.',
+    rolNeden: 'Neden Anadolu Rehberi', rolMaddeler: [['Doğru gezgin', 'Bölgenize ve dillerinize göre size ulaşan, rehberli tur arayan ziyaretçiler.'], ['Şeffaf kazanç', 'Fiyatınızı siz belirlersiniz. Gerçekleşen her rezervasyondan %15 hizmet bedeli alınır; gizli kesinti yoktur.'], ['Hikâyeyle gelen müşteri', 'Ziyaretçiler size gelmeden önce yerin hikâyesini bizde okur; meraklı ve hazırlıklı gelirler.']],
+    rolKimler: 'Kimler başvurabilir', rolKimlerMetin: 'Türkiye\'de profesyonel turist rehberliği yasal olarak rehber çalışma kartı (kokart) gerektirir. Başvurunuzda kokart numaranızı belirtmeniz gerekir; numara onay sürecinde kontrol edilir.',
+    rolSurec: 'Başvuru süreci', rolAdimlar: ['Formu doldurun.', 'Başvurunuz ve kokartınız incelenir.', 'Profiliniz onaylanınca yayına alınır.', 'Rezervasyon talepleri size e-posta ile ulaşır.'],
+    rolForm: 'Başvuru formu', rAd: 'Ad soyad', rEmail: 'E-posta', rTel: 'Telefon', rSehir: 'Yaşadığınız şehir', rDiller: 'Rehberlik yaptığınız diller', rBolgeler: 'Çalıştığınız bölgeler', rKokart: 'Kokart (rehber çalışma kartı) numarası', rDeneyim: 'Deneyim (yıl)', rUcret: 'Günlük ücret (₺)', rHakkinda: 'Kendinizi tanıtın', rHakkindaPh: 'Uzmanlık alanlarınız, sevdiğiniz rotalar, çalıştığınız kazılar…', rGonder: 'Başvuruyu gönder', rTesekkur: 'Başvurunuz alındı. İnceleme sonrası e-posta ile size döneceğiz.', rDilSec: 'En az bir dil ve bir bölge seçin.', rKvkk: 'Bilgileriniz yalnız başvurunuzu değerlendirmek için kullanılır; e-posta ve telefonunuz sitede yayınlanmaz.',
+    iletBaslik: 'İletişim', iletAlt: 'Sorularınız, iş birliği önerileriniz ve geri bildirimleriniz için bize yazın.', iletDiller: 'Türkçe, İngilizce, Almanca ve Rusça yazabilirsiniz.', iletYakinda: 'İletişim bilgilerimiz yakında burada olacak.', iletRezervasyon: 'Rezervasyonlarınızla ilgili sorular için rezervasyon onay e-postanızdaki adrese yanıt verebilirsiniz.',
+    altTanitim: 'Anadolu\'nun ören yerlerini hikâyeleriyle anlatan, gezginleri uzman rehberlerle buluşturan platform.', altKesfet: 'KEŞFET', altKurum: 'ANADOLU REHBERİ', altBolgeler: 'BÖLGELER', altDiller: 'Türkçe · English · Deutsch · Русский',
+    pencereEtiket: 'DÖNEM PENCERESİ', pencereHazirlaniyor: 'Dönem penceresi hazırlanıyor…', pencereYedek: 'Bu dönemin anlatımı şu anda yüklenemedi. Lütfen biraz sonra tekrar deneyin.', pencereGorsel: 'Görsel yapay zekâ tarafından oluşturulmuştur.', buDonemYerler: 'Bu dönemin ören yerleri →',
+    onc: 'M.Ö.', sonra: 'M.S.', gunler: 'gün'
+  },
+  en: {
+    logoAlt: 'ON THE TRAIL OF HISTORY', mYerler: 'Ancient Sites', mRehberler: 'Guides', mTur: 'Plan a Tour', mHakkimizda: 'About', mRehberOl: 'Become a Guide', mIletisim: 'Contact',
+    rehberleGez: 'Tour with a Guide', mobilUygulama: 'Mobile app',
+    acilisBaslik: 'Know Anatolia by its stories, not just its stones.',
+    acilisAlt: '118 ancient sites, ten thousand years of history, and the guides who tell it best.',
+    aramaPh: 'Where would you like to go? Kaunos, Hattusha, Lycia…', ara: 'Search',
+    kesfetBtn: 'Explore the sites', acilisImza: 'Rock tombs of Kaunos, Dalyan — 4th century BC',
+    nedenEtiket: 'Why a guide', nedenBaslik: 'Your guide tells you what the signs leave out.',
+    neden1B: 'The people behind the stones', neden1: 'The name of Zenon, the architect of the theatre at Aspendos, still survives in its inscriptions. Your guide will show you that line; a sign won\'t.',
+    neden2B: 'In your own language', neden2: 'Guides who speak English, German, Russian and Turkish. Someone you can ask questions and talk with as you walk.',
+    neden3B: 'A route made for you', neden3: 'The hours when the crowds are gone, the neighbouring cities you can see the same day, a local table on the way. Your guide builds the day around you.',
+    rehberEtiket: 'Our guides', rehberBaslik: 'Travel with those who know Anatolia best', tumRehberler: 'All guides', gun: 'day', yilDeneyim: 'years of experience', rezervasyon: 'Book', rehberYok: 'We don\'t have a guide for this region yet. They\'ll be here soon.', yukleniyor: 'Loading…', hata: 'Something went wrong, please try again.', tur: 'tours', degerlendirme: 'reviews', yeni: 'New guide',
+    donemEtiket: 'Timeline', donemBaslik: 'A journey through ten thousand years', donemAlt: 'Click an era to open a window onto its world.', orenYeri: 'sites',
+    haritaEtiket: 'Map', haritaBaslik: '118 ancient sites on one map', haritaAlt: 'Click a point to read the story of the site.', detayaGit: 'Details →',
+    hikayeEtiket: 'Story of the week', devami: 'Read the full story →',
+    turEtiket: 'AI tour planning', turBaslik: 'Draw your own route in a minute', turAlt: 'Tell us how many days you have, where you start and what you\'re curious about; we\'ll prepare a day-by-day plan. Then bring it to life with a guide.',
+    gunSayisi: 'How many days?', baslangic: 'Starting point', baslangicPh: 'e.g. Izmir', ilgi: 'Interests', bolgeTercih: 'Regions', butce: 'Budget', butce1: 'Economy', butce2: 'Mid-range', butce3: 'Comfort', ekNot: 'Anything to add', ekNotPh: 'e.g. travelling with children', planOlustur: 'Create my plan', planHazirlaniyor: 'Preparing your plan…', planBos: 'Your plan will appear here.',
+    ilgiler: ['Ancient cities','Temples','Theatres','Mosaics','Hittites & Bronze Age','Byzantium','Seljuks & Ottomans','Nature & views','Local cuisine'],
+    yorumEtiket: 'What travellers say', yorumBaslik: 'Words from those who\'ve been',
+    uygBaslik: 'Continue on your phone at the site', uygAlt: 'Maps, audio guide and legends in your pocket while you walk the ruins. The journey you start on the web continues on your phone.', uygBtn: 'Open the mobile app',
+    yerlerBaslik: 'Ancient Sites', yerlerAlt: 'From Neolithic villages to Ottoman palaces: 118 ancient sites across Anatolia.', tumDonemler: 'All eras', tumBolgeler: 'All regions', yalnizUnesco: 'UNESCO only', araPh: 'Search a site or city', sonuc: 'sites',
+    kurulus: 'Founded', sonDonem: 'Last period', sure: 'Span', yil: 'years', medeniyetler: 'Civilisations', hakkinda: 'About', efsane: 'Legend', unluler: 'People of this land', ziyaret: 'Visitor information', ucret: 'Entry', ucretsiz: 'Free', saatler: 'Hours', otopark: 'Parking', var: 'Yes', yok: 'No', yolTarifi: 'Get directions', konum: 'Location',
+    buYerRehber: 'Guides in this region', yorumlar: 'Visitor reviews', yorumYok: 'No reviews yet. Be the first to write one.', yorumYaz: 'Write a review', adiniz: 'Your name', sehriniz: 'Your city', yorumunuz: 'Your review', puaniniz: 'Your rating', gonder: 'Send', yorumTesekkur: 'Thank you, your review is live.', eksikAlan: 'Please fill in the required fields.',
+    yalnizTr: 'This section is currently available in Turkish only.', eserler: 'Works and achievements', sozler: 'Sayings',
+    rehberlerBaslik: 'Guides', rehberlerAlt: 'Guides who know their region, your language and its history. Private full-day tours; price per group.', tumBolgeSec: 'All regions',
+    rezBaslik: 'Booking', rezAd: 'Full name', rezEmail: 'Email', rezTel: 'Phone (optional)', rezYer: 'Site', rezTarih: 'Tour date', rezKisi: 'Number of people', rezDil: 'Tour language', rezNot: 'Notes', rezGonder: 'Send booking request', rezTesekkur: 'Request received. Your guide will reply by email.', rezBilgi: 'No payment is taken now. You\'ll be notified by email once the guide confirms.',
+    hakBaslik: 'About us', hakAlt: 'We set out to tell the story of Anatolia accurately.',
+    hakMetin: [
+      ['', 'Anatolia carries ten thousand years of unbroken history, from Göbekli Tepe, where people first built monumental temples, to the palaces of the Ottomans. Yet most of that history reaches visitors through signs a few lines long.'],
+      ['', 'Anadolu Rehberi was founded to fill that gap. We tell the story of 118 ancient sites through their eras, their legends and the people who lived there, and we connect travellers with the guides who know each region best.'],
+      ['What we care about', 'Accuracy. Every date, name and figure is checked against sources; when we find a mistake we correct it and say so. We prefer concrete detail to grand adjectives.'],
+      ['Our guides', 'Every guide application is reviewed individually and published only after approval. We show our guides together with travellers\' reviews, and ratings can only be given after a completed tour.'],
+      ['Four languages, one platform', 'Our website and app are in English, German, Russian and Turkish. Plan your trip on the web and continue on site with the mobile app.']
+    ],
+    rolBaslik: 'Become a Guide', rolAlt: 'We connect guides who have made telling Anatolia\'s story their profession with the travellers looking for them.',
+    rolNeden: 'Why Anadolu Rehberi', rolMaddeler: [['The right travellers', 'Visitors looking for guided tours who reach you by region and language.'], ['Transparent earnings', 'You set your own price. A 15% service fee applies to each completed booking; there are no hidden deductions.'], ['Clients who come for the story', 'Visitors read the story of a site with us before they meet you; they arrive curious and prepared.']],
+    rolKimler: 'Who can apply', rolKimlerMetin: 'In Türkiye, working as a professional tourist guide legally requires a guide work card (kokart). Please include your card number in your application; it is checked during approval.',
+    rolSurec: 'Application process', rolAdimlar: ['Fill in the form.', 'Your application and card are reviewed.', 'Your profile goes live once approved.', 'Booking requests reach you by email.'],
+    rolForm: 'Application form', rAd: 'Full name', rEmail: 'Email', rTel: 'Phone', rSehir: 'City of residence', rDiller: 'Languages you guide in', rBolgeler: 'Regions you work in', rKokart: 'Guide work card (kokart) number', rDeneyim: 'Experience (years)', rUcret: 'Daily fee (₺)', rHakkinda: 'Tell us about yourself', rHakkindaPh: 'Your specialities, favourite routes, excavations you\'ve worked on…', rGonder: 'Send application', rTesekkur: 'Application received. We\'ll get back to you by email after review.', rDilSec: 'Choose at least one language and one region.', rKvkk: 'Your details are used only to evaluate your application; your email and phone are never published on the site.',
+    iletBaslik: 'Contact', iletAlt: 'Write to us with questions, partnership ideas or feedback.', iletDiller: 'You can write in English, German, Russian or Turkish.', iletYakinda: 'Our contact details will be available here soon.', iletRezervasyon: 'For questions about a booking, simply reply to your booking confirmation email.',
+    altTanitim: 'A platform that tells the story of Anatolia\'s ancient sites and connects travellers with expert guides.', altKesfet: 'EXPLORE', altKurum: 'ANADOLU REHBERİ', altBolgeler: 'REGIONS', altDiller: 'Türkçe · English · Deutsch · Русский',
+    pencereEtiket: 'WINDOW ON AN ERA', pencereHazirlaniyor: 'Opening a window onto this era…', pencereYedek: 'The story of this era could not be loaded right now. Please try again shortly.', pencereGorsel: 'Image generated by AI.', buDonemYerler: 'Sites from this era →',
+    onc: 'BC', sonra: 'AD', gunler: 'days'
+  },
+  de: {
+    logoAlt: 'AUF DEN SPUREN DER GESCHICHTE', mYerler: 'Antike Stätten', mRehberler: 'Reiseleiter', mTur: 'Tour planen', mHakkimizda: 'Über uns', mRehberOl: 'Reiseleiter werden', mIletisim: 'Kontakt',
+    rehberleGez: 'Mit Reiseleiter reisen', mobilUygulama: 'Mobile App',
+    acilisBaslik: 'Lernen Sie Anatolien durch seine Geschichten kennen, nicht nur durch seine Steine.',
+    acilisAlt: '118 antike Stätten, zehntausend Jahre Geschichte und die Reiseleiter, die sie am besten erzählen.',
+    aramaPh: 'Wohin möchten Sie? Kaunos, Hattuscha, Lykien…', ara: 'Suchen',
+    kesfetBtn: 'Stätten entdecken', acilisImza: 'Felsgräber von Kaunos, Dalyan — 4. Jh. v. Chr.',
+    nedenEtiket: 'Warum mit Reiseleiter', nedenBaslik: 'Ihr Reiseleiter erzählt, was auf keiner Tafel steht.',
+    neden1B: 'Die Menschen hinter den Steinen', neden1: 'Der Name Zenons, des Architekten des Theaters von Aspendos, steht noch heute in dessen Inschriften. Ihr Reiseleiter zeigt Ihnen diese Zeile – eine Infotafel nicht.',
+    neden2B: 'In Ihrer Sprache', neden2: 'Reiseleiter, die Deutsch, Englisch, Russisch und Türkisch sprechen. Jemand, dem Sie unterwegs Fragen stellen können.',
+    neden3B: 'Eine Route für Sie', neden3: 'Die Stunden ohne Gedränge, Nachbarstätten für denselben Tag, ein einheimischer Tisch am Weg. Ihr Reiseleiter plant den Tag um Sie herum.',
+    rehberEtiket: 'Unsere Reiseleiter', rehberBaslik: 'Reisen Sie mit denen, die Anatolien am besten kennen', tumRehberler: 'Alle Reiseleiter', gun: 'Tag', yilDeneyim: 'Jahre Erfahrung', rezervasyon: 'Buchen', rehberYok: 'Für diese Region haben wir noch keinen Reiseleiter. Bald ist es so weit.', yukleniyor: 'Wird geladen…', hata: 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.', tur: 'Touren', degerlendirme: 'Bewertungen', yeni: 'Neu dabei',
+    donemEtiket: 'Zeitleiste', donemBaslik: 'Eine Reise durch zehntausend Jahre', donemAlt: 'Klicken Sie auf eine Epoche, um ein Fenster in ihre Welt zu öffnen.', orenYeri: 'Stätten',
+    haritaEtiket: 'Karte', haritaBaslik: '118 antike Stätten auf einer Karte', haritaAlt: 'Klicken Sie auf einen Punkt, um die Geschichte des Ortes zu lesen.', detayaGit: 'Details →',
+    hikayeEtiket: 'Geschichte der Woche', devami: 'Weiterlesen →',
+    turEtiket: 'Tourplanung mit KI', turBaslik: 'Ihre eigene Route in einer Minute', turAlt: 'Nennen Sie uns Reisedauer, Startort und Interessen – wir erstellen einen Plan Tag für Tag. Setzen Sie ihn dann mit einem Reiseleiter um.',
+    gunSayisi: 'Wie viele Tage?', baslangic: 'Startort', baslangicPh: 'z. B. Izmir', ilgi: 'Interessen', bolgeTercih: 'Regionen', butce: 'Budget', butce1: 'Günstig', butce2: 'Mittel', butce3: 'Komfortabel', ekNot: 'Weitere Wünsche', ekNotPh: 'z. B. wir reisen mit Kindern', planOlustur: 'Plan erstellen', planHazirlaniyor: 'Ihr Plan wird erstellt…', planBos: 'Ihr Plan erscheint hier.',
+    ilgiler: ['Antike Städte','Tempel','Theater','Mosaike','Hethiter & Bronzezeit','Byzanz','Seldschuken & Osmanen','Natur & Aussicht','Regionale Küche'],
+    yorumEtiket: 'Was Reisende sagen', yorumBaslik: 'Stimmen nach der Reise',
+    uygBaslik: 'Vor Ort mit dem Handy weitermachen', uygAlt: 'Karte, Audioguide und Legenden in der Tasche, während Sie durch die Ruinen gehen. Die Reise, die Sie im Web planen, geht auf dem Handy weiter.', uygBtn: 'Mobile App öffnen',
+    yerlerBaslik: 'Antike Stätten', yerlerAlt: 'Von neolithischen Dörfern bis zu osmanischen Palästen: 118 antike Stätten in Anatolien.', tumDonemler: 'Alle Epochen', tumBolgeler: 'Alle Regionen', yalnizUnesco: 'Nur UNESCO', araPh: 'Stätte oder Stadt suchen', sonuc: 'Stätten',
+    kurulus: 'Gründung', sonDonem: 'Letzte Epoche', sure: 'Dauer', yil: 'Jahre', medeniyetler: 'Kulturen', hakkinda: 'Über den Ort', efsane: 'Legende', unluler: 'Menschen dieses Ortes', ziyaret: 'Besucherinformation', ucret: 'Eintritt', ucretsiz: 'Frei', saatler: 'Öffnungszeiten', otopark: 'Parkplatz', var: 'Ja', yok: 'Nein', yolTarifi: 'Route planen', konum: 'Lage',
+    buYerRehber: 'Reiseleiter in dieser Region', yorumlar: 'Besucherbewertungen', yorumYok: 'Noch keine Bewertungen. Schreiben Sie die erste.', yorumYaz: 'Bewertung schreiben', adiniz: 'Ihr Name', sehriniz: 'Ihre Stadt', yorumunuz: 'Ihre Bewertung', puaniniz: 'Ihre Wertung', gonder: 'Senden', yorumTesekkur: 'Danke, Ihre Bewertung ist online.', eksikAlan: 'Bitte füllen Sie die Pflichtfelder aus.',
+    yalnizTr: 'Dieser Abschnitt ist derzeit nur auf Türkisch verfügbar.', eserler: 'Werke und Leistungen', sozler: 'Zitate',
+    rehberlerBaslik: 'Reiseleiter', rehberlerAlt: 'Reiseleiter, die ihre Region, Ihre Sprache und die Geschichte kennen. Private Tagestouren; Preis pro Gruppe.', tumBolgeSec: 'Alle Regionen',
+    rezBaslik: 'Buchung', rezAd: 'Vor- und Nachname', rezEmail: 'E-Mail', rezTel: 'Telefon (optional)', rezYer: 'Stätte', rezTarih: 'Datum', rezKisi: 'Personenzahl', rezDil: 'Sprache der Tour', rezNot: 'Anmerkungen', rezGonder: 'Buchungsanfrage senden', rezTesekkur: 'Anfrage erhalten. Ihr Reiseleiter antwortet per E-Mail.', rezBilgi: 'Es wird jetzt keine Zahlung fällig. Sie erhalten eine E-Mail, sobald der Reiseleiter bestätigt.',
+    hakBaslik: 'Über uns', hakAlt: 'Wir wollen die Geschichte Anatoliens genau erzählen.',
+    hakMetin: [
+      ['', 'Anatolien trägt zehntausend Jahre ununterbrochene Geschichte – von Göbekli Tepe, wo Menschen die ersten monumentalen Tempel errichteten, bis zu den Palästen der Osmanen. Doch das meiste davon erreicht Besucher nur über wenige Zeilen auf Infotafeln.'],
+      ['', 'Anadolu Rehberi wurde gegründet, um diese Lücke zu schließen. Wir erzählen 118 antike Stätten mit ihren Epochen, Legenden und Menschen und bringen Reisende mit den Reiseleitern zusammen, die ihre Region am besten kennen.'],
+      ['Was uns wichtig ist', 'Genauigkeit. Jedes Datum, jeder Name und jede Zahl wird anhand von Quellen geprüft; finden wir einen Fehler, korrigieren wir ihn und sagen es auch. Konkrete Details sind uns lieber als große Adjektive.'],
+      ['Unsere Reiseleiter', 'Jede Bewerbung wird einzeln geprüft und erst nach Freigabe veröffentlicht. Wir zeigen unsere Reiseleiter mit den Bewertungen der Reisenden; bewerten kann nur, wer eine Tour tatsächlich gemacht hat.'],
+      ['Vier Sprachen, eine Plattform', 'Website und App gibt es auf Deutsch, Englisch, Russisch und Türkisch. Planen Sie im Web und machen Sie vor Ort mit der App weiter.']
+    ],
+    rolBaslik: 'Reiseleiter werden', rolAlt: 'Wir verbinden Reiseleiter, für die das Erzählen Anatoliens Beruf ist, mit den Reisenden, die sie suchen.',
+    rolNeden: 'Warum Anadolu Rehberi', rolMaddeler: [['Die richtigen Gäste', 'Besucher auf der Suche nach geführten Touren, die Sie nach Region und Sprache finden.'], ['Transparente Vergütung', 'Ihren Preis legen Sie selbst fest. Pro durchgeführter Buchung fällt eine Servicegebühr von 15 % an; versteckte Abzüge gibt es nicht.'], ['Gäste, die wegen der Geschichte kommen', 'Besucher lesen die Geschichte eines Ortes bei uns, bevor sie Sie treffen – neugierig und vorbereitet.']],
+    rolKimler: 'Wer kann sich bewerben', rolKimlerMetin: 'In der Türkei ist für die Arbeit als professioneller Reiseleiter gesetzlich ein Reiseleiterausweis (Kokart) erforderlich. Bitte geben Sie Ihre Ausweisnummer an; sie wird bei der Freigabe geprüft.',
+    rolSurec: 'Ablauf', rolAdimlar: ['Formular ausfüllen.', 'Bewerbung und Ausweis werden geprüft.', 'Nach Freigabe geht Ihr Profil online.', 'Buchungsanfragen erhalten Sie per E-Mail.'],
+    rolForm: 'Bewerbungsformular', rAd: 'Vor- und Nachname', rEmail: 'E-Mail', rTel: 'Telefon', rSehir: 'Wohnort', rDiller: 'Sprachen Ihrer Führungen', rBolgeler: 'Ihre Regionen', rKokart: 'Nummer des Reiseleiterausweises (Kokart)', rDeneyim: 'Erfahrung (Jahre)', rUcret: 'Tagessatz (₺)', rHakkinda: 'Stellen Sie sich vor', rHakkindaPh: 'Ihre Fachgebiete, Lieblingsrouten, Grabungen, an denen Sie mitgearbeitet haben…', rGonder: 'Bewerbung senden', rTesekkur: 'Bewerbung erhalten. Nach der Prüfung melden wir uns per E-Mail.', rDilSec: 'Bitte mindestens eine Sprache und eine Region wählen.', rKvkk: 'Ihre Angaben dienen nur der Prüfung Ihrer Bewerbung; E-Mail und Telefon werden nie auf der Website veröffentlicht.',
+    iletBaslik: 'Kontakt', iletAlt: 'Schreiben Sie uns bei Fragen, Kooperationsideen oder Feedback.', iletDiller: 'Sie können auf Deutsch, Englisch, Russisch oder Türkisch schreiben.', iletYakinda: 'Unsere Kontaktdaten finden Sie bald hier.', iletRezervasyon: 'Bei Fragen zu einer Buchung antworten Sie einfach auf Ihre Bestätigungs-E-Mail.',
+    altTanitim: 'Eine Plattform, die die antiken Stätten Anatoliens mit ihren Geschichten erzählt und Reisende mit erfahrenen Reiseleitern zusammenbringt.', altKesfet: 'ENTDECKEN', altKurum: 'ANADOLU REHBERİ', altBolgeler: 'REGIONEN', altDiller: 'Türkçe · English · Deutsch · Русский',
+    pencereEtiket: 'FENSTER IN DIE EPOCHE', pencereHazirlaniyor: 'Das Fenster in diese Epoche öffnet sich…', pencereYedek: 'Die Beschreibung dieser Epoche konnte gerade nicht geladen werden. Bitte versuchen Sie es gleich noch einmal.', pencereGorsel: 'Bild von KI erzeugt.', buDonemYerler: 'Stätten dieser Epoche →',
+    onc: 'v. Chr.', sonra: 'n. Chr.', gunler: 'Tage'
+  },
+  ru: {
+    logoAlt: 'ПО СЛЕДАМ ИСТОРИИ', mYerler: 'Античные памятники', mRehberler: 'Гиды', mTur: 'Спланировать тур', mHakkimizda: 'О нас', mRehberOl: 'Стать гидом', mIletisim: 'Контакты',
+    rehberleGez: 'Путешествовать с гидом', mobilUygulama: 'Мобильное приложение',
+    acilisBaslik: 'Узнайте Анатолию по её историям, а не только по камням.',
+    acilisAlt: '118 античных памятников, десять тысяч лет истории и гиды, которые расскажут её лучше всех.',
+    aramaPh: 'Куда Вы хотите поехать? Кавн, Хаттуса, Ликия…', ara: 'Найти',
+    kesfetBtn: 'Открыть памятники', acilisImza: 'Скальные гробницы Кавна, Дальян — IV в. до н. э.',
+    nedenEtiket: 'Почему с гидом', nedenBaslik: 'Гид расскажет то, о чём молчат таблички.',
+    neden1B: 'Люди за камнями', neden1: 'Имя Зенона, архитектора театра в Аспендосе, до сих пор сохранилось в надписях театра. Гид покажет Вам эту строку — табличка не покажет.',
+    neden2B: 'На Вашем языке', neden2: 'Гиды, говорящие на русском, английском, немецком и турецком. Человек, которому можно задать вопрос и с кем приятно поговорить в пути.',
+    neden3B: 'Маршрут для Вас', neden3: 'Часы, когда нет толп, соседние города, которые можно увидеть в тот же день, местная кухня по дороге. Гид выстроит день вокруг Вас.',
+    rehberEtiket: 'Наши гиды', rehberBaslik: 'Путешествуйте с теми, кто знает Анатолию лучше всех', tumRehberler: 'Все гиды', gun: 'день', yilDeneyim: 'лет опыта', rezervasyon: 'Забронировать', rehberYok: 'Для этого региона у нас пока нет гида. Скоро они появятся.', yukleniyor: 'Загрузка…', hata: 'Что-то пошло не так. Пожалуйста, попробуйте ещё раз.', tur: 'туров', degerlendirme: 'отзывов', yeni: 'Новый гид',
+    donemEtiket: 'Хронология', donemBaslik: 'Путешествие длиной в десять тысяч лет', donemAlt: 'Нажмите на эпоху, чтобы открыть окно в её мир.', orenYeri: 'памятников',
+    haritaEtiket: 'Карта', haritaBaslik: '118 памятников на одной карте', haritaAlt: 'Нажмите на точку, чтобы прочитать историю места.', detayaGit: 'Подробнее →',
+    hikayeEtiket: 'История недели', devami: 'Читать дальше →',
+    turEtiket: 'Планирование с ИИ', turBaslik: 'Проложите свой маршрут за минуту', turAlt: 'Расскажите, сколько у Вас дней, откуда Вы начинаете и что Вам интересно, — мы составим план по дням. А воплотить его поможет гид.',
+    gunSayisi: 'Сколько дней?', baslangic: 'Начало маршрута', baslangicPh: 'Например, Измир', ilgi: 'Интересы', bolgeTercih: 'Регионы', butce: 'Бюджет', butce1: 'Эконом', butce2: 'Средний', butce3: 'Комфорт', ekNot: 'Пожелания', ekNotPh: 'Например, путешествуем с детьми', planOlustur: 'Составить план', planHazirlaniyor: 'Составляем Ваш план…', planBos: 'Здесь появится Ваш план.',
+    ilgiler: ['Античные города','Храмы','Театры','Мозаики','Хетты и бронзовый век','Византия','Сельджуки и османы','Природа и виды','Местная кухня'],
+    yorumEtiket: 'Отзывы путешественников', yorumBaslik: 'Слова тех, кто уже побывал',
+    uygBaslik: 'Продолжайте на месте с телефоном', uygAlt: 'Карта, аудиогид и легенды в кармане, пока Вы идёте по руинам. Путешествие, начатое в браузере, продолжится в телефоне.', uygBtn: 'Открыть мобильное приложение',
+    yerlerBaslik: 'Античные памятники', yerlerAlt: 'От неолитических поселений до османских дворцов: 118 памятников Анатолии.', tumDonemler: 'Все эпохи', tumBolgeler: 'Все регионы', yalnizUnesco: 'Только ЮНЕСКО', araPh: 'Поиск по месту или городу', sonuc: 'мест',
+    kurulus: 'Основание', sonDonem: 'Последний период', sure: 'Длительность', yil: 'лет', medeniyetler: 'Цивилизации', hakkinda: 'О месте', efsane: 'Легенда', unluler: 'Люди этой земли', ziyaret: 'Информация для посетителей', ucret: 'Вход', ucretsiz: 'Бесплатно', saatler: 'Часы работы', otopark: 'Парковка', var: 'Есть', yok: 'Нет', yolTarifi: 'Проложить маршрут', konum: 'Расположение',
+    buYerRehber: 'Гиды в этом регионе', yorumlar: 'Отзывы посетителей', yorumYok: 'Отзывов пока нет. Напишите первый.', yorumYaz: 'Написать отзыв', adiniz: 'Ваше имя', sehriniz: 'Ваш город', yorumunuz: 'Ваш отзыв', puaniniz: 'Ваша оценка', gonder: 'Отправить', yorumTesekkur: 'Спасибо, Ваш отзыв опубликован.', eksikAlan: 'Пожалуйста, заполните обязательные поля.',
+    yalnizTr: 'Этот раздел пока доступен только на турецком языке.', eserler: 'Труды и достижения', sozler: 'Изречения',
+    rehberlerBaslik: 'Гиды', rehberlerAlt: 'Гиды, которые знают свой регион, Ваш язык и историю. Индивидуальные туры на целый день; цена за группу.', tumBolgeSec: 'Все регионы',
+    rezBaslik: 'Бронирование', rezAd: 'Имя и фамилия', rezEmail: 'Эл. почта', rezTel: 'Телефон (необязательно)', rezYer: 'Памятник', rezTarih: 'Дата тура', rezKisi: 'Количество человек', rezDil: 'Язык тура', rezNot: 'Примечания', rezGonder: 'Отправить запрос', rezTesekkur: 'Запрос получен. Гид ответит Вам по эл. почте.', rezBilgi: 'Сейчас оплата не взимается. Вы получите письмо, когда гид подтвердит запрос.',
+    hakBaslik: 'О нас', hakAlt: 'Мы взялись рассказывать историю Анатолии точно.',
+    hakMetin: [
+      ['', 'Анатолия хранит десять тысяч лет непрерывной истории — от Гёбекли-Тепе, где люди впервые возвели монументальные храмы, до османских дворцов. Но большая часть этой истории доходит до посетителей лишь в виде нескольких строк на табличках.'],
+      ['', 'Anadolu Rehberi создан, чтобы заполнить этот пробел. Мы рассказываем о 118 памятниках через их эпохи, легенды и людей, а путешественников знакомим с гидами, которые лучше всех знают свой регион.'],
+      ['Что для нас важно', 'Точность. Каждая дата, имя и цифра проверяются по источникам; найдя ошибку, мы её исправляем и сообщаем об этом. Конкретные детали мы предпочитаем громким эпитетам.'],
+      ['Наши гиды', 'Каждая заявка гида рассматривается отдельно и публикуется только после одобрения. Мы показываем гидов вместе с отзывами путешественников; оценку можно поставить только после состоявшегося тура.'],
+      ['Четыре языка, одна платформа', 'Сайт и приложение доступны на русском, английском, немецком и турецком. Планируйте поездку на сайте и продолжайте на месте в мобильном приложении.']
+    ],
+    rolBaslik: 'Станьте гидом', rolAlt: 'Мы знакомим гидов, для которых рассказ об Анатолии — профессия, с путешественниками, которые их ищут.',
+    rolNeden: 'Почему Anadolu Rehberi', rolMaddeler: [['Нужные гости', 'Путешественники, которые ищут тур с гидом и находят Вас по региону и языку.'], ['Прозрачный заработок', 'Цену назначаете Вы. С каждой состоявшейся брони удерживается сервисный сбор 15 %; скрытых удержаний нет.'], ['Гости, пришедшие за историей', 'Посетители читают историю места у нас ещё до встречи с Вами — они приходят любопытными и подготовленными.']],
+    rolKimler: 'Кто может подать заявку', rolKimlerMetin: 'В Турции работа профессиональным гидом по закону требует удостоверения гида (кокарт). Укажите номер удостоверения в заявке; он проверяется при одобрении.',
+    rolSurec: 'Как это работает', rolAdimlar: ['Заполните форму.', 'Мы проверим заявку и удостоверение.', 'После одобрения профиль публикуется.', 'Запросы на бронирование приходят на эл. почту.'],
+    rolForm: 'Форма заявки', rAd: 'Имя и фамилия', rEmail: 'Эл. почта', rTel: 'Телефон', rSehir: 'Город проживания', rDiller: 'Языки экскурсий', rBolgeler: 'Регионы работы', rKokart: 'Номер удостоверения гида (кокарт)', rDeneyim: 'Опыт (лет)', rUcret: 'Ставка за день (₺)', rHakkinda: 'Расскажите о себе', rHakkindaPh: 'Ваши специализации, любимые маршруты, раскопки, в которых Вы участвовали…', rGonder: 'Отправить заявку', rTesekkur: 'Заявка получена. После проверки мы ответим Вам по эл. почте.', rDilSec: 'Выберите хотя бы один язык и один регион.', rKvkk: 'Ваши данные используются только для рассмотрения заявки; эл. почта и телефон никогда не публикуются на сайте.',
+    iletBaslik: 'Контакты', iletAlt: 'Пишите нам с вопросами, предложениями о сотрудничестве и отзывами.', iletDiller: 'Можно писать на русском, английском, немецком или турецком.', iletYakinda: 'Наши контактные данные скоро появятся здесь.', iletRezervasyon: 'С вопросами о брони просто ответьте на письмо с подтверждением.',
+    altTanitim: 'Платформа, которая рассказывает истории античных памятников Анатолии и знакомит путешественников с опытными гидами.', altKesfet: 'ОТКРЫТЬ', altKurum: 'ANADOLU REHBERİ', altBolgeler: 'РЕГИОНЫ', altDiller: 'Türkçe · English · Deutsch · Русский',
+    pencereEtiket: 'ОКНО В ЭПОХУ', pencereHazirlaniyor: 'Открываем окно в эпоху…', pencereYedek: 'Не удалось загрузить рассказ об этой эпохе. Пожалуйста, попробуйте чуть позже.', pencereGorsel: 'Изображение создано ИИ.', buDonemYerler: 'Памятники этой эпохи →',
+    onc: 'до н. э.', sonra: 'н. э.', gunler: 'дней'
+  }
+};
+
+const DONEM_AD = {
+  tr: ['Taş Devri','Tunç Çağı','Demir Çağı','Antik Çağ','Bizans','Selçuklu','Osmanlı'],
+  en: ['Stone Age','Bronze Age','Iron Age','Classical Antiquity','Byzantine','Seljuk','Ottoman'],
+  de: ['Steinzeit','Bronzezeit','Eisenzeit','Antike','Byzanz','Seldschuken','Osmanen'],
+  ru: ['Каменный век','Бронзовый век','Железный век','Античность','Византия','Сельджуки','Османы']
+};
+const DONEM_ARALIK = { '1': [-10000,-3000], '2': [-3000,-1200], '3': [-1200,-550], '4': [-550,395], '5': [395,1453], '6': [1071,1299], '7': [1299,1922] };
+const BOLGE_AD = {
+  tr: { ege:'Ege', marmara:'Marmara', akdeniz:'Akdeniz', ic:'İç Anadolu', karadeniz:'Karadeniz', dogu:'Doğu Anadolu', guneydogu:'Güneydoğu Anadolu' },
+  en: { ege:'Aegean', marmara:'Marmara', akdeniz:'Mediterranean', ic:'Central Anatolia', karadeniz:'Black Sea', dogu:'Eastern Anatolia', guneydogu:'Southeastern Anatolia' },
+  de: { ege:'Ägäis', marmara:'Marmara', akdeniz:'Mittelmeer', ic:'Zentralanatolien', karadeniz:'Schwarzmeer', dogu:'Ostanatolien', guneydogu:'Südostanatolien' },
+  ru: { ege:'Эгейский регион', marmara:'Мраморноморский регион', akdeniz:'Средиземноморье', ic:'Центральная Анатолия', karadeniz:'Черноморье', dogu:'Восточная Анатолия', guneydogu:'Юго-Восточная Анатолия' }
+};
+const DIL_AD = {
+  tr: { 'Türkçe':'Türkçe', 'İngilizce':'İngilizce', 'Almanca':'Almanca', 'Rusça':'Rusça', 'Fransızca':'Fransızca' },
+  en: { 'Türkçe':'Turkish', 'İngilizce':'English', 'Almanca':'German', 'Rusça':'Russian', 'Fransızca':'French' },
+  de: { 'Türkçe':'Türkisch', 'İngilizce':'Englisch', 'Almanca':'Deutsch', 'Rusça':'Russisch', 'Fransızca':'Französisch' },
+  ru: { 'Türkçe':'турецкий', 'İngilizce':'английский', 'Almanca':'немецкий', 'Rusça':'русский', 'Fransızca':'французский' }
+};
+const DIL_TAM = { tr: 'Türkçe', en: 'English', de: 'Deutsch', ru: 'на русском языке' };
+const SAAT_CEVIRI = { 'Her zaman açık': { en: 'Always open', de: 'Immer geöffnet', ru: 'Открыто всегда' } };
+
+// ════════════════════════════════════════════════════════════════════════
+// DİL
+// ════════════════════════════════════════════════════════════════════════
+let dil = (() => {
+  try { const k = localStorage.getItem('webDil'); if (T[k]) return k; } catch (e) {}
+  const n = (navigator.language || 'tr').slice(0, 2);
+  return T[n] ? n : 'tr';
+})();
+const t = k => (T[dil][k] ?? T.tr[k] ?? k);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const sayi = n => Number(n).toLocaleString({ tr:'tr-TR', en:'en-GB', de:'de-DE', ru:'ru-RU' }[dil]);
+
+function dilDegistir(yeni) {
+  dil = yeni;
+  try { localStorage.setItem('webDil', yeni); } catch (e) {}
+  document.documentElement.lang = yeni;
+  sabitMetinler();
+  yonlendir();
+}
+
+function sabitMetinler() {
+  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
+  document.getElementById('dilSec').innerHTML = ['tr','en','de','ru'].map(d =>
+    `<button class="${d === dil ? 'aktif' : ''}" onclick="dilDegistir('${d}')">${d.toUpperCase()}</button>`).join('');
+  document.getElementById('altBolgeler').innerHTML = Object.keys(BOLGE_AD.tr).map(b =>
+    `<a href="#/yerler?bolge=${b}">${esc(BOLGE_AD[dil][b])}</a>`).join('');
+}
+
+// İçerik yardımcıları (çeviri varsa onu, yoksa Türkçesini verir)
+function yerIsim(y) { return dil !== 'tr' && ({ en: ISIMLER_EN, de: ISIMLER_DE, ru: ISIMLER_RU }[dil] || {})[y.id] || y.isim; }
+function yerAciklama(y) { return dil !== 'tr' && ({ en: ACIKLAMALAR_EN, de: ACIKLAMALAR_DE, ru: ACIKLAMALAR_RU }[dil] || {})[y.id] || y.aciklama; }
+function medeniyet(m) { return dil !== 'tr' && ({ en: MEDENIYETLER_EN, de: MEDENIYETLER_DE, ru: MEDENIYETLER_RU }[dil] || {})[m] || m; }
+function yilYaz(n) { return n < 0 ? `${t('onc') === 'M.Ö.' ? 'M.Ö. ' + sayi(-n) : sayi(-n) + ' ' + t('onc')}` : (dil === 'en' ? 'AD ' + n : dil === 'tr' ? 'M.S. ' + n : n + ' ' + t('sonra')); }
+function saatYaz(s) { return dil !== 'tr' && SAAT_CEVIRI[s] ? SAAT_CEVIRI[s][dil] : s; }
+function fotolar(y, w = 1200) { return (GALERI_MAP[y.id] || []).map(k => `${CDN}/f_auto,q_auto,w_${w}/${encodeURIComponent(k)}`); }
+function yerBul(id) { return YERLER.find(y => String(y.id) === String(id)); }
+function yildizlar(n) { n = Math.round(Number(n) || 0); return '★'.repeat(n) + '☆'.repeat(Math.max(0, 5 - n)); }
+
+// ════════════════════════════════════════════════════════════════════════
+// YÖNLENDİRME
+// ════════════════════════════════════════════════════════════════════════
+const SAYFALAR = { '': anaSayfa, 'yerler': yerlerSayfasi, 'yer': yerSayfasi, 'rehberler': rehberlerSayfasi, 'tur-planla': turSayfasi, 'hakkimizda': hakkimizdaSayfasi, 'rehber-ol': rehberOlSayfasi, 'iletisim': iletisimSayfasi };
+let harita = null;
+
+function yonlendir() {
+  const [yol, sorgu = ''] = location.hash.replace(/^#\/?/, '').split('?');
+  const [ad, param] = yol.split('/');
+  const parametreler = Object.fromEntries(new URLSearchParams(sorgu));
+  if (harita) { harita.remove(); harita = null; }
+  modalKapat();
+  document.querySelectorAll('.menu a').forEach(a => a.classList.toggle('aktif', a.dataset.yol === ad));
+  (SAYFALAR[ad] || anaSayfa)(param, parametreler);
+  window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', yonlendir);
+
+const sayfa = () => document.getElementById('sayfa');
+
+// ════════════════════════════════════════════════════════════════════════
+// SUPABASE
+// ════════════════════════════════════════════════════════════════════════
+async function sbGet(yol) {
+  const res = await fetch(`${SAPI}/${yol}`, { headers: SB_BASLIK });
+  if (!res.ok) throw new Error(res.status);
+  return res.json();
+}
+async function sbPost(tablo, veri) {
+  return fetch(`${SAPI}/${tablo}`, { method: 'POST', headers: { ...SB_BASLIK, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, body: JSON.stringify(veri) });
+}
+async function yapayZeka(prompt) {
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/tur-planlayici`, { method: 'POST', headers: { ...SB_BASLIK, 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt }) });
+  if (!res.ok) throw new Error(res.status);
+  const d = await res.json();
+  // Yapay zekâ bazen Markdown işaretleri (#, **) döndürüyor; düz metne çevir
+  return (d.plan || d.response || d.result || '').replace(/^#{1,6}\s*/gm, '').replace(/\*\*/g, '');
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// ORTAK PARÇALAR
+// ════════════════════════════════════════════════════════════════════════
+function yerKarti(y) {
+  const f = fotolar(y, 700)[0];
+  return `<a class="yer-kart" href="#/yer/${y.id}">
+    <div class="yer-kart-gorsel">${y.unesco ? '<span class="unesco-rozet">UNESCO</span>' : ''}${f ? `<img src="${f}" alt="${esc(yerIsim(y))}" loading="lazy" onerror="this.remove()">` : ''}${esc(y.emoji)}</div>
+    <h3>${esc(yerIsim(y))}</h3>
+    <div class="yer-kart-alt">${esc(y.sehir)} · ${esc(DONEM_AD[dil][y.donem - 1])}</div>
+  </a>`;
+}
+
+function rehberKarti(r) {
+  const portre = r.foto_url ? `style="background-image:url('${esc(r.foto_url)}')"` : '';
+  const diller = (r.diller || []).map(d => `<span class="rozet">${esc(DIL_AD[dil][d] || d)}</span>`).join('');
+  const puan = Number(r.yorum_sayisi) > 0 ? `<span class="puan"><span class="yildiz">★</span> ${Number(r.ortalama_puan).toFixed(1)} · ${r.yorum_sayisi} ${t('degerlendirme')}</span>` : `<span class="puan">${t('yeni')}</span>`;
+  return `<div class="rehber-kart">
+    <div class="rehber-portre" ${portre}>${r.foto_url ? '' : esc((r.ad_soyad || '?').charAt(0))}</div>
+    <h3>${esc(r.ad_soyad)}</h3>
+    <div class="rehber-yer">${esc(r.sehir || '')}${r.deneyim_yil ? ` · ${r.deneyim_yil} ${t('yilDeneyim')}` : ''}</div>
+    <div class="rozetler">${diller}</div>
+    <p>${esc(r.hakkinda || '')}</p>
+    <div class="rehber-alt">
+      <span class="fiyat">${r.gunluk_ucret ? `₺${sayi(r.gunluk_ucret)} <small>/ ${t('gun')}</small>` : ''}</span>${puan}
+    </div>
+    <button class="btn" onclick='rezervasyonAc(${JSON.stringify({ id: r.id, ad: r.ad_soyad, ucret: r.gunluk_ucret, bolgeler: r.bolgeler || [] }).replace(/'/g, '&#39;')})'>${t('rezervasyon')}</button>
+  </div>`;
+}
+
+async function rehberleriDoldur(kapId, bolge, limit) {
+  const kap = document.getElementById(kapId);
+  kap.innerHTML = `<p class="yukleniyor">${t('yukleniyor')}</p>`;
+  try {
+    let yol = `rehberler?select=${REHBER_ALANLAR}&onaylandi=eq.true&order=one_cikan.desc.nullslast,ortalama_puan.desc.nullslast`;
+    if (bolge) yol += `&bolgeler=cs.{${bolge}}`;
+    if (limit) yol += `&limit=${limit}`;
+    const liste = await sbGet(yol);
+    kap.innerHTML = liste.length ? `<div class="rehber-izgara">${liste.map(rehberKarti).join('')}</div>` : `<div class="bos-durum">${t('rehberYok')}</div>`;
+  } catch (e) { kap.innerHTML = `<div class="bos-durum">${t('hata')}</div>`; }
+}
+
+function haritaKur(kapId, yerler, odak) {
+  if (typeof L === 'undefined') return;
+  harita = L.map(kapId, { scrollWheelZoom: false }).setView(odak || [38.9, 35.2], odak ? 10 : 6);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap © CARTO', maxZoom: 18 }).addTo(harita);
+  yerler.forEach(y => {
+    const k = KOORDINATLAR[y.id]; if (!k) return;
+    L.circleMarker(k, { radius: 6, color: '#B85C2A', weight: 1.5, fillColor: '#B85C2A', fillOpacity: .75 })
+      .addTo(harita).bindPopup(`<b>${esc(yerIsim(y))}</b><br>${esc(y.sehir)} · ${esc(DONEM_AD[dil][y.donem - 1])}<br><a href="#/yer/${y.id}">${t('detayaGit')}</a>`);
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// ANA SAYFA
+// ════════════════════════════════════════════════════════════════════════
+function anaSayfa() {
+  const hafta = Math.floor(Date.now() / 6048e5);
+  const hikayeIdleri = Object.keys(EFSANELER).filter(id => yerBul(id) && (GALERI_MAP[id] || []).length);
+  const hikayeId = hikayeIdleri[hafta % hikayeIdleri.length];
+  const hikayeYer = yerBul(hikayeId), hikaye = EFSANELER[hikayeId];
+  const yorumOrnek = T[dil].ilgiler;
+
+  sayfa().innerHTML = `
+  <section class="acilis">
+    <div class="acilis-gorsel" style="background-image:url('${CDN}/f_auto,q_auto,w_2000/${ACILIS_FOTO}')"></div>
+    <div class="kap">
+      <h1>${t('acilisBaslik')}</h1>
+      <p class="giris">${t('acilisAlt')}</p>
+      <div class="acilis-arama">
+        <input id="acilisAra" placeholder="${esc(t('aramaPh'))}" autocomplete="off" oninput="oneriGoster(this.value)" onkeydown="if(event.key==='Enter')aramaYap()">
+        <button class="btn vurgu" onclick="aramaYap()">${t('ara')}</button>
+        <div class="oneri-liste" id="oneriListe"></div>
+      </div>
+      <div class="acilis-butonlar">
+        <a href="#/yerler" class="btn acik">${t('kesfetBtn')}</a>
+        <a href="#/rehberler" class="btn acik">${t('rehberleGez')}</a>
+      </div>
+    </div>
+    <div class="acilis-imza">${t('acilisImza')}</div>
+  </section>
+
+  <section class="bolum">
+    <div class="kap">
+      <div class="ust-etiket">${t('nedenEtiket')}</div>
+      <h2 style="max-width:760px;margin-bottom:60px">${t('nedenBaslik')}</h2>
+      <div class="uclu">
+        ${[1,2,3].map(i => `<div class="madde"><div class="madde-no">0${i}</div><h3>${t('neden' + i + 'B')}</h3><p>${t('neden' + i)}</p></div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section class="bolum kagit2">
+    <div class="kap">
+      <div class="bolum-bas">
+        <div><div class="ust-etiket">${t('rehberEtiket')}</div><h2>${t('rehberBaslik')}</h2></div>
+        <a href="#/rehberler" class="btn cerceve">${t('tumRehberler')}</a>
+      </div>
+      <div id="oneCikanRehberler"></div>
+    </div>
+  </section>
+
+  <section class="bolum gece">
+    <div class="kap">
+      <div class="ust-etiket">${t('donemEtiket')}</div>
+      <h2>${t('donemBaslik')}</h2>
+      <p class="giris" style="margin-bottom:60px">${t('donemAlt')}</p>
+      <div class="cizelge">
+        ${Object.keys(DONEM_META).map(id => {
+          const m = DONEM_META[id], n = YERLER.filter(y => y.donem === id).length;
+          const [a, b] = DONEM_ARALIK[id];
+          return `<div class="donem" onclick="donemPenceresi('${id}')"><div class="donem-emoji">${m.emoji}</div><h3>${DONEM_AD[dil][id - 1]}</h3><div class="donem-tarih">${yilYaz(a)} – ${yilYaz(b)}</div><div class="donem-sayi">${n} ${t('orenYeri')}</div></div>`;
+        }).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section class="bolum">
+    <div class="kap">
+      <div class="bolum-bas"><div><div class="ust-etiket">${t('haritaEtiket')}</div><h2>${t('haritaBaslik')}</h2><p class="giris">${t('haritaAlt')}</p></div></div>
+      <div class="harita-kap" id="anaHarita"></div>
+    </div>
+  </section>
+
+  <section class="bolum gece">
+    <div class="kap hikaye">
+      <a href="#/yer/${hikayeId}" class="hikaye-gorsel" style="background-image:url('${fotolar(hikayeYer, 1200)[0]}')"></a>
+      <div>
+        <div class="ust-etiket">${t('hikayeEtiket')} · ${esc(yerIsim(hikayeYer))}</div>
+        <h2 style="color:#fff">${esc(hikaye.baslik)}</h2>
+        ${dil !== 'tr' ? `<p class="not-tr">${t('yalnizTr')}</p>` : ''}
+        <blockquote>${esc(hikaye.icerik)}</blockquote>
+        <a href="#/yer/${hikayeId}" class="btn acik">${t('devami')}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bolum">
+    <div class="kap ikili">
+      <div>
+        <div class="ust-etiket">${t('turEtiket')}</div>
+        <h2>${t('turBaslik')}</h2>
+        <p class="giris" style="margin-bottom:36px">${t('turAlt')}</p>
+        <a href="#/tur-planla" class="btn">${t('mTur')} →</a>
+      </div>
+      <div class="secimler" style="align-content:center;padding-top:40px">
+        ${yorumOrnek.map(i => `<a href="#/tur-planla" class="secim">${esc(i)}</a>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section class="bolum kagit2" id="yorumBolumu">
+    <div class="kap">
+      <div class="ust-etiket">${t('yorumEtiket')}</div>
+      <h2 style="margin-bottom:52px">${t('yorumBaslik')}</h2>
+      <div id="sonYorumlar"><p class="yukleniyor">${t('yukleniyor')}</p></div>
+    </div>
+  </section>
+
+  <section class="bolum ince gece">
+    <div class="kap uygulama">
+      <div><h2 style="color:#fff">${t('uygBaslik')}</h2><p class="giris">${t('uygAlt')}</p></div>
+      <a href="index.html?mobil" class="btn acik">📱 ${t('uygBtn')}</a>
+    </div>
+  </section>`;
+
+  rehberleriDoldur('oneCikanRehberler', null, 4);
+  haritaKur('anaHarita', YERLER);
+  sbGet('yorumlar?select=kullanici_adi,sehir,yorum,puan,oren_yeri_id&order=olusturma_tarihi.desc&limit=6').then(liste => {
+    const iyi = liste.filter(y => (y.puan || 0) >= 4 && (y.yorum || '').length > 20).slice(0, 3);
+    if (!iyi.length) { document.getElementById('yorumBolumu').remove(); return; }
+    document.getElementById('sonYorumlar').innerHTML = `<div class="yorum-izgara">${iyi.map(y => {
+      const yer = yerBul(y.oren_yeri_id);
+      return `<div class="yorum"><div class="yildiz">${yildizlar(y.puan)}</div><p>“${esc(y.yorum)}”</p><div class="yorum-kim">${esc(y.kullanici_adi)}${y.sehir ? ', ' + esc(y.sehir) : ''}${yer ? ` — <a href="#/yer/${yer.id}">${esc(yerIsim(yer))}</a>` : ''}</div></div>`;
+    }).join('')}</div>`;
+  }).catch(() => { const b = document.getElementById('yorumBolumu'); if (b) b.remove(); });
+}
+
+function aramaEsles(q) {
+  q = q.trim().toLocaleLowerCase('tr');
+  if (q.length < 2) return [];
+  return YERLER.filter(y => [y.isim, yerIsim(y), y.sehir, ...(y.medeniyetler || []).map(medeniyet), ...(y.medeniyetler || [])]
+    .some(s => (s || '').toLocaleLowerCase('tr').includes(q)));
+}
+function oneriGoster(q) {
+  const kutu = document.getElementById('oneriListe');
+  const s = aramaEsles(q).slice(0, 8);
+  kutu.style.display = s.length ? 'block' : 'none';
+  kutu.innerHTML = s.map(y => `<a href="#/yer/${y.id}">${esc(yerIsim(y))}<span>${esc(y.sehir)}</span></a>`).join('');
+}
+function aramaYap() {
+  const q = document.getElementById('acilisAra').value.trim();
+  location.hash = `#/yerler${q ? '?ara=' + encodeURIComponent(q) : ''}`;
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// ÖREN YERLERİ
+// ════════════════════════════════════════════════════════════════════════
+let yerFiltre = { donem: '', bolge: '', unesco: false, ara: '' };
+
+function yerlerSayfasi(_, p) {
+  yerFiltre = { donem: p.donem || '', bolge: p.bolge || '', unesco: false, ara: p.ara || '' };
+  sayfa().innerHTML = `
+  <section class="sayfa-bas"><div class="kap"><div class="ust-etiket">${t('mYerler')}</div><h1>${t('yerlerBaslik')}</h1><p class="giris">${t('yerlerAlt')}</p></div></section>
+  <section style="padding-bottom:110px"><div class="kap">
+    <div class="filtreler">
+      <input class="girdi arama" id="fAra" placeholder="${esc(t('araPh'))}" value="${esc(yerFiltre.ara)}" oninput="yerFiltre.ara=this.value;yerleriCiz()">
+      <select class="girdi" onchange="yerFiltre.donem=this.value;yerleriCiz()">
+        <option value="">${t('tumDonemler')}</option>
+        ${Object.keys(DONEM_META).map(id => `<option value="${id}" ${yerFiltre.donem === id ? 'selected' : ''}>${DONEM_AD[dil][id - 1]}</option>`).join('')}
+      </select>
+      <select class="girdi" onchange="yerFiltre.bolge=this.value;yerleriCiz()">
+        <option value="">${t('tumBolgeler')}</option>
+        ${Object.keys(BOLGE_AD.tr).map(b => `<option value="${b}" ${yerFiltre.bolge === b ? 'selected' : ''}>${esc(BOLGE_AD[dil][b])}</option>`).join('')}
+      </select>
+      <label class="secim" id="fUnesco" onclick="yerFiltre.unesco=!yerFiltre.unesco;this.classList.toggle('aktif',yerFiltre.unesco);yerleriCiz()">${t('yalnizUnesco')}</label>
+      <span class="sonuc-sayi" id="sonucSayi"></span>
+    </div>
+    <div class="yer-izgara" id="yerIzgara"></div>
+  </div></section>`;
+  yerleriCiz();
+}
+
+function yerleriCiz() {
+  let liste = yerFiltre.ara ? aramaEsles(yerFiltre.ara) : YERLER.slice();
+  if (yerFiltre.donem) liste = liste.filter(y => y.donem === yerFiltre.donem);
+  if (yerFiltre.bolge) liste = liste.filter(y => y.bolge === yerFiltre.bolge);
+  if (yerFiltre.unesco) liste = liste.filter(y => y.unesco);
+  document.getElementById('sonucSayi').textContent = `${liste.length} ${t('sonuc')}`;
+  document.getElementById('yerIzgara').innerHTML = liste.map(yerKarti).join('');
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// ÖREN YERİ DETAY
+// ════════════════════════════════════════════════════════════════════════
+let seciliPuan = 5;
+
+function yerSayfasi(id) {
+  const y = yerBul(id);
+  if (!y) { location.hash = '#/yerler'; return; }
+  document.title = `${yerIsim(y)} — Anadolu Rehberi`;
+  const f = fotolar(y, 1600), efsane = EFSANELER[y.id], kisiler = UNLULER[y.id] || [];
+  const galeri = f.length
+    ? `<div class="galeri">${f.slice(0, 3).map(u => `<div style="background-image:url('${u}')" onclick="fotoBuyut('${u}')"></div>`).join('')}</div>`
+    : `<div class="galeri tek">${esc(y.emoji)}</div>`;
+
+  sayfa().innerHTML = `
+  <section style="padding:40px 0 110px"><div class="kap">
+    ${galeri}
+    <div class="detay">
+      <div>
+        <div class="ust-etiket">${esc(DONEM_AD[dil][y.donem - 1])} · ${esc(BOLGE_AD[dil][y.bolge] || '')}${y.unesco ? ' · UNESCO' : ''}</div>
+        <h1>${esc(yerIsim(y))}</h1>
+        <div class="detay-sehir">${esc(y.sehir)}</div>
+        <div class="bilgi-satir">
+          <div><small>${t('kurulus')}</small><b>${yilYaz(y.baslangic)}</b></div>
+          <div><small>${t('sonDonem')}</small><b>${yilYaz(y.bitis)}</b></div>
+          <div><small>${t('sure')}</small><b>${sayi(Math.abs(y.bitis - y.baslangic))} ${t('yil')}</b></div>
+          <div><small>${t('medeniyetler')}</small><b>${(y.medeniyetler || []).map(m => esc(medeniyet(m))).join(', ')}</b></div>
+        </div>
+        <p class="detay-metin">${esc(yerAciklama(y))}</p>
+
+        ${efsane ? `<h2>${t('efsane')}</h2>${dil !== 'tr' ? `<p class="not-tr">${t('yalnizTr')}</p>` : ''}
+          <div class="efsane-kutu"><h3>${esc(efsane.baslik)}</h3><div>${esc(efsane.icerik)}</div></div>` : ''}
+
+        ${kisiler.length ? `<h2>${t('unluler')}</h2>${dil !== 'tr' ? `<p class="not-tr">${t('yalnizTr')}</p>` : ''}
+          <div class="unlu-satir">${kisiler.map((k, i) => `<div class="unlu" onclick="unluAc('${y.id}',${i})">
+            <div class="unlu-foto" ${k.foto ? `style="background-image:url('${esc(k.foto)}')"` : ''}>${k.foto ? '' : '👤'}</div>
+            <div><b>${esc(k.isim)}</b><small>${esc(k.unvan)}</small></div></div>`).join('')}</div>` : ''}
+
+        <h2>${t('buYerRehber')}</h2>
+        <div id="yerRehberleri"></div>
+
+        <h2>${t('yorumlar')}</h2>
+        <div class="yorum-liste" id="yerYorumlari"><p class="yukleniyor">${t('yukleniyor')}</p></div>
+        <div class="yan-kutu" style="margin-top:20px">
+          <h3>${t('yorumYaz')}</h3>
+          <div class="form-izgara">
+            <div><label class="etiket">${t('adiniz')} *</label><input class="girdi" id="yAd" maxlength="60"></div>
+            <div><label class="etiket">${t('sehriniz')}</label><input class="girdi" id="ySehir" maxlength="60"></div>
+            <div class="tam"><label class="etiket">${t('puaniniz')}</label><div class="secimler" id="yPuan"></div></div>
+            <div class="tam"><label class="etiket">${t('yorumunuz')} *</label><textarea class="girdi" id="yMetin" maxlength="1000"></textarea></div>
+          </div>
+          <button class="btn" style="margin-top:16px" onclick="yorumGonder('${y.id}')">${t('gonder')}</button>
+          <div class="form-mesaj" id="yMesaj"></div>
+        </div>
+      </div>
+
+      <aside class="yan">
+        <div class="yan-kutu ziyaret">
+          <h3>${t('ziyaret')}</h3>
+          <dl>
+            <dt>${t('ucret')}</dt><dd>${y.ucret ? '₺' + sayi(y.ucret) : t('ucretsiz')}</dd>
+            <dt>${t('saatler')}</dt><dd>${esc(saatYaz(y.saatler))}</dd>
+            <dt>${t('otopark')}</dt><dd>${y.park ? t('var') : t('yok')}</dd>
+          </dl>
+        </div>
+        <div class="yan-kutu" style="padding:0"><div class="harita-kap kucuk" id="yerHarita" style="border:0"></div></div>
+        ${KOORDINATLAR[y.id] ? `<a class="btn cerceve" style="width:100%;justify-content:center" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${KOORDINATLAR[y.id].join(',')}">${t('yolTarifi')} ↗</a>` : ''}
+        <a class="btn vurgu" style="width:100%;justify-content:center;margin-top:12px" href="#yerRehberleri" onclick="event.preventDefault();document.getElementById('yerRehberleri').scrollIntoView({behavior:'smooth'})">${t('rehberleGez')}</a>
+      </aside>
+    </div>
+  </div></section>`;
+
+  seciliPuan = 5; puanCiz();
+  haritaKur('yerHarita', [y], KOORDINATLAR[y.id]);
+  rehberleriDoldur('yerRehberleri', y.bolge);
+  yorumlariYukle(y.id);
+}
+
+function puanCiz() {
+  document.getElementById('yPuan').innerHTML = [1,2,3,4,5].map(n =>
+    `<span class="secim ${n <= seciliPuan ? 'aktif' : ''}" onclick="seciliPuan=${n};puanCiz()">★</span>`).join('');
+}
+
+async function yorumlariYukle(id) {
+  const kap = document.getElementById('yerYorumlari');
+  try {
+    const liste = await sbGet(`yorumlar?select=kullanici_adi,sehir,yorum,puan,olusturma_tarihi&oren_yeri_id=eq.${encodeURIComponent(id)}&order=olusturma_tarihi.desc&limit=20`);
+    kap.innerHTML = liste.length ? liste.map(y => `<div class="yorum"><div class="yildiz">${yildizlar(y.puan)}</div><p>“${esc(y.yorum)}”</p><div class="yorum-kim">${esc(y.kullanici_adi)}${y.sehir ? ', ' + esc(y.sehir) : ''}</div></div>`).join('')
+      : `<p class="yukleniyor">${t('yorumYok')}</p>`;
+  } catch (e) { kap.innerHTML = `<p class="yukleniyor">${t('hata')}</p>`; }
+}
+
+async function yorumGonder(id) {
+  const ad = document.getElementById('yAd').value.trim(), metin = document.getElementById('yMetin').value.trim();
+  const mesaj = document.getElementById('yMesaj');
+  if (!ad || !metin) { mesaj.className = 'form-mesaj hata'; mesaj.textContent = t('eksikAlan'); return; }
+  const res = await sbPost('yorumlar', { oren_yeri_id: String(id), kullanici_adi: ad, sehir: document.getElementById('ySehir').value.trim() || null, yorum: metin, puan: seciliPuan }).catch(() => null);
+  if (res && res.ok) {
+    mesaj.className = 'form-mesaj basari'; mesaj.textContent = t('yorumTesekkur');
+    document.getElementById('yMetin').value = '';
+    yorumlariYukle(id);
+  } else { mesaj.className = 'form-mesaj hata'; mesaj.textContent = t('hata'); }
+}
+
+function unluAc(yerId, i) {
+  const k = UNLULER[yerId][i], d = UNLULER_DETAY[k.isim] || {};
+  modalAc(`
+    <div style="display:flex;gap:20px;align-items:center;margin-bottom:24px">
+      <div class="unlu-foto" style="width:88px;height:88px;font-size:36px;${k.foto ? `background-image:url('${esc(k.foto)}')` : ''}">${k.foto ? '' : '👤'}</div>
+      <div><div class="ust-etiket" style="margin-bottom:6px">${esc(k.unvan)}</div><h2 style="margin:0">${esc(k.isim)}</h2><div style="color:var(--gri2)">${esc(k.donem)}</div></div>
+    </div>
+    ${dil !== 'tr' ? `<p class="not-tr">${t('yalnizTr')}</p>` : ''}
+    <p style="font-size:19px">${esc(k.ozet)}</p>
+    ${(d.sozler || []).length ? `<div class="soz">“${esc(d.sozler[0])}”</div>` : ''}
+    ${(d.eserler || []).length ? `<h3 style="margin-top:26px">${t('eserler')}</h3><div class="rozetler">${d.eserler.map(e => `<span class="rozet">${esc(e)}</span>`).join('')}</div>` : ''}`);
+}
+
+function fotoBuyut(u) {
+  const m = document.getElementById('modal');
+  document.getElementById('modalIc').outerHTML = `<div class="modal-ic" id="modalIc" style="background:none;padding:0;max-width:none;width:auto"><img class="buyuk-foto" src="${u}" alt=""></div>`;
+  m.classList.add('acik');
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// DÖNEM PENCERESİ
+// ════════════════════════════════════════════════════════════════════════
+const pencereOnbellek = {};
+let pencereAktif = null;
+
+async function donemPenceresi(id) {
+  const m = DONEM_META[id], [a, b] = DONEM_ARALIK[id];
+  pencereAktif = id + dil;
+  const gorsel = `https://image.pollinations.ai/prompt/${encodeURIComponent(m.imgPrompt)}?width=900&height=1100&nologo=true&seed=${id}`;
+  modalAc(`
+    <div class="pencere-gorsel" id="pencereGorsel">${m.emoji}</div>
+    <div class="pencere-metin">
+      <div class="ust-etiket">${t('pencereEtiket')}</div>
+      <h2>${DONEM_AD[dil][id - 1]}</h2>
+      <div style="color:var(--gri2);margin-bottom:24px">${yilYaz(a)} – ${yilYaz(b)}</div>
+      <div class="govde" id="pencereGovde"><span class="yukleniyor">${t('pencereHazirlaniyor')}</span></div>
+      <div class="rozetler" style="margin-top:24px">${m.medeniyetler.map(x => `<span class="rozet">${esc(medeniyet(x))}</span>`).join('')}</div>
+      <a class="btn" style="margin-top:20px" href="#/yerler?donem=${id}">${t('buDonemYerler')}</a>
+      <p class="alt-yazi">${t('pencereGorsel')}</p>
+    </div>`, true);
+  const img = new Image();
+  img.onload = () => { const el = document.getElementById('pencereGorsel'); if (el && pencereAktif === id + dil) { el.style.backgroundImage = `url('${gorsel}')`; el.textContent = ''; } };
+  img.src = gorsel;
+
+  const anahtar = id + dil;
+  if (!pencereOnbellek[anahtar]) {
+    try {
+      const prompt = m.aiPrompt.replace(/Türkçe, maksimum 180 kelime\./, `Yanıtı ${DIL_TAM[dil]} dilinde yaz, maksimum 180 kelime.`);
+      const metin = await yapayZeka(prompt);
+      if (metin) pencereOnbellek[anahtar] = metin;
+    } catch (e) {}
+  }
+  if (pencereAktif !== anahtar) return;
+  const g = document.getElementById('pencereGovde');
+  if (g) g.textContent = pencereOnbellek[anahtar] || t('pencereYedek');
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// REHBERLER + REZERVASYON
+// ════════════════════════════════════════════════════════════════════════
+function rehberlerSayfasi(_, p) {
+  const bolge = p.bolge || '';
+  sayfa().innerHTML = `
+  <section class="sayfa-bas"><div class="kap"><div class="ust-etiket">${t('mRehberler')}</div><h1>${t('rehberlerBaslik')}</h1><p class="giris">${t('rehberlerAlt')}</p></div></section>
+  <section style="padding-bottom:110px"><div class="kap">
+    <div class="filtreler">
+      <div class="secimler">
+        <a class="secim ${!bolge ? 'aktif' : ''}" href="#/rehberler">${t('tumBolgeSec')}</a>
+        ${Object.keys(BOLGE_AD.tr).map(b => `<a class="secim ${bolge === b ? 'aktif' : ''}" href="#/rehberler?bolge=${b}">${esc(BOLGE_AD[dil][b])}</a>`).join('')}
+      </div>
+    </div>
+    <div id="rehberListe"></div>
+  </div></section>`;
+  rehberleriDoldur('rehberListe', bolge);
+}
+
+function rezervasyonAc(r) {
+  const yerler = YERLER.filter(y => !r.bolgeler.length || r.bolgeler.includes(y.bolge));
+  const yerDetay = location.hash.match(/^#\/yer\/(\w+)/);
+  const yarin = new Date(Date.now() + 864e5).toISOString().slice(0, 10);
+  modalAc(`
+    <div class="ust-etiket">${t('rezBaslik')}</div>
+    <h2>${esc(r.ad)}</h2>
+    ${r.ucret ? `<p class="fiyat" style="margin-bottom:22px">₺${sayi(r.ucret)} <small>/ ${t('gun')}</small></p>` : ''}
+    <div class="form-izgara">
+      <div><label class="etiket">${t('rezAd')} *</label><input class="girdi" id="rAd" maxlength="80"></div>
+      <div><label class="etiket">${t('rezEmail')} *</label><input class="girdi" id="rEmail" type="email" maxlength="120"></div>
+      <div><label class="etiket">${t('rezTel')}</label><input class="girdi" id="rTel" type="tel" maxlength="30"></div>
+      <div><label class="etiket">${t('rezTarih')} *</label><input class="girdi" id="rTarih" type="date" min="${yarin}"></div>
+      <div class="tam"><label class="etiket">${t('rezYer')} *</label><select class="girdi" id="rYer">${yerler.map(y => `<option value="${y.id}" ${yerDetay && yerDetay[1] === String(y.id) ? 'selected' : ''}>${esc(yerIsim(y))} — ${esc(y.sehir)}</option>`).join('')}</select></div>
+      <div><label class="etiket">${t('rezKisi')}</label><input class="girdi" id="rKisi" type="number" min="1" max="30" value="2"></div>
+      <div><label class="etiket">${t('rezDil')}</label><select class="girdi" id="rDil">${['Türkçe','İngilizce','Almanca','Rusça'].map(d => `<option value="${d}" ${({ tr:'Türkçe', en:'İngilizce', de:'Almanca', ru:'Rusça' })[dil] === d ? 'selected' : ''}>${DIL_AD[dil][d]}</option>`).join('')}</select></div>
+      <div class="tam"><label class="etiket">${t('rezNot')}</label><textarea class="girdi" id="rNot" maxlength="800"></textarea></div>
+    </div>
+    <p class="alt-yazi" style="margin:14px 0 18px">${t('rezBilgi')}</p>
+    <button class="btn vurgu" id="rGonderBtn" onclick='rezervasyonGonder(${JSON.stringify({ id: r.id, ad: r.ad, ucret: r.ucret }).replace(/'/g, '&#39;')})'>${t('rezGonder')}</button>
+    <div class="form-mesaj" id="rMesaj"></div>`);
+}
+
+async function rezervasyonGonder(r) {
+  const v = id => document.getElementById(id).value.trim();
+  const mesaj = document.getElementById('rMesaj'), btn = document.getElementById('rGonderBtn');
+  const ad = v('rAd'), email = v('rEmail'), tarih = v('rTarih'), yer = v('rYer');
+  if (!ad || !/^\S+@\S+\.\S+$/.test(email) || !tarih || !yer) { mesaj.className = 'form-mesaj hata'; mesaj.textContent = t('eksikAlan'); return; }
+  btn.disabled = true;
+  const res = await sbPost('rezervasyonlar', {
+    rehber_id: r.id, musteri_adi: ad, musteri_email: email, musteri_telefon: v('rTel') || null,
+    oren_yeri_id: yer, tur_tarihi: tarih, kisi_sayisi: parseInt(v('rKisi')) || 1, dil: v('rDil'), notlar: v('rNot') || null
+  }).catch(() => null);
+  if (res && res.ok) {
+    // Mobil uygulamadaki gibi komisyon kaydı (admin panelinde takip için)
+    if (r.ucret) sbPost('komisyonlar', { rehber_id: r.id, rehber_adi: r.ad, musteri_adi: ad, oren_yeri_id: yer, tur_tarihi: tarih, rehber_ucreti: r.ucret, komisyon_orani: 15, komisyon_tutar: Math.round(r.ucret * 15 / 100), odeme_durumu: 'bekliyor' }).catch(() => {});
+    document.getElementById('modalIc').innerHTML = `<button class="modal-kapat" onclick="modalKapat()">×</button><div class="ust-etiket">${t('rezBaslik')}</div><h2>✓</h2><p style="font-size:20px">${t('rezTesekkur')}</p>`;
+  } else { btn.disabled = false; mesaj.className = 'form-mesaj hata'; mesaj.textContent = t('hata'); }
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// TUR PLANLA
+// ════════════════════════════════════════════════════════════════════════
+function turSayfasi() {
+  sayfa().innerHTML = `
+  <section class="sayfa-bas"><div class="kap"><div class="ust-etiket">${t('turEtiket')}</div><h1>${t('turBaslik')}</h1><p class="giris">${t('turAlt')}</p></div></section>
+  <section style="padding-bottom:110px"><div class="kap ikili">
+    <div class="form-izgara">
+      <div><label class="etiket">${t('gunSayisi')}</label><select class="girdi" id="tGun">${[1,2,3,4,5,7,10,14].map(n => `<option ${n === 3 ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
+      <div><label class="etiket">${t('baslangic')}</label><input class="girdi" id="tBas" placeholder="${esc(t('baslangicPh'))}"></div>
+      <div class="tam"><label class="etiket">${t('ilgi')}</label><div class="secimler" id="tIlgi">${T[dil].ilgiler.map(i => `<span class="secim" onclick="this.classList.toggle('aktif')">${esc(i)}</span>`).join('')}</div></div>
+      <div class="tam"><label class="etiket">${t('bolgeTercih')}</label><div class="secimler" id="tBolge">${Object.keys(BOLGE_AD.tr).map(b => `<span class="secim" data-b="${b}" onclick="this.classList.toggle('aktif')">${esc(BOLGE_AD[dil][b])}</span>`).join('')}</div></div>
+      <div class="tam"><label class="etiket">${t('butce')}</label><select class="girdi" id="tButce"><option>${t('butce1')}</option><option selected>${t('butce2')}</option><option>${t('butce3')}</option></select></div>
+      <div class="tam"><label class="etiket">${t('ekNot')}</label><input class="girdi" id="tNot" placeholder="${esc(t('ekNotPh'))}"></div>
+      <div class="tam"><button class="btn vurgu" id="tBtn" onclick="planOlustur()">${t('planOlustur')}</button></div>
+    </div>
+    <div class="plan-sonuc" id="tSonuc">${t('planBos')}</div>
+  </div></section>`;
+}
+
+async function planOlustur() {
+  const sec = id => [...document.querySelectorAll(`#${id} .secim.aktif`)].map(e => e.textContent);
+  const btn = document.getElementById('tBtn'), sonuc = document.getElementById('tSonuc');
+  btn.disabled = true; sonuc.className = 'plan-sonuc'; sonuc.textContent = t('planHazirlaniyor');
+  const ilgili = YERLER.filter(y => { const b = sec('tBolge'); return !b.length || b.map(x => Object.keys(BOLGE_AD[dil]).find(k => BOLGE_AD[dil][k] === x)).includes(y.bolge); }).map(y => y.isim).join(', ');
+  const prompt = `Sen Türkiye'nin tarihi ören yerleri konusunda uzman bir tur rehberisin. Aşağıdaki bilgilere göre kişiselleştirilmiş bir tur planı oluştur. Yanıtını ${DIL_TAM[dil]} dilinde ver.
+
+Kullanıcı bilgileri:
+- Süre: ${document.getElementById('tGun').value} gün
+- Başlangıç noktası: ${document.getElementById('tBas').value.trim() || 'belirtilmedi'}
+- İlgi alanları: ${sec('tIlgi').join(', ') || 'Genel tarih'}
+- Tercih edilen bölgeler: ${sec('tBolge').join(', ') || 'Tüm Türkiye'}
+- Bütçe: ${document.getElementById('tButce').value}
+${document.getElementById('tNot').value.trim() ? `- Özel notlar: ${document.getElementById('tNot').value.trim()}` : ''}
+
+Planı öncelikle şu ören yerlerinden seç: ${ilgili}
+
+Şu formatta yaz:
+- Her gün için başlık ve ziyaret edilecek ören yerleri
+- Her yer için kısa açıklama ve tahmini süre
+- Pratik öneriler (ulaşım, konaklama, yemek)
+- Toplam bütçe tahmini
+
+Somut ve pratik ol, abartılı sıfatlardan kaçın.`;
+  try {
+    const plan = await yapayZeka(prompt);
+    sonuc.className = 'plan-sonuc dolu';
+    sonuc.textContent = plan || t('hata');
+  } catch (e) { sonuc.textContent = t('hata'); }
+  btn.disabled = false;
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// HAKKIMIZDA · REHBER OL · İLETİŞİM
+// ════════════════════════════════════════════════════════════════════════
+function hakkimizdaSayfasi() {
+  sayfa().innerHTML = `
+  <section class="sayfa-bas"><div class="kap"><div class="ust-etiket">${t('mHakkimizda')}</div><h1>${t('hakBaslik')}</h1><p class="giris">${t('hakAlt')}</p></div></section>
+  <section style="padding-bottom:110px"><div class="kap ikili">
+    <div class="metin-sutun">${T[dil].hakMetin.map(([b, m]) => `${b ? `<h2>${esc(b)}</h2>` : ''}<p>${esc(m)}</p>`).join('')}</div>
+    <div class="hikaye-gorsel" style="background-image:url('${CDN}/f_auto,q_auto,w_1200/göbeklitepe_1_e8ssz7');position:sticky;top:106px"></div>
+  </div></section>`;
+}
+
+function rehberOlSayfasi() {
+  const diller = ['Türkçe','İngilizce','Almanca','Rusça','Fransızca'];
+  sayfa().innerHTML = `
+  <section class="sayfa-bas"><div class="kap"><div class="ust-etiket">${t('mRehberOl')}</div><h1>${t('rolBaslik')}</h1><p class="giris">${t('rolAlt')}</p></div></section>
+  <section style="padding-bottom:40px"><div class="kap">
+    <div class="uclu" style="margin-bottom:80px">${T[dil].rolMaddeler.map(([b, m], i) => `<div class="madde"><div class="madde-no">0${i + 1}</div><h3>${esc(b)}</h3><p>${esc(m)}</p></div>`).join('')}</div>
+    <h2>${t('rolSurec')}</h2>
+    <div class="adimlar">${T[dil].rolAdimlar.map(a => `<div class="adim"><p>${esc(a)}</p></div>`).join('')}</div>
+  </div></section>
+  <section class="bolum kagit2"><div class="kap ikili">
+    <div>
+      <h2>${t('rolKimler')}</h2>
+      <p class="giris">${t('rolKimlerMetin')}</p>
+      <p class="alt-yazi" style="margin-top:24px">${t('rKvkk')}</p>
+    </div>
+    <div>
+      <h2>${t('rolForm')}</h2>
+      <div class="form-izgara">
+        <div><label class="etiket">${t('rAd')} *</label><input class="girdi" id="bAd" maxlength="80"></div>
+        <div><label class="etiket">${t('rEmail')} *</label><input class="girdi" id="bEmail" type="email" maxlength="120"></div>
+        <div><label class="etiket">${t('rTel')}</label><input class="girdi" id="bTel" type="tel" maxlength="30"></div>
+        <div><label class="etiket">${t('rSehir')} *</label><input class="girdi" id="bSehir" maxlength="60"></div>
+        <div class="tam"><label class="etiket">${t('rDiller')} *</label><div class="secimler" id="bDiller">${diller.map(d => `<span class="secim" data-v="${d}" onclick="this.classList.toggle('aktif')">${DIL_AD[dil][d]}</span>`).join('')}</div></div>
+        <div class="tam"><label class="etiket">${t('rBolgeler')} *</label><div class="secimler" id="bBolgeler">${Object.keys(BOLGE_AD.tr).map(b => `<span class="secim" data-v="${b}" onclick="this.classList.toggle('aktif')">${esc(BOLGE_AD[dil][b])}</span>`).join('')}</div></div>
+        <div class="tam"><label class="etiket">${t('rKokart')} *</label><input class="girdi" id="bKokart" maxlength="40"></div>
+        <div><label class="etiket">${t('rDeneyim')}</label><input class="girdi" id="bDeneyim" type="number" min="0" max="60"></div>
+        <div><label class="etiket">${t('rUcret')}</label><input class="girdi" id="bUcret" type="number" min="0" step="50"></div>
+        <div class="tam"><label class="etiket">${t('rHakkinda')}</label><textarea class="girdi" id="bHakkinda" maxlength="1500" placeholder="${esc(t('rHakkindaPh'))}"></textarea></div>
+      </div>
+      <button class="btn vurgu" id="bBtn" style="margin-top:18px" onclick="basvuruGonder()">${t('rGonder')}</button>
+      <div class="form-mesaj" id="bMesaj"></div>
+    </div>
+  </div></section>`;
+}
+
+async function basvuruGonder() {
+  const v = id => document.getElementById(id).value.trim();
+  const sec = id => [...document.querySelectorAll(`#${id} .secim.aktif`)].map(e => e.dataset.v);
+  const mesaj = document.getElementById('bMesaj'), btn = document.getElementById('bBtn');
+  if (!v('bAd') || !/^\S+@\S+\.\S+$/.test(v('bEmail')) || !v('bSehir') || !v('bKokart')) { mesaj.className = 'form-mesaj hata'; mesaj.textContent = t('eksikAlan'); return; }
+  if (!sec('bDiller').length || !sec('bBolgeler').length) { mesaj.className = 'form-mesaj hata'; mesaj.textContent = t('rDilSec'); return; }
+  btn.disabled = true;
+  const res = await sbPost('rehberler', {
+    ad_soyad: v('bAd'), email: v('bEmail'), telefon: v('bTel') || null, sehir: v('bSehir'),
+    diller: sec('bDiller'), bolgeler: sec('bBolgeler'), sertifika: v('bKokart'),
+    deneyim_yil: parseInt(v('bDeneyim')) || 0, gunluk_ucret: parseInt(v('bUcret')) || null,
+    hakkinda: v('bHakkinda') || null, onaylandi: false
+  }).catch(() => null);
+  if (res && res.ok) {
+    btn.closest('div').innerHTML = `<h2>✓</h2><p class="giris">${t('rTesekkur')}</p>`;
+  } else { btn.disabled = false; mesaj.className = 'form-mesaj hata'; mesaj.textContent = t('hata'); }
+}
+
+function iletisimSayfasi() {
+  const satirlar = [
+    ILETISIM.email && `<p><b>E-posta</b><br><a href="mailto:${esc(ILETISIM.email)}" style="color:var(--vurgu)">${esc(ILETISIM.email)}</a></p>`,
+    ILETISIM.whatsapp && `<p><b>WhatsApp</b><br><a href="https://wa.me/${esc(ILETISIM.whatsapp.replace(/\D/g, ''))}" target="_blank" rel="noopener" style="color:var(--vurgu)">${esc(ILETISIM.whatsapp)}</a></p>`,
+    ILETISIM.instagram && `<p><b>Instagram</b><br><a href="https://instagram.com/${esc(ILETISIM.instagram.replace('@', ''))}" target="_blank" rel="noopener" style="color:var(--vurgu)">${esc(ILETISIM.instagram)}</a></p>`
+  ].filter(Boolean).join('');
+  sayfa().innerHTML = `
+  <section class="sayfa-bas"><div class="kap"><div class="ust-etiket">${t('mIletisim')}</div><h1>${t('iletBaslik')}</h1><p class="giris">${t('iletAlt')}</p></div></section>
+  <section style="padding-bottom:110px"><div class="kap ikili">
+    <div class="metin-sutun">
+      ${satirlar || `<p>${t('iletYakinda')}</p>`}
+      <p>${t('iletDiller')}</p>
+      <p class="alt-yazi">${t('iletRezervasyon')}</p>
+    </div>
+    <div class="hikaye-gorsel" style="background-image:url('${CDN}/f_auto,q_auto,w_1200/assos_3_tfnq7g')"></div>
+  </div></section>`;
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════════════════════
+function modalAc(icerik, genis) {
+  const m = document.getElementById('modal');
+  document.getElementById('modalIc').outerHTML = `<div class="modal-ic ${genis ? 'genis' : ''}" id="modalIc"><button class="modal-kapat" onclick="modalKapat()">×</button>${icerik}</div>`;
+  m.classList.add('acik');
+  document.body.style.overflow = 'hidden';
+}
+function modalKapat() {
+  pencereAktif = null;
+  document.getElementById('modal').classList.remove('acik');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') modalKapat(); });
+document.addEventListener('click', e => { if (!e.target.closest('.acilis-arama')) { const k = document.getElementById('oneriListe'); if (k) k.style.display = 'none'; } });
+
+// ════════════════════════════════════════════════════════════════════════
+// BAŞLAT
+// ════════════════════════════════════════════════════════════════════════
+document.documentElement.lang = dil;
+document.getElementById('yil').textContent = new Date().getFullYear();
+sabitMetinler();
+yonlendir();
+</script>
+</body>
+</html>
